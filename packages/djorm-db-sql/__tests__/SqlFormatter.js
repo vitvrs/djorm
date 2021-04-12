@@ -28,7 +28,13 @@ describe('SqlFormatter', () => {
     }
   }
 
-  describe('select', () => {
+  it('throws given query does not inherit Query', () => {
+    expect(() => driver.formatQuery(new (class Foo {})())).toThrow(
+      QueryFormatterError
+    )
+  })
+
+  describe('formatQuery with select', () => {
     it('formats query', () => {
       const qs = new Select().from('users').select('id', 'name')
       expect(driver.formatQuery(qs)).toBe('SELECT `id`, `name` FROM `users`')
