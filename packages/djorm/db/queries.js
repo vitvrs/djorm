@@ -17,10 +17,12 @@ const QuerySetMode = {
   update: 'UPDATE'
 }
 
+const IdentifierSeparator = '__'
+
 const parseColumn = col => {
   if (typeof col === 'string') {
-    if (col.includes('__')) {
-      const [source, name] = col.split('__')
+    if (col.includes(IdentifierSeparator)) {
+      const [source, name] = col.split(IdentifierSeparator)
       return { source, name }
     }
   }
@@ -42,6 +44,16 @@ class QueryIdentifier extends PropModel {
 }
 
 class QueryColumn extends QueryIdentifier {
+  static parseColumn (str) {
+    const [name, source] = str.split(IdentifierSeparator).reverse()
+    const alias = source ? str : null
+    return { alias, source, name }
+  }
+
+  constructor (props) {
+    super(typeof props === 'string' ? QueryColumn.parseColumn(props) : props)
+  }
+
   get source () {
     return this.props.source
   }
@@ -53,6 +65,13 @@ class QueryJoin extends QueryIdentifier {
   static left = 'LEFT'
   static right = 'RIGHT'
   static inner = 'INNER'
+
+  constructor ({ conditions, ...props }) {
+    super({
+      ...props,
+      conditions: conditions instanceof Q ? conditions : new And(conditions)
+    })
+  }
 
   get side () {
     return this.props.side || this.constructor.inner
@@ -113,9 +132,18 @@ class Query extends ImmutablePropModel {
     return this.getProp('mode', QuerySetMode.select)
   }
 
-  select (...value) {
+  parseSelectionValue (value) {
+    if (typeof value instanceof QueryIdentifier) {
+      return value
+    }
+    if (typeof value === 'string') {
+      return new QueryColumn(value)
+    }
+  }
+
+  select (...values) {
     return this.initProp('selection', defaultSelection)
-      .appendProp('selection', ...value)
+      .appendProp('selection', ...values.map(this.parseSelectionValue))
       .setProp('mode', QuerySetMode.select, true)
   }
 
@@ -191,11 +219,11 @@ class Query extends ImmutablePropModel {
     return this.filter(value.negate(true))
   }
 
-  join (table, alias, conditions) {
-    this.initProp('joins', defaultJoins)
-    if (table instanceof QueryJoin) {
-      return this.appendProp('joins', table)
-    }
+  join (joinSpec) {
+    return this.initProp('joins', defaultJoins).appendProp(
+      'joins',
+      joinSpec instanceof QueryJoin ? joinSpec : new QueryJoin(joinSpec)
+    )
   }
 
   orderBy (...fields) {

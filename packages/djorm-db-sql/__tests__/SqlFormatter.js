@@ -6,8 +6,7 @@ const {
   Q,
   Query,
   QueryColumn,
-  QueryError,
-  QueryForeignKey,
+  QueryFormatterError,
   QueryJoin,
   Or
 } = require('djorm/db')
@@ -424,14 +423,15 @@ describe('SqlFormatter', () => {
       .join(
         new QueryJoin({
           name: 'roles',
-          conditions: new Q(new QueryForeignKey('roleId', 'roles__id'))
+          alias: 'roles',
+          conditions: new Q({ roleId: new QueryColumn('roles__id') })
         })
       )
     expect(driver.formatQuerySet(qs)).toBe(
       [
         'SELECT',
         '`id`, `name` FROM `users`',
-        'JOIN `roles` ON (`roles`.`id` = `users`.`roleId`)'
+        'INNER JOIN `roles` AS `roles` ON (`users`.`roleId` = `roles`.`id`)'
       ].join(' ')
     )
   })
@@ -443,15 +443,16 @@ describe('SqlFormatter', () => {
       .join(
         new QueryJoin({
           name: 'roles',
+          alias: 'roles',
           side: QueryJoin.left,
-          conditions: new Q(new QueryForeignKey('roleId', 'roles__id'))
+          conditions: new Q({ roleId: new QueryColumn('roles__id') })
         })
       )
     expect(driver.formatQuerySet(qs)).toBe(
       [
         'SELECT',
         '`id`, `name` FROM `users`',
-        'LEFT JOIN `roles` ON (`roles`.`id` = `users`.`roleId`)'
+        'LEFT JOIN `roles` AS `roles` ON (`users`.`roleId` = `roles`.`id`)'
       ].join(' ')
     )
   })
@@ -463,8 +464,9 @@ describe('SqlFormatter', () => {
       .join(
         new QueryJoin({
           name: 'roles',
+          alias: 'roles',
           side: QueryJoin.right,
-          conditions: new Q(new QueryForeignKey('roleId', 'roles__id'))
+          conditions: new Q({ roleId: new QueryColumn('roles__id') })
         })
       )
 
@@ -472,7 +474,7 @@ describe('SqlFormatter', () => {
       [
         'SELECT',
         '`id`, `name` FROM `users`',
-        'RIGHT JOIN `roles` ON (`roles`.`id` = `users`.`roleId`)'
+        'RIGHT JOIN `roles` AS `roles` ON (`users`.`roleId` = `roles`.`id`)'
       ].join(' ')
     )
   })
@@ -484,23 +486,25 @@ describe('SqlFormatter', () => {
       .join(
         new QueryJoin({
           name: 'user_roles',
-          conditions: new Q(new QueryForeignKey('id', 'user_roles__userId'))
+          alias: 'user_roles',
+          conditions: new Q({ id: new QueryColumn('user_roles__userId') })
         })
       )
       .join(
         new QueryJoin({
           name: 'roles',
-          conditions: new Q(
-            new QueryForeignKey('user_roles__roleId', 'roles__id')
-          )
+          alias: 'roles',
+          conditions: new Q({
+            user_roles__roleId: new QueryColumn('roles__id')
+          })
         })
       )
     expect(driver.formatQuerySet(qs)).toBe(
       [
         'SELECT',
         '`id`, `name`, `roles`.`name` AS `roles__name`, `roles`.`id` AS `roles__id` FROM `users`',
-        'JOIN `user_roles` ON (`user_roles`.`userId` = `users`.`id`)',
-        'JOIN `roles` ON (`roles`.`roleId` = `roles`.`id`)'
+        'INNER JOIN `user_roles` AS `user_roles` ON (`users`.`id` = `user_roles`.`userId`)',
+        'INNER JOIN `roles` AS `roles` ON (`user_roles`.`roleId` = `roles`.`id`)'
       ].join(' ')
     )
   })
@@ -508,20 +512,21 @@ describe('SqlFormatter', () => {
   it('formats query with self join', () => {
     const qs = new Query()
       .from('users')
-      .select('id', 'lookalikeIndex', 'lookalike__id')
+      .select('id', 'lookalikeIndex', 'lookalike__lookalikeIndex')
       .join(
         new QueryJoin({
           name: 'users',
           alias: 'lookalike',
+          side: QueryJoin.left,
           conditions: {
-            lookalikeIndex: new QueryColumn('lookalikeIndex')
+            lookalikeIndex: new QueryColumn('lookalike__lookalikeIndex')
           }
         })
       )
     expect(driver.formatQuerySet(qs)).toBe(
       [
         'SELECT',
-        '`id`, `lookalikeIndex`, `lookalike`.`lookalikeIndex` as `lookalike__lookalikeIndex`',
+        '`id`, `lookalikeIndex`, `lookalike`.`lookalikeIndex` AS `lookalike__lookalikeIndex`',
         'FROM `users`',
         'LEFT JOIN `users` AS `lookalike` ON (`users`.`lookalikeIndex` = `lookalike`.`lookalikeIndex`)'
       ].join(' ')
@@ -535,31 +540,24 @@ describe('SqlFormatter', () => {
       .join(
         new QueryJoin({
           name: 'user_roles',
-          conditions: new Q(new QueryForeignKey('id', 'user_roles__userId'))
+          conditions: new Q({ id: new QueryColumn('user_roles__userId') })
         })
       )
-
-    expect(() =>
-      qs.join(
-        'user_roles',
-        new Q(new QueryForeignKey('id', 'user_roles__userId'))
-      )
-    ).toThrow(QueryError)
+      .join('user_roles', new Q({ id: new QueryColumn('user_roles__userId') }))
+    expect(() => driver.formatQuerySet(qs)).toThrow(QueryFormatterError)
   })
 
   it('throws given query joins base table without alias', () => {
     const qs = new Query()
       .from('users')
       .select('id', 'name', 'roles__name', 'roles__id')
-
-    expect(() =>
-      qs.join(
+      .join(
         new QueryJoin({
           name: 'users',
           conditions: { lookalike: new QueryColumn('lookalike') }
         })
       )
-    ).toThrow(QueryError)
+    expect(() => driver.formatQuerySet(qs)).toThrow(QueryFormatterError)
   })
 
   it('formats trivial model query', () => {

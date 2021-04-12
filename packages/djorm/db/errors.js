@@ -1,3 +1,4 @@
 class QueryError extends Error {}
+class QueryFormatterError extends Error {}
 
-module.exports = { QueryError }
+module.exports = { QueryError, QueryFormatterError }

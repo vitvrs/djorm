@@ -7,6 +7,7 @@ const {
 const { ComparisonOperator } = require('djorm/db/ComparisonOperator')
 const { LogicOperator } = require('djorm/db/LogicOperator')
 const { QueryFormatter } = require('djorm/db/QueryFormatter')
+const { QueryFormatterError } = require('djorm/db/errors')
 const { Q } = require('djorm/db/QueryCondition')
 
 const nonEmpty = item => Boolean(item)
@@ -74,7 +75,7 @@ class SqlFormatter extends QueryFormatter {
     return `FROM ${this.formatIdentifier(qs.props.from)}`
   }
 
-  formatQueryColumn (expr) {
+  formatQueryColumn (expr, ignoreAlias = false) {
     const source = [
       expr.source && this.formatSafeName(expr.source),
       this.formatSafeName(expr.name)
@@ -84,7 +85,7 @@ class SqlFormatter extends QueryFormatter {
     const alias = [expr.prefix, expr.alias || (expr.prefix && expr.name)]
       .filter(nonEmpty)
       .join('__')
-    return alias ? this.formatAlias(source, alias) : source
+    return alias && !ignoreAlias ? this.formatAlias(source, alias) : source
   }
 
   formatSelectionExpression (qs, expressionItem) {
@@ -144,13 +145,22 @@ class SqlFormatter extends QueryFormatter {
     return `${operator} ${this.formatValue(value)}`
   }
 
+  formatValue (value) {
+    if (value instanceof QueryColumn) {
+      return this.formatQueryColumn(value, true)
+    }
+    return super.formatValue(value)
+  }
+
   formatConditionExpression (qs, condition, fieldSpec, value) {
     const operatorName = this.resolveOperatorName(condition, fieldSpec)
     const operator = ComparisonOperator[operatorName]
     const fieldName = fieldSpec.replace(this.operatorMatch, '')
-    const field = this.formatQueryColumn(
-      new QueryColumn({ source: qs.props.from, name: fieldName })
-    )
+    const col = new QueryColumn(fieldName)
+    if (!col.source) {
+      col.props.source = qs.props.from
+    }
+    const field = this.formatQueryColumn(col, true)
     return `${field} ${this.formatOperatorExpression(operator, value)}`
   }
 
@@ -186,19 +196,28 @@ class SqlFormatter extends QueryFormatter {
     )
   }
 
+  formatQueryConditions (qs, conditions) {
+    return qs.props.conditions
+      .map(condition => this.formatQueryCondition(qs, condition))
+      .join(` ${LogicOperator.and} `)
+  }
+
   formatWhere (qs) {
     if (qs.props.conditions) {
-      const str = qs.props.conditions
-        .map(condition => this.formatQueryCondition(qs, condition))
-        .join(` ${LogicOperator.and} `)
-      return `WHERE ${str}`
+      return `WHERE ${this.formatQueryConditions(qs, qs.props.conditions)}`
     }
     return ''
   }
 
   formatJoinDirective (qs, join) {
-    console.log(join)
-    return `${join.side} JOIN ${this.formatAlias(join.table, join.alias)} ON ()`
+    if (!join.alias) {
+      throw new QueryFormatterError(
+        `Missing alias for join "${JSON.stringify(join, null, 2)}"`
+      )
+    }
+    return `${join.side} JOIN ${this.formatIdentifier(
+      join
+    )} ON (${this.formatQueryCondition(qs, join.props.conditions)})`
   }
 
   formatJoin (qs) {
