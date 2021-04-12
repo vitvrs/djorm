@@ -6,7 +6,6 @@
   "homepage": "https://github.com/just-paja/djorm#readme",
   "license": "ISC",
   "main": "index.js",
-  "private": true,
   "standard": {
     "env": [
       "jest"
@@ -14,10 +13,10 @@
     "parser": "babel-eslint"
   },
   "files": [
+    "db",
     "fields",
     "models",
-    "errors.js",
-    "filters.js"
+    "*.js"
   ],
   "repository": {
     "type": "git",

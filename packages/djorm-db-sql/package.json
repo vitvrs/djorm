@@ -7,7 +7,7 @@
   "license": "ISC",
   "main": "lib/djorm-db-sql.js",
   "files": [
-    "lib"
+    "*.js"
   ],
   "repository": {
     "type": "git",

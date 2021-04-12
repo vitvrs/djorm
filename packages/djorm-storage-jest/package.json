@@ -7,7 +7,7 @@
   "license": "ISC",
   "main": "index.js",
   "files": [
-    "index.js"
+    "*.js"
   ],
   "standard": {
     "env": [
