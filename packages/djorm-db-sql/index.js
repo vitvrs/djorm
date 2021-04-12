@@ -1,22 +1,21 @@
-const {
-  QueryColumn,
-  QueryIdentifier,
-  QuerySetMode,
-  QueryShortcut
-} = require('djorm/db')
 const { ComparisonOperator } = require('djorm/db/ComparisonOperator')
 const { LogicOperator } = require('djorm/db/LogicOperator')
-const { QueryFormatter } = require('djorm/db/QueryFormatter')
-const { QueryFormatterError } = require('djorm/db/errors')
 const { Q } = require('djorm/db/QueryCondition')
+const { QueryColumn } = require('djorm/db/QueryColumn')
+const { QueryFormatterError } = require('djorm/db/errors')
+const { QueryFormatter } = require('djorm/db/QueryFormatter')
+const { QueryIdentifier } = require('djorm/db/QueryIdentifier')
+const { QueryShortcut } = require('djorm/db/QueryShortcut')
+const { Select } = require('djorm/db/Select')
 
 const nonEmpty = item => Boolean(item)
 
 class SqlFormatter extends QueryFormatter {
-  formatQuerySet (qs) {
-    if (qs.mode === QuerySetMode.select) {
+  formatQuery (qs) {
+    if (qs instanceof Select) {
       return this.formatSelect(qs)
     }
+    throw new QueryFormatterError('Unknown query type')
   }
 
   /** Format string parts of a query

@@ -2,134 +2,23 @@ const { And } = require('./And')
 const { DatabaseModel } = require('../models/DatabaseModel')
 const { filterUnique } = require('../filters')
 const { getModelName } = require('../models/ModelRegistry')
-const { ImmutablePropModel } = require('./props')
 const { parseFieldObjects } = require('../models/AttrModel')
-const { PropModel } = require('./props')
 const { Q } = require('./QueryCondition')
+const { QueryColumnGroup } = require('./QueryColumnGroup')
+const { QueryColumn } = require('./QueryColumn')
+const { QueryIdentifier } = require('./QueryIdentifier')
+const { QueryJoin } = require('./QueryJoin')
+const { Query } = require('./Query')
+const { QueryTable } = require('./QueryTable')
 
 const defaultConditions = () => []
 const defaultSelection = () => []
 const defaultJoins = () => []
 
-const QuerySetMode = {
-  delete: 'DELETE',
-  select: 'SELECT',
-  update: 'UPDATE'
-}
-
-const IdentifierSeparator = '__'
-
-const parseColumn = col => {
-  if (typeof col === 'string') {
-    if (col.includes(IdentifierSeparator)) {
-      const [source, name] = col.split(IdentifierSeparator)
-      return { source, name }
-    }
-  }
-  return col
-}
-
-class QueryIdentifier extends PropModel {
-  get name () {
-    return this.props.name
-  }
-
-  get alias () {
-    return this.props.alias
-  }
-
-  get prefix () {
-    return this.props.prefix
-  }
-}
-
-class QueryColumn extends QueryIdentifier {
-  static parseColumn (str) {
-    const [name, source] = str.split(IdentifierSeparator).reverse()
-    const alias = source ? str : null
-    return { alias, source, name }
-  }
-
-  constructor (props) {
-    super(typeof props === 'string' ? QueryColumn.parseColumn(props) : props)
-  }
-
-  get source () {
-    return this.props.source
-  }
-}
-
-class QueryTable extends QueryIdentifier {}
-
-class QueryJoin extends QueryIdentifier {
-  static left = 'LEFT'
-  static right = 'RIGHT'
-  static inner = 'INNER'
-
-  constructor ({ conditions, ...props }) {
-    super({
-      ...props,
-      conditions: conditions instanceof Q ? conditions : new And(conditions)
-    })
-  }
-
-  get side () {
-    return this.props.side || this.constructor.inner
-  }
-}
-
-class QueryForeignKey extends QueryIdentifier {
-  constructor (column1, column2) {
-    super({
-      leftColumn: parseColumn(column1),
-      rightColumn: parseColumn(column2)
-    })
-  }
-
-  get leftColumn () {
-    return this.props.leftColumn
-  }
-
-  get rightColumn () {
-    return this.props.rightColumn
-  }
-}
-
-class QueryShortcut extends PropModel {}
-
-class QueryColumnGroup extends QueryShortcut {
-  get source () {
-    return this.props.source
-  }
-
-  get prefix () {
-    return this.props.prefix
-  }
-
-  get columns () {
-    return this.props.columns
-  }
-
-  breakdown () {
-    return this.columns.map(
-      name =>
-        new QueryColumn({
-          name,
-          source: this.source,
-          prefix: this.prefix
-        })
-    )
-  }
-}
-
-class Query extends ImmutablePropModel {
+class Select extends Query {
   // group by
   get model () {
     return this.getProp('model')
-  }
-
-  get mode () {
-    return this.getProp('mode', QuerySetMode.select)
   }
 
   parseSelectionValue (value) {
@@ -142,9 +31,10 @@ class Query extends ImmutablePropModel {
   }
 
   select (...values) {
-    return this.initProp('selection', defaultSelection)
-      .appendProp('selection', ...values.map(this.parseSelectionValue))
-      .setProp('mode', QuerySetMode.select, true)
+    return this.initProp('selection', defaultSelection).appendProp(
+      'selection',
+      ...values.map(this.parseSelectionValue)
+    )
   }
 
   getModelFields (model) {
@@ -189,18 +79,11 @@ class Query extends ImmutablePropModel {
   }
 
   from (value) {
-    let nextInstance
     if (value.prototype && value.prototype instanceof DatabaseModel) {
       const [selection] = this.getModelFields(value)
-      nextInstance = this.setProp('from', value.table).setProp(
-        'selection',
-        selection
-      )
-    } else {
-      nextInstance = this.setProp('from', value)
+      return this.setProp('from', value.table).setProp('selection', selection)
     }
-
-    return nextInstance.setProp('mode', QuerySetMode.select, true)
+    return this.setProp('from', value)
   }
 
   distinct (fields) {
@@ -245,13 +128,5 @@ class Query extends ImmutablePropModel {
 }
 
 module.exports = {
-  QueryColumn,
-  QueryColumnGroup,
-  QueryForeignKey,
-  QueryIdentifier,
-  QueryJoin,
-  Query,
-  QuerySetMode,
-  QueryShortcut,
-  QueryTable
+  Select
 }

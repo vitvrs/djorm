@@ -3,7 +3,14 @@ module.exports = {
   ...require('./ComparisonOperator'),
   ...require('./LogicOperator'),
   ...require('./Or'),
-  ...require('./queries'),
+  ...require('./Query'),
+  ...require('./QueryColumn'),
+  ...require('./QueryColumnGroup'),
   ...require('./QueryCondition'),
-  ...require('./QueryFormatter')
+  ...require('./QueryFormatter'),
+  ...require('./QueryIdentifier'),
+  ...require('./QueryJoin'),
+  ...require('./QueryShortcut'),
+  ...require('./QueryTable'),
+  ...require('./Select')
 }
