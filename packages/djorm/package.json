@@ -1,0 +1,36 @@
+{
+  "name": "djorm",
+  "version": "0.17.0",
+  "description": "> TODO: description",
+  "author": "Pavel Žák <pavel@zak.global>",
+  "homepage": "https://github.com/just-paja/djorm#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "private": true,
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "parser": "babel-eslint"
+  },
+  "files": [
+    "fields",
+    "models",
+    "errors.js",
+    "filters.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/just-paja/djorm.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/just-paja/djorm/issues"
+  },
+  "dependencies": {
+    "camelcase": "^6.2.0",
+    "moment-timezone": "^0.5.33"
+  }
+}

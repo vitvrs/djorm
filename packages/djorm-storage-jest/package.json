@@ -1,0 +1,25 @@
+{
+  "name": "djorm-storage-jest",
+  "version": "0.17.0",
+  "description": "> TODO: description",
+  "author": "Pavel Žák <pavel@zak.global>",
+  "homepage": "https://bitbucket.org/optimics/skoda-ig11-banner-generator#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "parser": "babel-eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/optimics/skoda-ig11-banner-generator.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  }
+}
