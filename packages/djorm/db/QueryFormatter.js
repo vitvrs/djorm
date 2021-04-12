@@ -1,9 +1,11 @@
-const { ValueOperator } = require('./conditions')
+const { ComparisonOperator } = require('./ComparisonOperator')
 const { QueryError } = require('./errors')
 
 class QueryFormatter {
   filterNonEmpty = item => Boolean(item)
-  operatorMatch = new RegExp(`__(${Object.keys(ValueOperator).join('|')})$`)
+  operatorMatch = new RegExp(
+    `__(${Object.keys(ComparisonOperator).join('|')})$`
+  )
 
   formatValue (value) {
     if (Number.isInteger(value)) {

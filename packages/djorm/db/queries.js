@@ -1,8 +1,11 @@
-const { ImmutablePropModel } = require('./props')
+const { And } = require('./And')
+const { DatabaseModel } = require('../models/DatabaseModel')
 const { filterUnique } = require('../filters')
-const { And, Q } = require('./conditions')
-const { DatabaseModel, getModelName, parseFieldObjects } = require('../models')
+const { getModelName } = require('../models/ModelRegistry')
+const { ImmutablePropModel } = require('./props')
+const { parseFieldObjects } = require('../models/AttrModel')
 const { PropModel } = require('./props')
+const { Q } = require('./QueryCondition')
 
 const defaultConditions = () => []
 const defaultSelection = () => []

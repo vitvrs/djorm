@@ -1,5 +1,9 @@
 module.exports = {
-  ...require('./conditions'),
+  ...require('./And'),
+  ...require('./ComparisonOperator'),
+  ...require('./LogicOperator'),
+  ...require('./Or'),
   ...require('./queries'),
+  ...require('./QueryCondition'),
   ...require('./QueryFormatter')
 }

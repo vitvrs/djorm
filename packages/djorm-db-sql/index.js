@@ -1,13 +1,13 @@
 const {
-  QueryFormatter,
-  LogicOperator,
-  Q,
   QueryColumn,
   QueryIdentifier,
   QuerySetMode,
-  QueryShortcut,
-  ValueOperator
+  QueryShortcut
 } = require('djorm/db')
+const { ComparisonOperator } = require('djorm/db/ComparisonOperator')
+const { LogicOperator } = require('djorm/db/LogicOperator')
+const { QueryFormatter } = require('djorm/db/QueryFormatter')
+const { Q } = require('djorm/db/QueryCondition')
 
 const nonEmpty = item => Boolean(item)
 
@@ -135,7 +135,10 @@ class SqlFormatter extends QueryFormatter {
   }
 
   formatOperatorExpression (operator, value) {
-    if (operator === ValueOperator.in || operator === ValueOperator.notin) {
+    if (
+      operator === ComparisonOperator.in ||
+      operator === ComparisonOperator.notin
+    ) {
       return `${operator} (${value.map(this.formatValue).join(',')})`
     }
     return `${operator} ${this.formatValue(value)}`
@@ -143,7 +146,7 @@ class SqlFormatter extends QueryFormatter {
 
   formatConditionExpression (qs, condition, fieldSpec, value) {
     const operatorName = this.resolveOperatorName(condition, fieldSpec)
-    const operator = ValueOperator[operatorName]
+    const operator = ComparisonOperator[operatorName]
     const fieldName = fieldSpec.replace(this.operatorMatch, '')
     const field = this.formatQueryColumn(
       new QueryColumn({ source: qs.props.from, name: fieldName })

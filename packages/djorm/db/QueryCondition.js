@@ -1,20 +1,5 @@
 const { ImmutablePropModel } = require('./props')
-
-const LogicOperator = {
-  and: 'AND',
-  or: 'OR'
-}
-
-const ValueOperator = {
-  eq: '=',
-  gt: '>',
-  gte: '>=',
-  lt: '<',
-  lte: '<=',
-  neq: '!=',
-  in: 'IN',
-  notin: 'NOT IN'
-}
+const { LogicOperator } = require('./LogicOperator')
 
 class QueryCondition extends ImmutablePropModel {
   constructor (...conditions) {
@@ -61,19 +46,8 @@ class QueryCondition extends ImmutablePropModel {
 }
 
 const Q = QueryCondition
-const And = QueryCondition
-
-class Or extends QueryCondition {
-  constructor (...conditions) {
-    super(...conditions)
-    this.setProp('operator', LogicOperator.or, true)
-  }
-}
 
 module.exports = {
-  LogicOperator,
-  ValueOperator,
-  Q,
-  And,
-  Or
+  QueryCondition,
+  Q
 }
