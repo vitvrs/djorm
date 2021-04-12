@@ -1,6 +1,6 @@
-const { QuerySet, QueryJoin } = require('..')
+const { Query, QueryJoin } = require('..')
 
-describe('QuerySet', () => {
+describe('Query', () => {
   const newInstanceMethods = [
     ['from', 'foo'],
     ['distinct', 'foo'],
@@ -13,10 +13,10 @@ describe('QuerySet', () => {
   ]
 
   newInstanceMethods.forEach(([method, ...args]) => {
-    it(`${method} returns new instance of QuerySet`, () => {
-      const qs = new QuerySet()
+    it(`${method} returns new instance of Query`, () => {
+      const qs = new Query()
       const result = qs[method](...args)
-      expect(result).toBeInstanceOf(QuerySet)
+      expect(result).toBeInstanceOf(Query)
       expect(result).not.toBe(qs)
     })
   })

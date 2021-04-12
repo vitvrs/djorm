@@ -1,0 +1,28 @@
+{
+  "name": "djorm-db-sql",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "Pavel Žák <pavel@zak.global>",
+  "homepage": "https://github.com/just-paja/djorm#readme",
+  "license": "ISC",
+  "main": "lib/djorm-db-sql.js",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/just-paja/djorm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/just-paja/djorm/issues"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "parser": "babel-eslint"
+  },
+  "dependencies": {
+    "djorm": "file:../djorm"
+  }
+}

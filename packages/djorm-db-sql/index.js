@@ -1,31 +1,17 @@
-const { LogicOperator, Q, ValueOperator } = require('./conditions')
-const { QueryError } = require('./errors')
 const {
+  QueryFormatter,
+  LogicOperator,
+  Q,
   QueryColumn,
   QueryIdentifier,
+  QuerySetMode,
   QueryShortcut,
-  QuerySetMode
-} = require('./queries')
+  ValueOperator
+} = require('djorm/db')
 
 const nonEmpty = item => Boolean(item)
 
-class DbDriver {
-  operatorMatch = new RegExp(`__(${Object.keys(ValueOperator).join('|')})$`)
-
-  formatValue (value) {
-    if (Number.isInteger(value)) {
-      return String(value)
-    }
-    if (typeof value === 'string') {
-      return `'${value}'` // TODO: escape
-    }
-    throw new QueryError(
-      `Unknown value type: "${typeof value}" for value "${value}"`
-    )
-  }
-}
-
-class GenericSqlDriver extends DbDriver {
+class SqlFormatter extends QueryFormatter {
   formatQuerySet (qs) {
     if (qs.mode === QuerySetMode.select) {
       return this.formatSelect(qs)
@@ -259,5 +245,5 @@ class GenericSqlDriver extends DbDriver {
 }
 
 module.exports = {
-  GenericSqlDriver
+  SqlFormatter
 }

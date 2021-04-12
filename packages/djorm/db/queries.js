@@ -100,7 +100,7 @@ class QueryColumnGroup extends QueryShortcut {
   }
 }
 
-class QuerySet extends ImmutablePropModel {
+class Query extends ImmutablePropModel {
   // group by
   get model () {
     return this.getProp('model')
@@ -219,7 +219,7 @@ module.exports = {
   QueryForeignKey,
   QueryIdentifier,
   QueryJoin,
-  QuerySet,
+  Query,
   QuerySetMode,
   QueryShortcut,
   QueryTable
