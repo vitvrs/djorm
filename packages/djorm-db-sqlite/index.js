@@ -21,6 +21,10 @@ class SqliteDatabase extends Database {
     this.connected = false
   }
 
+  async execDb (str) {
+    return this.db.prepare(str).run()
+  }
+
   async queryDb (str) {
     return this.db.prepare(str).all()
   }

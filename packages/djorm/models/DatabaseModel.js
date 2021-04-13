@@ -92,7 +92,7 @@ class DatabaseModel extends DatabaseModelBase {
     let inject = {}
     for (const row of cascade) {
       const result = await new Insert()
-        .target(row.model.table)
+        .target(row.model)
         .values({ ...row.values, ...inject })
         .exec()
       if (result.insertId) {
@@ -109,7 +109,7 @@ class DatabaseModel extends DatabaseModelBase {
     const cascade = this.serializeDbValues()
     for (const row of cascade) {
       await new Update()
-        .target(row.model.table)
+        .target(row.model)
         .values(row.values)
         .filter({ [row.model.pkName]: this.pk })
         .exec()
@@ -128,8 +128,8 @@ class DatabaseModel extends DatabaseModelBase {
     let obj = this.constructor
     while (obj && obj !== DatabaseModel && (!obj.meta || !obj.meta.abstract)) {
       await new Delete()
-        .target(obj.table)
-        .filter({ [obj.pkName]: obj.pk })
+        .target(obj)
+        .filter({ [obj.pkName]: this.pk })
         .exec()
       obj = Object.getPrototypeOf(obj)
     }

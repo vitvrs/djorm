@@ -21,6 +21,14 @@ class Database extends PropModel {
     return await this.queryDb(str)
   }
 
+  async exec (str) {
+    return await this.execDb(str)
+  }
+
+  async execDb () {
+    throw new NotImplemented()
+  }
+
   async queryDb () {
     throw new NotImplemented()
   }

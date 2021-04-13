@@ -1,15 +1,10 @@
 const { And } = require('./And')
-const { DatabaseModelBase } = require('../models/DatabaseModelBase')
-const { filterUnique } = require('../filters')
 const { getModelName } = require('../models/ModelRegistry')
-const { parseFieldObjects } = require('../models/AttrModel')
 const { Q } = require('./QueryCondition')
-const { QueryColumnGroup } = require('./QueryColumnGroup')
 const { QueryColumn } = require('./QueryColumn')
 const { QueryIdentifier } = require('./QueryIdentifier')
 const { QueryJoin } = require('./QueryJoin')
 const { Query } = require('./Query')
-const { QueryTable } = require('./QueryTable')
 
 const defaultSelection = () => []
 const defaultJoins = () => []
@@ -31,49 +26,6 @@ class Select extends Query {
       'selection',
       ...values.map(this.parseSelectionValue)
     )
-  }
-
-  getModelFields (model) {
-    const selection = []
-    const joins = []
-    let obj = model
-    do {
-      const fields = parseFieldObjects(obj).filter(([key, field]) => field.db)
-      const fieldNames = fields.map(([key]) => key).filter(filterUnique)
-      const last = selection[selection.length - 1]
-      if (obj.meta && obj.meta.abstract && last) {
-        for (const f of fieldNames) {
-          last.columns.push(f)
-        }
-      } else {
-        if (obj !== model) {
-          joins.push(
-            new QueryTable({
-              name: obj.table,
-              alias: obj.table,
-              on: [
-                {
-                  left: { source: obj.table, name: obj.pkName },
-                  column: {
-                    source: model.table,
-                    name: model.pkName
-                  }
-                }
-              ]
-            })
-          )
-        }
-        selection.push(
-          new QueryColumnGroup({
-            source: obj.table,
-            columns: fieldNames,
-            prefix: getModelName(obj)
-          })
-        )
-      }
-      obj = Object.getPrototypeOf(obj)
-    } while (obj && Object.getPrototypeOf(obj) !== DatabaseModelBase)
-    return [selection, joins]
   }
 
   from (value) {
@@ -108,10 +60,6 @@ class Select extends Query {
     return this.setProp('offset', value)
   }
 
-  async fetchResults () {
-    return await this.db.query(this.db.formatQuery(this))
-  }
-
   mapResults (results) {
     const Model = this.model
     if (!Model) {
@@ -136,7 +84,7 @@ class Select extends Query {
   }
 
   async fetch () {
-    return this.mapResults(await this.fetchResults())
+    return this.mapResults(await this.query())
   }
 
   async all () {
@@ -145,12 +93,12 @@ class Select extends Query {
 
   async first () {
     const items = await this.limit(1).fetch()
-    return items[0]
+    return items[0] || null
   }
 
   async last () {
     const items = await this.fetch()
-    return items[items.length - 1]
+    return items[items.length - 1] || null
   }
 }
 

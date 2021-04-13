@@ -2,23 +2,35 @@ const path = require('path')
 const pool = require('djorm/db/DatabasePool')
 const SqliteDatabase = require('..')
 const fields = require('djorm/fields')
+const tmp = require('tmp-promise')
 
+const { promises } = require('fs')
 const { DatabaseModel } = require('djorm/models')
 
-const setupDb = dbName => async () => {
-  const db = new SqliteDatabase({
-    path: path.resolve(__dirname, '..', '__samples__', dbName)
+const setupDb = dbName => {
+  let tmpFile
+  beforeEach(async () => {
+    const dbPath = path.resolve(__dirname, '..', '__samples__', dbName)
+    tmpFile = await tmp.file()
+    await promises.copyFile(dbPath, tmpFile.path)
+    const db = new SqliteDatabase({
+      path: tmpFile.path
+    })
+    const p = new pool.DatabasePool()
+    await p.connect(db)
+    pool.instance = p
   })
-  const p = new pool.DatabasePool()
-  await p.connect(db)
-  pool.instance = p
+
+  afterEach(async () => {
+    await tmpFile.cleanup()
+  })
 }
 
 describe('select', () => {
   describe('users-trivial', () => {
     let models
 
-    beforeEach(setupDb('users-trivial.sqlite'))
+    setupDb('users-trivial.sqlite')
 
     beforeEach(async () => {
       class User extends DatabaseModel {
@@ -138,12 +150,52 @@ describe('select', () => {
         })
       )
     })
+
+    it('inserts user', async () => {
+      const user = new models.User({
+        name: 'Test Runner',
+        email: 'test.runner@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+      await user.save()
+      expect(
+        await models.User.objects.filter({ name: 'Test Runner' }).first()
+      ).toEqual({
+        id: 5,
+        name: 'Test Runner',
+        email: 'test.runner@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    })
+
+    it('deletes user', async () => {
+      const user = await models.User.objects.get({ id: 1 })
+      await user.delete()
+      expect(await models.User.objects.filter({ id: 1 }).first()).toEqual(null)
+    })
+
+    it('updates user', async () => {
+      const user = await models.User.objects.get({ id: 1 })
+      user.name = 'Test Runner 2'
+      await user.save()
+      expect(await models.User.objects.filter({ id: 1 }).first()).toEqual(
+        new models.User({
+          id: 1,
+          name: 'Test Runner 2',
+          email: 'harmony.vasquez@gmail.com',
+          superuser: false,
+          inactive: false
+        })
+      )
+    })
   })
 
   describe('users-trivial', () => {
     let models
 
-    beforeEach(setupDb('users-and-roles.sqlite'))
+    setupDb('users-and-roles.sqlite')
 
     beforeEach(() => {
       class User extends DatabaseModel {
