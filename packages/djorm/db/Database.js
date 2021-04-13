@@ -13,7 +13,6 @@ class Database extends PropModel {
   }
 
   async query (str) {
-    console.log(str)
     return await this.queryDb(str)
   }
 
