@@ -20,10 +20,11 @@ const init = async config => {
       })
     )
   }
-  // blah
 }
 
-const shutdown = () => {}
+const shutdown = async () => {
+  require('./models/ModelRegistry').clearModels()
+}
 
 module.exports = {
   configure,

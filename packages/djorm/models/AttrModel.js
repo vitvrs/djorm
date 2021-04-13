@@ -78,7 +78,7 @@ class AttrModel {
     return field
   }
 
-  getValue (fieldName) {
+  get (fieldName) {
     const value = this[fieldName]
     if (value === undefined) {
       const field = this.constructor.getField(fieldName)
@@ -122,7 +122,7 @@ class AttrModel {
       .reduce(
         (aggr, [key, field]) => ({
           ...aggr,
-          [key]: this.getValue(key)
+          [key]: this.get(key)
         }),
         {}
       )
@@ -171,7 +171,7 @@ class Field extends GenericField {
 
   async validateValue (inst, fieldName) {
     return this.validator
-      ? await this.validator(inst.getValue(fieldName), inst, fieldName)
+      ? await this.validator(inst.get(fieldName), inst, fieldName)
       : null
   }
 }

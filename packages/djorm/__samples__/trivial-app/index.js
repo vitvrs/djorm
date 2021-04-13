@@ -21,6 +21,10 @@ class User extends DatabaseModel {
 class Role extends DatabaseModel {
   static id = new fields.PositiveIntegerField()
   static name = new fields.CharField()
+
+  static meta = class {
+    static modelName = 'Role'
+  }
 }
 
 class UserRole extends DatabaseModel {
@@ -36,9 +40,15 @@ class UserRole extends DatabaseModel {
   })
 }
 
+class AuditLog extends DatabaseModel {
+  static test = new fields.TextField()
+  static createdAt = new fields.DateTimeField()
+}
+
 const initialize = async () => {
-  User.register()
+  AuditLog.register()
   Role.register()
+  User.register()
   UserRole.register()
   await config.init({
     databases: {
@@ -50,4 +60,11 @@ const initialize = async () => {
   })
 }
 
-module.exports = { User, Role, UserRole, initialize, shutdown: config.shutdown }
+module.exports = {
+  AuditLog,
+  User,
+  Role,
+  UserRole,
+  initialize,
+  shutdown: config.shutdown
+}

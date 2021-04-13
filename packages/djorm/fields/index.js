@@ -9,6 +9,7 @@ module.exports = {
   ...require('./IntegerField'),
   ...require('./ObjectField'),
   ...require('./PositiveIntegerField'),
+  ...require('./TextField'),
   ...require('./TrivialField'),
   ...require('./UrlField'),
   Field

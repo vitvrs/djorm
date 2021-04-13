@@ -16,14 +16,18 @@ class ForeignKey extends Relation {
 
   constructor (params) {
     super(params)
-    const KeyFieldType = this.getValue('keyFieldType') || PositiveIntegerField
+    const KeyFieldType = this.get('keyFieldType') || PositiveIntegerField
     if (!this.keyField) {
-      this.keyField = `${camelCase(this.getValue('model'))}Id`
+      this.keyField = `${camelCase(this.get('model'))}Id`
     }
     this.foreignKeyField = new KeyFieldType()
     this.expandedField = {
       [this.keyField]: this.foreignKeyField
     }
+  }
+
+  getDefault (inst) {
+    return this.queryTargetModel(inst)
   }
 
   expand () {
@@ -54,14 +58,14 @@ class ForeignKey extends Relation {
   queryTargetModel (fkInstance) {
     const Model = getModel(this.model)
     return Model.objects.filter({
-      [Model.pkName]: fkInstance.getValue(this.keyField)
+      [Model.pkName]: fkInstance.get(this.keyField)
     })
   }
 
   async fetch (inst) {
     const model = getModel(this.model)
     return await model.objects.requireOne({
-      [model.pkName]: inst.getValue(this.keyField)
+      [model.pkName]: inst.get(this.keyField)
     })
   }
 }

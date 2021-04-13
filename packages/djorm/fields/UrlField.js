@@ -6,7 +6,7 @@ const createUrl = str => new URL(str)
 /** Field used for url values */
 class UrlField extends CharField {
   validateValue (inst, fieldName) {
-    const value = inst.getValue(fieldName)
+    const value = inst.get(fieldName)
     if (value) {
       try {
         createUrl(value)

@@ -1,27 +1,22 @@
-const models = {}
-const relations = {}
+const { ModelError } = require('../errors')
 
-function getModelName (model) {
-  if (model.meta && model.meta.modelName) {
-    return model.meta.modelName
-  }
-  return model.name
-}
+const models = {}
+const relationships = {}
+
+const getModelName = model =>
+  model.meta && model.meta.modelName ? model.meta.modelName : model.name
+
+const getModels = () => models
+const getRelationships = () => relationships
+const getRelationRefName = (modelName, relatedName) =>
+  `${modelName}__${relatedName}`
 
 function getModel (name) {
   const m = models[name]
   if (!m) {
-    throw new Error(`Model "${name}" was not found`)
+    throw new ModelError(`Model "${name}" was not found`)
   }
   return m
-}
-
-function getModels () {
-  return models
-}
-
-function getRelationRefName (modelName, relatedName) {
-  return `${modelName}__${relatedName}`
 }
 
 function registerModelRelations (modelName, model) {
@@ -29,15 +24,15 @@ function registerModelRelations (modelName, model) {
   if (modelRelations) {
     for (const [, field] of modelRelations) {
       field.parentModel = modelName
-      relations[getRelationRefName(field.model, field.relatedName)] = field
+      relationships[getRelationRefName(field.model, field.relatedName)] = field
     }
   }
 }
 
 function unregisterModelRelations (modelName) {
-  for (const key of Object.keys(relations)) {
+  for (const key of Object.keys(relationships)) {
     if (key.startsWith(`${modelName}__`)) {
-      delete relations[key]
+      delete relationships[key]
     }
   }
 }
@@ -55,15 +50,27 @@ function unregisterModel (model) {
   unregisterModelRelations(modelName)
 }
 
-function getRelation (model, relatedName) {
-  return relations[getRelationRefName(getModelName(model), relatedName)]
+function getRelationship (model, relatedName) {
+  return relationships[getRelationRefName(getModelName(model), relatedName)]
+}
+
+const clearObj = obj =>
+  Object.keys(obj).forEach(key => {
+    delete obj[key]
+  })
+
+const clearModels = () => {
+  clearObj(models)
+  clearObj(relationships)
 }
 
 module.exports = {
+  clearModels,
   getModel,
   getModelName,
   getModels,
-  getRelation,
+  getRelationship,
+  getRelationships,
   registerModel,
   unregisterModel
 }

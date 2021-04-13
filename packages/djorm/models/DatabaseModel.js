@@ -1,65 +1,18 @@
 const { DatabaseModelBase } = require('./DatabaseModelBase')
+const { Delete } = require('../db/Delete')
 const { ForeignKey } = require('../fields/ForeignKey')
 const { getDb } = require('../db/DatabasePool')
-const { getModelName, getRelation, registerModel } = require('./ModelRegistry')
+const { Insert } = require('../db/Insert')
+const { ObjectManager } = require('./ObjectManager')
 const { ObjectNotFound } = require('../errors')
 const { parseFieldObjects } = require('./AttrModel')
 const { Relation } = require('../fields/Relation')
-const { Select } = require('../db/Select')
-
-class ObjectManager {
-  constructor (model) {
-    this.model = model
-  }
-
-  get db () {
-    return this.model.db
-  }
-
-  get query () {
-    return Select.fromDb(this.db).from(this.model)
-  }
-
-  async all () {
-    return await this.query.all()
-  }
-
-  async first () {
-    return await this.query.first()
-  }
-
-  async last () {
-    return await this.query.last()
-  }
-
-  async get (filter) {
-    return await this.query.filter(filter).first()
-  }
-
-  filter (...args) {
-    return this.query.filter(...args)
-  }
-
-  orderBy (...args) {
-    return this.query.orderBy(...args)
-  }
-}
-
-function getValuesInsertSql (db, values) {
-  const fields = Object.keys(values).filter(
-    key => typeof values[key] !== 'undefined'
-  )
-  return `(${fields.join(',')}) VALUES (${fields.map(field =>
-    db.escape(values[field])
-  )})`
-}
-
-function getValuesUpdateSql (db, values) {
-  return Object.keys(values)
-    .filter(key => typeof values[key] !== 'undefined')
-    .map(field => `${field} = ${db.escape(values[field])}`)
-    .join(' , ')
-}
+const { Update } = require('../db/Update')
+const {
+  getModelName,
+  getRelationship,
+  registerModel
+} = require('./ModelRegistry')
 
 class DatabaseModel extends DatabaseModelBase {
   static NotFound = ObjectNotFound
@@ -73,25 +26,19 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   static get objects () {
-    const Manager = this.manager
-    return new Manager(this)
+    if (!this.managerInstance) {
+      const Manager = this.manager
+      this.managerInstance = new Manager(this)
+    }
+    return this.managerInstance
+  }
+
+  static get db () {
+    return getDb(this.dbName)
   }
 
   static get table () {
     return this.tableName || getModelName(this).toLowerCase()
-  }
-
-  static register () {
-    return registerModel(this)
-  }
-
-  async fetchRelationship (fieldName) {
-    if (!this.getValue(fieldName)) {
-      this.setValue(
-        fieldName,
-        await this.constructor.getField(fieldName).fetch(this)
-      )
-    }
   }
 
   static get relationFields () {
@@ -106,38 +53,48 @@ class DatabaseModel extends DatabaseModelBase {
     )
   }
 
-  get foreignKeys () {
-    return this.constructor.foreignKeyFields
+  static register () {
+    return registerModel(this)
+  }
+
+  get pk () {
+    return this[this.constructor.pkName]
   }
 
   rel (relatedName) {
-    const field = getRelation(this.constructor, relatedName)
-    return field.queryParentModel(this)
+    return getRelationship(this.constructor, relatedName).queryParentModel(this)
+  }
+
+  async fetchRelationship (fieldName) {
+    if (!this.get(fieldName)) {
+      this.setValue(
+        fieldName,
+        await this.constructor.getField(fieldName).fetch(this)
+      )
+    }
   }
 
   async saveForeignKeys () {
     const values = await Promise.all(
-      this.foreignKeys
-        .map(([fieldName, field]) => [field, this.getValue(fieldName)])
+      this.constructor.foreignKeyFields
+        .map(([fieldName, field]) => [field, this.get(fieldName)])
         .filter(([field, value]) => Boolean(value))
         .map(async ([field, value]) => [field, await value.save()])
     )
     values.forEach(([field, value]) => {
-      this.setValue(field.keyField, value.getValue(value.constructor.pkName))
+      this.setValue(field.keyField, value.get(value.constructor.pkName))
     })
   }
 
   async create () {
     await this.saveForeignKeys()
-    const db = this.getDb()
     const cascade = this.serializeDbValues()
     let inject = {}
     for (const row of cascade) {
-      const sql = `INSERT INTO ${row.model.table} ${getValuesInsertSql(db, {
-        ...row.values,
-        ...inject
-      })}`
-      const result = await db.fetch(sql)
+      const result = await new Insert()
+        .target(row.model.table)
+        .values({ ...row.values, ...inject })
+        .exec()
       if (result.insertId) {
         this.setValue(row.model.pkName, result.insertId)
         // Set this back to the cascade ^^
@@ -149,14 +106,13 @@ class DatabaseModel extends DatabaseModelBase {
 
   async update () {
     await this.saveForeignKeys()
-    const db = this.getDb()
     const cascade = this.serializeDbValues()
     for (const row of cascade) {
-      const sql = `UPDATE ${row.model.table} SET ${getValuesUpdateSql(
-        db,
-        row.values
-      )} WHERE ${row.model.pkName} = ${db.escape(this.pk)}`
-      await db.fetchOne(sql)
+      await new Update()
+        .target(row.model.table)
+        .values(row.values)
+        .filter({ [row.model.pkName]: this.pk })
+        .exec()
     }
     return this
   }
@@ -168,23 +124,13 @@ class DatabaseModel extends DatabaseModelBase {
     return await this.create()
   }
 
-  get pk () {
-    return this[this.constructor.pkName]
-  }
-
-  static get db () {
-    return getDb(this.dbName)
-  }
-
   async delete () {
-    const db = getDb()
     let obj = this.constructor
     while (obj && obj !== DatabaseModel && (!obj.meta || !obj.meta.abstract)) {
-      await db.fetch(
-        db.format(`DELETE FROM ${obj.table} WHERE id = ?`, [
-          this.getValue(obj.pkName)
-        ])
-      )
+      await new Delete()
+        .target(obj.table)
+        .filter({ [obj.pkName]: obj.pk })
+        .exec()
       obj = Object.getPrototypeOf(obj)
     }
   }
@@ -201,7 +147,7 @@ class DatabaseModel extends DatabaseModelBase {
           .reduce(
             (aggr, [key, field]) => ({
               ...aggr,
-              [key]: this.getValue(key)
+              [key]: this.get(key)
             }),
             {}
           )

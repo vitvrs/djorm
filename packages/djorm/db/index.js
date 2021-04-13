@@ -2,6 +2,8 @@ module.exports = {
   ...require('./And'),
   ...require('./ComparisonOperator'),
   ...require('./DatabasePool'),
+  ...require('./Delete'),
+  ...require('./Insert'),
   ...require('./LogicOperator'),
   ...require('./Or'),
   ...require('./Query'),
@@ -13,5 +15,6 @@ module.exports = {
   ...require('./QueryJoin'),
   ...require('./QueryShortcut'),
   ...require('./QueryTable'),
-  ...require('./Select')
+  ...require('./Select'),
+  ...require('./Update')
 }

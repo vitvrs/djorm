@@ -19,7 +19,7 @@ function setSystemDefaultStorage (storage) {
 }
 
 function getFieldValue (inst, fieldName) {
-  return fieldName && inst.getValue(fieldName)
+  return fieldName && inst.get(fieldName)
 }
 
 class FileStorage {
@@ -37,7 +37,7 @@ class File extends AttrModel {
   static name = new CharField()
 
   get filePath () {
-    return [this.getValue('basePath'), this.getValue('name')].join('/')
+    return [this.get('basePath'), this.get('name')].join('/')
   }
 
   get readStream () {
@@ -75,7 +75,7 @@ class FileField extends Field {
   })
 
   resolveStorage () {
-    return this.getValue('storage') || this.getValue('defaultStorage')
+    return this.get('storage') || this.get('defaultStorage')
   }
 }
 
@@ -88,8 +88,7 @@ class NamedFileField extends FileField {
     const Model = this.objectClass
     return new Model({
       storage: this.resolveStorage(inst),
-      basePath:
-        getFieldValue(inst, this.basePathField) || this.getValue('basePath'),
+      basePath: getFieldValue(inst, this.basePathField) || this.get('basePath'),
       name: getFieldValue(inst, this.nameField)
     })
   }

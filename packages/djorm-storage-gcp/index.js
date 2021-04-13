@@ -13,10 +13,10 @@ class GcpFileStorage extends FileStorage {
 
   get storage () {
     return new Storage({
-      projectId: this.getValue('projectId'),
+      projectId: this.get('projectId'),
       credentials: {
-        client_email: this.getValue('clientEmail'),
-        private_key: this.getValue('privateKey').replace(/\\n/g, '\n')
+        client_email: this.get('clientEmail'),
+        private_key: this.get('privateKey').replace(/\\n/g, '\n')
       }
     })
   }

@@ -11,15 +11,11 @@ const { QueryJoin } = require('./QueryJoin')
 const { Query } = require('./Query')
 const { QueryTable } = require('./QueryTable')
 
-const defaultConditions = () => []
 const defaultSelection = () => []
 const defaultJoins = () => []
 
 class Select extends Query {
-  // group by
-  get model () {
-    return this.getProp('model')
-  }
+  // TODO: Group By
 
   parseSelectionValue (value) {
     if (typeof value instanceof QueryIdentifier) {
@@ -81,24 +77,11 @@ class Select extends Query {
   }
 
   from (value) {
-    if (value.prototype && value.prototype instanceof DatabaseModelBase) {
-      const [selection] = this.getModelFields(value)
-      return this.setProp('from', value.table)
-        .setProp('selection', selection, true)
-        .setProp('model', value, true)
-    }
-    return this.setProp('from', value)
+    return this.target(value)
   }
 
   distinct (fields) {
     return this.setProp('distinct', fields)
-  }
-
-  filter (props) {
-    return this.initProp('conditions', defaultConditions).appendProp(
-      'conditions',
-      props instanceof Q ? props : new And(props)
-    )
   }
 
   exclude (props) {

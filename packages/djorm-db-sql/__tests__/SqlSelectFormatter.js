@@ -11,7 +11,7 @@ const {
   Or
 } = require('djorm/db')
 
-describe('SqlFormatter', () => {
+describe('SqlSelectFormatter', () => {
   let driver
 
   beforeEach(() => {
