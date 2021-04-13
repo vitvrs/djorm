@@ -4,6 +4,11 @@ const { NotImplemented } = require('../errors')
 class Database extends PropModel {
   connected = false
 
+  static resolveDriver (dbConfig) {
+    const Model = require(dbConfig.driver)
+    return new Model(dbConfig)
+  }
+
   async connect () {
     throw new NotImplemented()
   }
