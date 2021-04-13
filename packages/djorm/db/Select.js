@@ -1,5 +1,5 @@
 const { And } = require('./And')
-const { DatabaseModel } = require('../models/DatabaseModel')
+const { DatabaseModelBase } = require('../models/DatabaseModelBase')
 const { filterUnique } = require('../filters')
 const { getModelName } = require('../models/ModelRegistry')
 const { parseFieldObjects } = require('../models/AttrModel')
@@ -46,7 +46,9 @@ class Select extends Query {
       const fieldNames = fields.map(([key]) => key).filter(filterUnique)
       const last = selection[selection.length - 1]
       if (obj.meta && obj.meta.abstract && last) {
-        last.columns = last.columns.concat(fieldNames)
+        for (const f of fieldNames) {
+          last.columns.push(f)
+        }
       } else {
         if (obj !== model) {
           joins.push(
@@ -74,14 +76,16 @@ class Select extends Query {
         )
       }
       obj = Object.getPrototypeOf(obj)
-    } while (obj && obj !== DatabaseModel)
+    } while (obj && Object.getPrototypeOf(obj) !== DatabaseModelBase)
     return [selection, joins]
   }
 
   from (value) {
-    if (value.prototype && value.prototype instanceof DatabaseModel) {
+    if (value.prototype && value.prototype instanceof DatabaseModelBase) {
       const [selection] = this.getModelFields(value)
-      return this.setProp('from', value.table).setProp('selection', selection)
+      return this.setProp('from', value.table)
+        .setProp('selection', selection, true)
+        .setProp('model', value, true)
     }
     return this.setProp('from', value)
   }
@@ -121,10 +125,50 @@ class Select extends Query {
     return this.setProp('offset', value)
   }
 
-  // Fetch methods
-  async all () {}
-  async first () {}
-  async last () {}
+  async fetchResults () {
+    return await this.db.query(this.db.formatQuery(this))
+  }
+
+  mapResults (results) {
+    const Model = this.model
+    if (!Model) {
+      return results
+    }
+    const prefix = `${getModelName(Model)}__`
+    const prefixLength = prefix.length
+    return results.map(
+      item =>
+        new Model(
+          Object.entries(item)
+            .filter(([fieldValue]) => fieldValue.startsWith(prefix))
+            .reduce(
+              (aggr, [fieldName, fieldValue]) => ({
+                ...aggr,
+                [fieldName.substr(prefixLength)]: fieldValue
+              }),
+              {}
+            )
+        )
+    )
+  }
+
+  async fetch () {
+    return this.mapResults(await this.fetchResults())
+  }
+
+  async all () {
+    return await this.fetch()
+  }
+
+  async first () {
+    const items = await this.limit(1).fetch()
+    return items[0]
+  }
+
+  async last () {
+    const items = await this.fetch()
+    return items[items.length - 1]
+  }
 }
 
 module.exports = {

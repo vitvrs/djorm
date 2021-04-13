@@ -7,11 +7,11 @@ function serializeError (e) {
 }
 
 class DjormError extends Error {}
+class NotImplemented extends Error {}
 class ConfigError extends DjormError {}
 class ModelError extends DjormError {}
 
 class FieldError extends ModelError {}
-class NotConnected extends ModelError {}
 class ValueError extends FieldError {}
 
 class ValidationError extends ValueError {
@@ -92,7 +92,7 @@ module.exports = {
   InvalidUrl,
   ModelError,
   NestedValidationError,
-  NotConnected,
+  NotImplemented,
   ObjectNotFound,
   serializeError,
   ValidationError,

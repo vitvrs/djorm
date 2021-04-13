@@ -1,97 +1,47 @@
-const { AttrModel, parseFieldObjects } = require('./AttrModel')
-const { filterUnique } = require('../filters')
+const { DatabaseModelBase } = require('./DatabaseModelBase')
 const { ForeignKey } = require('../fields/ForeignKey')
-const { NotConnected, ObjectNotFound } = require('../errors')
-const { getModelName } = require('./ModelRegistry')
-
-let dbConnection
-
-function connectToDb (db) {
-  dbConnection = db
-}
-
-function getDb () {
-  if (!dbConnection || !dbConnection.connected) {
-    throw new NotConnected('Models are not connected to the database')
-  }
-  return dbConnection
-}
+const { getDb } = require('../db/DatabasePool')
+const { getModelName, getRelation, registerModel } = require('./ModelRegistry')
+const { ObjectNotFound } = require('../errors')
+const { parseFieldObjects } = require('./AttrModel')
+const { Relation } = require('../fields/Relation')
+const { Select } = require('../db/Select')
 
 class ObjectManager {
   constructor (model) {
     this.model = model
   }
 
+  get db () {
+    return this.model.db
+  }
+
   get query () {
-    let selection = []
-    let joins = []
-    let obj = this.model
-    do {
-      const fields = parseFieldObjects(obj).filter(([key, field]) => field.db)
-      const fieldNames = fields.map(([key]) => key).filter(filterUnique)
-      const last = selection[selection.length - 1]
-      if (obj.meta && obj.meta.abstract && last) {
-        last.names = last.names.concat(fieldNames)
-      } else {
-        if (obj !== this.model) {
-          joins = joins.concat([
-            {
-              table: obj.tableName,
-              alias: obj.tableName,
-              on: [
-                {
-                  left: { source: obj.tableName, name: obj.pkName },
-                  column: {
-                    source: this.model.tableName,
-                    name: this.model.pkName
-                  }
-                }
-              ]
-            }
-          ])
-        }
-        selection = selection.concat({
-          source: obj.tableName,
-          names: fieldNames
-        })
-      }
-      obj = Object.getPrototypeOf(obj)
-    } while (obj && obj !== DatabaseModel)
-    return {
-      table: this.model.table,
-      selection,
-      joins
-    }
+    return Select.fromDb(this.db).from(this.model)
   }
 
-  async all (where) {
-    const Model = this.model
-    const items = await getDb().select({
-      ...this.query,
-      where
-    })
-    return items.map(item => new Model(item))
+  async all () {
+    return await this.query.all()
   }
 
-  async findOne (where) {
-    const Model = this.model
-    const item = await getDb().selectOne({
-      ...this.query,
-      where
-    })
-    return item ? new Model(item) : item
+  async first () {
+    return await this.query.first()
   }
 
-  async requireOne (where) {
-    const obj = await this.findOne(where)
-    if (!obj) {
-      throw new ObjectNotFound(
-        `Could not find "${getModelName(
-          this.model
-        )}" specified by "${JSON.stringify(where)}"`
-      )
-    }
-    return obj
+  async last () {
+    return await this.query.last()
+  }
+
+  async get (filter) {
+    return await this.query.filter(filter).first()
+  }
+
+  filter (...args) {
+    return this.query.filter(...args)
+  }
+
+  orderBy (...args) {
+    return this.query.orderBy(...args)
   }
 }
 
@@ -111,11 +61,12 @@ function getValuesUpdateSql (db, values) {
     .join(' , ')
 }
 
-class DatabaseModel extends AttrModel {
+class DatabaseModel extends DatabaseModelBase {
   static NotFound = ObjectNotFound
   static pkName = 'id'
   static tableName = null
   static manager = ObjectManager
+  static dbName = 'default'
 
   static meta = class {
     static abstract = true
@@ -127,11 +78,11 @@ class DatabaseModel extends AttrModel {
   }
 
   static get table () {
-    return this.tableName
+    return this.tableName || getModelName(this).toLowerCase()
   }
 
-  static get dbName () {
-    return getModelName(this)
+  static register () {
+    return registerModel(this)
   }
 
   async fetchRelationship (fieldName) {
@@ -143,10 +94,25 @@ class DatabaseModel extends AttrModel {
     }
   }
 
-  get foreignKeys () {
-    return this.constructor.fieldObjects.filter(
+  static get relationFields () {
+    return this.fieldObjects.filter(
+      ([fieldName, field]) => field instanceof Relation
+    )
+  }
+
+  static get foreignKeyFields () {
+    return this.relationFields.filter(
       ([fieldName, field]) => field instanceof ForeignKey
     )
+  }
+
+  get foreignKeys () {
+    return this.constructor.foreignKeyFields
+  }
+
+  rel (relatedName) {
+    const field = getRelation(this.constructor, relatedName)
+    return field.queryParentModel(this)
   }
 
   async saveForeignKeys () {
@@ -206,7 +172,9 @@ class DatabaseModel extends AttrModel {
     return this[this.constructor.pkName]
   }
 
-  getDb = getDb
+  static get db () {
+    return getDb(this.dbName)
+  }
 
   async delete () {
     const db = getDb()
@@ -245,7 +213,6 @@ class DatabaseModel extends AttrModel {
 }
 
 module.exports = {
-  connectToDb,
   DatabaseModel,
   ObjectManager
 }

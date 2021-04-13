@@ -14,6 +14,9 @@ class QueryFormatter {
     if (typeof value === 'string') {
       return `'${value}'` // TODO: escape
     }
+    if (typeof value === 'boolean') {
+      return value ? 1 : 0
+    }
     throw new QueryError(
       `Unknown value type: "${typeof value}" for value "${value}"`
     )

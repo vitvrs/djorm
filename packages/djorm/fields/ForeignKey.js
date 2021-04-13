@@ -3,13 +3,16 @@ const camelCase = require('camelcase')
 const { Field } = require('../models/AttrModel')
 const { getModel, getModelName } = require('../models/ModelRegistry')
 const { PositiveIntegerField } = require('./PositiveIntegerField')
+const { Relation } = require('./Relation')
 const { ValueError } = require('../errors')
 
 /** Field used for foreign key objects */
-class ForeignKey extends Field {
-  static model = new Field()
+class ForeignKey extends Relation {
   static keyField = new Field()
   static keyFieldType = new Field()
+  static model = new Field()
+  static parentModel = new Field()
+  static relatedName = new Field()
 
   constructor (params) {
     super(params)
@@ -40,6 +43,19 @@ class ForeignKey extends Field {
       )
     }
     return value
+  }
+
+  queryParentModel (primaryInstance) {
+    return getModel(this.parentModel).objects.filter({
+      [this.keyField]: primaryInstance.pk
+    })
+  }
+
+  queryTargetModel (fkInstance) {
+    const Model = getModel(this.model)
+    return Model.objects.filter({
+      [Model.pkName]: fkInstance.getValue(this.keyField)
+    })
   }
 
   async fetch (inst) {

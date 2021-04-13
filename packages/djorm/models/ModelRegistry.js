@@ -1,4 +1,5 @@
-let registry = []
+const models = {}
+const relations = {}
 
 function getModelName (model) {
   if (model.meta && model.meta.modelName) {
@@ -8,7 +9,7 @@ function getModelName (model) {
 }
 
 function getModel (name) {
-  const m = registry.find(model => getModelName(model) === name)
+  const m = models[name]
   if (!m) {
     throw new Error(`Model "${name}" was not found`)
   }
@@ -16,21 +17,53 @@ function getModel (name) {
 }
 
 function getModels () {
-  return registry
+  return models
+}
+
+function getRelationRefName (modelName, relatedName) {
+  return `${modelName}__${relatedName}`
+}
+
+function registerModelRelations (modelName, model) {
+  const modelRelations = model.relationFields
+  if (modelRelations) {
+    for (const [, field] of modelRelations) {
+      field.parentModel = modelName
+      relations[getRelationRefName(field.model, field.relatedName)] = field
+    }
+  }
+}
+
+function unregisterModelRelations (modelName) {
+  for (const key of Object.keys(relations)) {
+    if (key.startsWith(`${modelName}__`)) {
+      delete relations[key]
+    }
+  }
 }
 
 function registerModel (model) {
-  registry = [...registry, model]
+  const modelName = getModelName(model)
+  models[modelName] = model
+  registerModelRelations(modelName, model)
+  return model
 }
 
 function unregisterModel (model) {
-  registry = registry.filter(item => item !== model)
+  const modelName = getModelName(model)
+  delete models[modelName]
+  unregisterModelRelations(modelName)
+}
+
+function getRelation (model, relatedName) {
+  return relations[getRelationRefName(getModelName(model), relatedName)]
 }
 
 module.exports = {
   getModel,
   getModelName,
   getModels,
+  getRelation,
   registerModel,
   unregisterModel
 }
