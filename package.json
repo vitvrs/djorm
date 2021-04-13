@@ -8,7 +8,8 @@
     "parser": "babel-eslint"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "lerna-isolate"
   },
   "dependencies": {
     "djorm": "file:packages/djorm",
