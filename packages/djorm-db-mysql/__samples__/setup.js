@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const path = require('path')
 const pool = require('djorm/db/DatabasePool')
 const MysqlDatabase = require('..')
@@ -42,7 +44,11 @@ const setupDb = dbName => {
         if (exitCode === 0) {
           resolve()
         } else {
-          reject(exitCode)
+          reject(
+            new Error(
+              `Failed to initialize MySQL server. The process exited with exit code ${exitCode}`
+            )
+          )
         }
       })
     })
@@ -79,7 +85,11 @@ const setupDb = dbName => {
         if (exitCode === 0) {
           resolve()
         } else {
-          reject(exitCode)
+          reject(
+            new Error(
+              `Failed to configure MySQL database. The process exited with exit code ${exitCode}`
+            )
+          )
         }
       })
     })
