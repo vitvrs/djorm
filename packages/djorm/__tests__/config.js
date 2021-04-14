@@ -138,5 +138,45 @@ describe('env config with sqlite', () => {
     it('throws ModelError when getting unknown Model', () => {
       expect(() => getModel('TestUnknownModel')).toThrow(ModelError)
     })
+
+    it('inserts user', async () => {
+      const user = new app.User({
+        name: 'Test Runner',
+        email: 'test.runner@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+      await user.save()
+      expect(
+        await app.User.objects.filter({ name: 'Test Runner' }).first()
+      ).toEqual({
+        id: 5,
+        name: 'Test Runner',
+        email: 'test.runner@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    })
+
+    it('deletes user role', async () => {
+      const userRole = await app.UserRole.objects.get({ id: 1 })
+      await userRole.delete()
+      expect(await app.UserRole.objects.filter({ id: 1 }).first()).toEqual(null)
+    })
+
+    it('updates user', async () => {
+      const user = await app.User.objects.get({ id: 1 })
+      user.name = 'Test Runner 2'
+      await user.save()
+      expect(await app.User.objects.filter({ id: 1 }).first()).toEqual(
+        new app.User({
+          id: 1,
+          name: 'Test Runner 2',
+          email: 'harmony.vasquez@gmail.com',
+          superuser: false,
+          inactive: false
+        })
+      )
+    })
   })
 })

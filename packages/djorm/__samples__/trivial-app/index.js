@@ -3,7 +3,9 @@
 const fields = require('djorm/fields')
 const path = require('path')
 const config = require('djorm/config')
+const tmp = require('tmp-promise')
 
+const { promises } = require('fs')
 const { DatabaseModel } = require('djorm/models')
 
 class User extends DatabaseModel {
@@ -45,7 +47,15 @@ class AuditLog extends DatabaseModel {
   static createdAt = new fields.DateTimeField()
 }
 
+let tmpFile
+const setupDb = async dbFile => {
+  const dbPath = path.resolve(__dirname, dbFile)
+  tmpFile = await tmp.file()
+  await promises.copyFile(dbPath, tmpFile.path)
+}
+
 const initialize = async () => {
+  await setupDb('db.sqlite')
   AuditLog.register()
   Role.register()
   User.register()
@@ -54,10 +64,15 @@ const initialize = async () => {
     databases: {
       default: {
         driver: 'djorm-db-sqlite',
-        path: path.join(__dirname, 'db.sqlite')
+        path: tmpFile.path
       }
     }
   })
+}
+
+const shutdown = async () => {
+  await tmpFile.cleanup()
+  await config.shutdown()
 }
 
 module.exports = {
@@ -66,5 +81,5 @@ module.exports = {
   Role,
   UserRole,
   initialize,
-  shutdown: config.shutdown
+  shutdown
 }

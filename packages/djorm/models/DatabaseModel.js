@@ -21,10 +21,6 @@ class DatabaseModel extends DatabaseModelBase {
   static manager = ObjectManager
   static dbName = 'default'
 
-  static meta = class {
-    static abstract = true
-  }
-
   static get objects () {
     if (!this.managerInstance) {
       const Manager = this.manager

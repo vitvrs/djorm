@@ -53,7 +53,9 @@ class SqlFormatterBase extends QueryFormatter {
       operator === ComparisonOperator.in ||
       operator === ComparisonOperator.notin
     ) {
-      return `${operator} (${value.map(this.formatValue).join(',')})`
+      return `${operator} (${value
+        .map(value => this.formatValue(value))
+        .join(',')})`
     }
     return `${operator} ${this.formatValue(value)}`
   }
