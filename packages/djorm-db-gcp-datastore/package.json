@@ -1,0 +1,31 @@
+{
+  "name": "djorm-db-gcp-datastore",
+  "version": "0.0.0",
+  "description": "Datastore bindings for djorm",
+  "author": "Pavel Žák <pavel@zak.global>",
+  "homepage": "https://github.com/just-paja/djorm#readme",
+  "license": "ISC",
+  "main": "lib/djorm-db-sqlite.js",
+  "files": [
+    "lib"
+  ],
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "parser": "babel-eslint"
+  },
+  "dependencies": {
+    "mysql": "^2.18.1"
+  },
+  "peerDependencies": {
+    "djorm": "file:../djorm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/just-paja/djorm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/just-paja/djorm/issues"
+  }
+}

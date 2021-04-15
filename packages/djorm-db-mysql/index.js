@@ -3,13 +3,26 @@ const { SqlFormatter } = require('djorm-db-sql')
 
 const mysql = require('mysql')
 
+const promise = async (fn, context, ...args) =>
+  await new Promise((resolve, reject) => {
+    fn.call(
+      context,
+      ...[
+        ...args,
+        (err, result) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(result)
+          }
+        }
+      ]
+    )
+  })
+
 class MysqlDatabase extends Database {
   formatter = new SqlFormatter()
   db = null
-
-  get path () {
-    return this.props.path
-  }
 
   async connect () {
     this.db = mysql.createConnection({
@@ -20,28 +33,12 @@ class MysqlDatabase extends Database {
       user: this.props.username,
       port: this.props.port
     })
-    await new Promise((resolve, reject) => {
-      this.db.connect(err => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve()
-        }
-      })
-    })
+    await promise(this.db.connect, this.db)
     this.connected = true
   }
 
   async disconnect () {
-    await new Promise((resolve, reject) => {
-      this.db.end(err => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve()
-        }
-      })
-    })
+    await promise(this.db.end, this.db)
     this.db = null
     this.connected = false
   }
@@ -51,19 +48,15 @@ class MysqlDatabase extends Database {
   }
 
   async queryDb (str) {
-    return await new Promise((resolve, reject) => {
-      this.db.query(str, function (err, result) {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(result)
-        }
-      })
-    })
+    return await promise(this.db.query, this.db, str)
   }
 
   formatQuery (qs) {
     return this.formatter.formatQuery(qs)
+  }
+
+  stream (query) {
+    return this.db.query(query).stream()
   }
 }
 

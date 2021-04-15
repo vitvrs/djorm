@@ -25,6 +25,10 @@ class ObjectManager {
     return await this.query.filter(filter).first()
   }
 
+  createReadStream () {
+    return this.query.createReadStream()
+  }
+
   filter (...args) {
     return this.query.filter(...args)
   }

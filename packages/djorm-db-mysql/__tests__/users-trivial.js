@@ -3,6 +3,7 @@ const fields = require('djorm/fields')
 
 const { DatabaseModel } = require('djorm/models')
 const { setupDb } = require('../__samples__/setup')
+const { TargetStream } = require('__mocks__/TargetStream')
 
 describe('mysql select with users-trivial', () => {
   let models
@@ -33,6 +34,48 @@ describe('mysql select with users-trivial', () => {
   it('selects all users', async () => {
     const result = await models.User.objects.all()
     expect(result).toEqual([
+      new models.User({
+        id: 1,
+        name: 'Harmony Vasquez',
+        email: 'harmony.vasquez@gmail.com',
+        superuser: false,
+        inactive: false
+      }),
+      new models.User({
+        id: 2,
+        name: 'Jasper Fraley',
+        email: 'jasper.fraley@seznam.cz',
+        superuser: true,
+        inactive: false
+      }),
+      new models.User({
+        id: 3,
+        name: 'Neil Henry',
+        email: 'neil.henry@iol.com',
+        superuser: false,
+        inactive: true
+      }),
+      new models.User({
+        id: 4,
+        name: 'Merver Chin',
+        email: 'merver.chin@gmail.com',
+        superuser: true,
+        inactive: false
+      })
+    ])
+  })
+
+  it('streams all users', async () => {
+    const dest = new TargetStream()
+    await new Promise((resolve, reject) => {
+      const src = models.User.objects.createReadStream()
+      src
+        .pipe(dest)
+        .on('error', reject)
+        .on('finish', resolve)
+    })
+
+    expect(dest.data).toEqual([
       new models.User({
         id: 1,
         name: 'Harmony Vasquez',

@@ -32,6 +32,10 @@ class Database extends PropModel {
   async queryDb () {
     throw new NotImplemented()
   }
+
+  stream (query) {
+    throw new NotImplemented()
+  }
 }
 
 module.exports = { Database }

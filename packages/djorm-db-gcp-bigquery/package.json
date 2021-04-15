@@ -1,0 +1,29 @@
+{
+  "name": "djorm-db-gcp-bigquery",
+  "version": "0.0.0",
+  "description": "BigQuery bindings for djorm",
+  "author": "Pavel Žák <pavel@zak.global>",
+  "homepage": "https://github.com/just-paja/djorm#readme",
+  "license": "ISC",
+  "main": "lib/djorm-db-sqlite.js",
+  "files": [
+    "lib"
+  ],
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "parser": "babel-eslint"
+  },
+  "dependencies": {
+    "djorm-db-sql": "file:../djorm-db-sql",
+    "mysql": "^2.18.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/just-paja/djorm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/just-paja/djorm/issues"
+  }
+}

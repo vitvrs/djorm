@@ -5,9 +5,42 @@ const { QueryColumn } = require('./QueryColumn')
 const { QueryIdentifier } = require('./QueryIdentifier')
 const { QueryJoin } = require('./QueryJoin')
 const { Query } = require('./Query')
+const { Transform } = require('stream')
 
 const defaultSelection = () => []
 const defaultJoins = () => []
+
+class QueryMapper extends Transform {
+  static createMapper = Model => {
+    if (!Model) {
+      return null
+    }
+    const prefix = `${getModelName(Model)}__`
+    const prefixLength = prefix.length
+    return item =>
+      new Model(
+        Object.entries(item)
+          .filter(([fieldValue]) => fieldValue.startsWith(prefix))
+          .reduce(
+            (aggr, [fieldName, fieldValue]) => ({
+              ...aggr,
+              [fieldName.substr(prefixLength)]: fieldValue
+            }),
+            {}
+          )
+      )
+  }
+
+  constructor (qs) {
+    super({ readableObjectMode: true, writableObjectMode: true })
+    this.map = this.constructor.createMapper(qs.model)
+  }
+
+  _transform (item, enc, next) {
+    this.push(this.map ? this.map(item) : item)
+    next()
+  }
+}
 
 class Select extends Query {
   // TODO: Group By
@@ -61,26 +94,8 @@ class Select extends Query {
   }
 
   mapResults (results) {
-    const Model = this.model
-    if (!Model) {
-      return results
-    }
-    const prefix = `${getModelName(Model)}__`
-    const prefixLength = prefix.length
-    return results.map(
-      item =>
-        new Model(
-          Object.entries(item)
-            .filter(([fieldValue]) => fieldValue.startsWith(prefix))
-            .reduce(
-              (aggr, [fieldName, fieldValue]) => ({
-                ...aggr,
-                [fieldName.substr(prefixLength)]: fieldValue
-              }),
-              {}
-            )
-        )
-    )
+    const mapper = QueryMapper.createMapper(this.model)
+    return mapper ? results.map(mapper) : results
   }
 
   async fetch () {
@@ -99,6 +114,14 @@ class Select extends Query {
   async last () {
     const items = await this.fetch()
     return items[items.length - 1] || null
+  }
+
+  getMapper () {
+    return new QueryMapper(this)
+  }
+
+  createReadStream (query) {
+    return super.createReadStream(query).pipe(this.getMapper())
   }
 }
 
