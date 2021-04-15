@@ -7,13 +7,19 @@ class DatastoreDatabase extends Database {
 
   get config () {
     return {
-      projectId: this.props.projectId,
-      credentials: this.props.credentials
+      apiEndpoint: this.props.apiEndpoint,
+      credentials: this.props.credentials,
+      namespace: this.namespace,
+      projectId: this.props.projectId
     }
   }
 
+  get namespace () {
+    return this.props.namespace
+  }
+
   async connect () {
-    this.db = new Datastore(this.cfg)
+    this.db = new Datastore(this.config)
     this.connected = true
   }
 
@@ -33,7 +39,8 @@ class DatastoreDatabase extends Database {
   }
 
   createQuery (qs) {
-    throw new NotImplemented()
+    const query = this.db.createQuery(this.namespace, qs.props.target)
+    return query
   }
 
   formatQuery (qs) {

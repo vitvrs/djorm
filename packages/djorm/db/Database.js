@@ -1,8 +1,10 @@
-const { PropModel } = require('./props')
+const { DatabaseMapper } = require('./DatabaseMapper')
 const { NotImplemented } = require('../errors')
+const { PropModel } = require('./props')
 
 class Database extends PropModel {
   connected = false
+  Mapper = DatabaseMapper
 
   static resolveDriver (dbConfig) {
     const Model = require(dbConfig.driver)
