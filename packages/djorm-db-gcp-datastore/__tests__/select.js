@@ -46,8 +46,6 @@ const setupDb = dbName => {
         )
       )
     )
-
-    console.log(await ds.runQuery(ds.createQuery('test', 'user')))
   })
 
   afterEach(async () => {

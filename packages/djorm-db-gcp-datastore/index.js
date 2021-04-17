@@ -1,9 +1,13 @@
-const { NotImplemented } = require('djorm/errors')
 const { Database } = require('djorm/db/Database')
+const { DatastoreMapper } = require('./DatastoreMapper')
+const { DatastoreFormatter } = require('./DatastoreFormatter')
 const { Datastore } = require('@google-cloud/datastore')
+const { NotImplemented } = require('djorm/errors')
 
 class DatastoreDatabase extends Database {
   db = null
+  Mapper = DatastoreMapper
+  Formatter = DatastoreFormatter
 
   get config () {
     return {
@@ -33,22 +37,17 @@ class DatastoreDatabase extends Database {
     throw new NotImplemented()
   }
 
-  async queryDb (qs) {
-    const [result] = await this.db.runQuery(this.createQuery(qs))
+  async queryDb (query) {
+    const [result] = await this.db.runQuery(query())
     return result
   }
 
-  createQuery (qs) {
-    const query = this.db.createQuery(this.namespace, qs.props.target)
-    return query
-  }
-
   formatQuery (qs) {
-    return qs
+    return new this.Formatter(this.db).formatQuery(qs)
   }
 
-  stream (qs) {
-    return this.createQuery(qs).runStream()
+  stream (query) {
+    return query().runStream()
   }
 }
 

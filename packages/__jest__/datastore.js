@@ -14,13 +14,6 @@ const getSdkExtractPath = downloadPath =>
   path.join(getCacheDir(), 'google-cloud-sdk')
 const getSdkPath = () => getSdkExtractPath(getSdkDownloadPath(sdkUrl))
 const getSdkBin = () => path.join(getSdkPath(), 'bin', 'gcloud')
-const getDatastoreBin = () =>
-  path.join(
-    getSdkPath(),
-    'platform',
-    'cloud-datastore-emulator',
-    'cloud_datastore_emulator'
-  )
 const ensureCacheDir = async () =>
   fs.promises.mkdir(getCacheDir(), { recursive: true })
 
@@ -44,7 +37,6 @@ const downloadSdk = async (downloadUrl, downloadPath) => {
     const dest = fs.createWriteStream(downloadPath)
     if (res.ok) {
       fs.closeSync(fs.openSync(downloadPath, 'w'))
-      console.log('does not exist')
       await new Promise((resolve, reject) => {
         res.body
           .pipe(dest)

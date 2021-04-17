@@ -49,6 +49,20 @@ class QueryFormatter {
       `Unknown value type: "${typeof value}" for value "${value}"`
     )
   }
+
+  parseOrderDirective (oi) {
+    const descending = oi.indexOf('-') === 0
+    const name = descending ? oi.substr(1) : oi
+    return [name, descending]
+  }
+
+  resolveOperatorName (condition, fieldSpec) {
+    const operatorKey = fieldSpec.match(this.operatorMatch)
+    const operatorName = (operatorKey && operatorKey[1]) || 'eq'
+    return condition.shouldNegate()
+      ? this.inverseOperator(operatorName)
+      : operatorName
+  }
 }
 
 module.exports = { QueryFormatter }

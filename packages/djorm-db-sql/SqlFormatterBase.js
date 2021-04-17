@@ -40,14 +40,6 @@ class SqlFormatterBase extends QueryFormatter {
     return alias && !ignoreAlias ? this.formatAlias(source, alias) : source
   }
 
-  resolveOperatorName (condition, fieldSpec) {
-    const operatorKey = fieldSpec.match(this.operatorMatch)
-    const operatorName = (operatorKey && operatorKey[1]) || 'eq'
-    return condition.shouldNegate()
-      ? this.inverseOperator(operatorName)
-      : operatorName
-  }
-
   formatOperatorExpression (operator, value) {
     if (
       operator === ComparisonOperator.in ||

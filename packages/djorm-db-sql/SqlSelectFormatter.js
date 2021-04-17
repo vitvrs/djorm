@@ -98,12 +98,11 @@ class SqlSelectFormatter extends SqlFormatterBase {
   }
 
   formatOrderDirective (qs, oi) {
-    const inverse = oi.indexOf('-') === 0
-    const fieldSpec = inverse ? oi.substr(1) : oi
+    const [name, descending] = this.parseOrderDirective(oi)
     const columnName = this.formatQueryColumn(
-      new QueryColumn({ source: qs.props.target, name: fieldSpec })
+      new QueryColumn({ source: qs.props.target, name })
     )
-    return inverse ? `${columnName} DESC` : columnName
+    return descending ? `${columnName} DESC` : columnName
   }
 
   formatOrderBy (qs) {
