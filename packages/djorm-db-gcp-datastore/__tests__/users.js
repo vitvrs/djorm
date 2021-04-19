@@ -169,23 +169,37 @@ describe('datastore select', () => {
     )
   })
 
+  it('updates new user object primary key', async () => {
+    const user = new models.User({
+      name: 'John Runner',
+      email: 'test.runner@gmail.com',
+      superuser: false,
+      inactive: false
+    })
+    await user.save()
+    expect(user.pk).not.toBe(null)
+    expect(user.pk).not.toBe(undefined)
+    expect(typeof user.pk).toBe('number')
+  })
+
   it('inserts user', async () => {
     const user = new models.User({
-      name: 'Test Runner',
+      name: 'John Runner',
       email: 'test.runner@gmail.com',
       superuser: false,
       inactive: false
     })
     await user.save()
     expect(
-      await models.User.objects.filter({ name: 'Test Runner' }).first()
-    ).toEqual({
-      id: 5,
-      name: 'Test Runner',
-      email: 'test.runner@gmail.com',
-      superuser: false,
-      inactive: false
-    })
+      await models.User.objects.filter({ name: 'John Runner' }).first()
+    ).toEqual(
+      expect.objectContaining({
+        name: 'John Runner',
+        email: 'test.runner@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    )
   })
 
   it('deletes user', async () => {

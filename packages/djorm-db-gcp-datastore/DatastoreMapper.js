@@ -6,18 +6,13 @@ class DatastoreMapper extends DatabaseMapper {
     if (!Model) {
       return null
     }
-    return item =>
-      new Model(
-        Object.entries(item)
-          .filter(([fieldKey]) => fieldKey !== Datastore.KEY)
-          .reduce(
-            (aggr, [fieldKey, fieldValue]) => ({
-              ...aggr,
-              [fieldKey]: fieldValue
-            }),
-            {}
-          )
-      )
+    return item => {
+      const { [Datastore.KEY]: key, ...data } = item
+      return new Model({
+        ...data,
+        [Model.pkName]: item[Datastore.KEY].id
+      })
+    }
   }
 }
 

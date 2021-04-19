@@ -177,13 +177,15 @@ describe('mysql select with users-trivial', () => {
     await user.save()
     expect(
       await models.User.objects.filter({ name: 'Test Runner' }).first()
-    ).toEqual({
-      id: 5,
-      name: 'Test Runner',
-      email: 'test.runner@gmail.com',
-      superuser: false,
-      inactive: false
-    })
+    ).toEqual(
+      new models.User({
+        id: 5,
+        name: 'Test Runner',
+        email: 'test.runner@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    )
   })
 
   it('deletes user', async () => {

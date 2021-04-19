@@ -1,14 +1,8 @@
 const { ComparisonOperator } = require('djorm/db/ComparisonOperator')
-const { QueryFormatter } = require('djorm/db/QueryFormatter')
 const { NotImplemented } = require('djorm/errors')
 const { DatastoreFormatterBase } = require('./DatastoreFormatterBase')
 
 class DatastoreDeleteFormatter extends DatastoreFormatterBase {
-  constructor (db) {
-    super()
-    this.db = db
-  }
-
   formatQuery (qs) {
     return async () => {
       await this.db.delete(this.mapFilter(qs, { qs }))
@@ -26,7 +20,7 @@ class DatastoreDeleteFormatter extends DatastoreFormatterBase {
         `Datastore delete can filter only by primary keys, but "${fieldName}" was given`
       )
     }
-    return this.db.key([query.qs.props.model.table, value])
+    return this.formatKey(query.qs.props.model, value)
   }
 }
 

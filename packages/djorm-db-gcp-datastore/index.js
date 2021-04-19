@@ -2,7 +2,6 @@ const { Database } = require('djorm/db/Database')
 const { DatastoreMapper } = require('./DatastoreMapper')
 const { DatastoreFormatter } = require('./DatastoreFormatter')
 const { Datastore } = require('@google-cloud/datastore')
-const { NotImplemented } = require('djorm/errors')
 
 class DatastoreDatabase extends Database {
   db = null

@@ -158,6 +158,7 @@ const setupDb = dbPath => {
         await ds.insert(entity)
       }
     }
+    await new Promise(resolve => setTimeout(resolve, 50))
   })
 
   afterEach(async () => {

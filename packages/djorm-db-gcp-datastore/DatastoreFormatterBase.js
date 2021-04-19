@@ -8,6 +8,23 @@ class DatastoreFormatterBase extends QueryFormatter {
     this.db = db
   }
 
+  formatKey (model, pk) {
+    return this.db.key([model.table, pk])
+  }
+
+  formatValue (qs, data) {
+    return {
+      key: this.formatKey(qs.props.model, data[qs.props.model.pkName]),
+      data
+    }
+  }
+
+  formatValues (qs) {
+    return qs.props.values instanceof Array
+      ? qs.props.values.map(data => this.formatValue(qs, data))
+      : [this.formatValue(qs, qs.props.values)]
+  }
+
   mapConditionExpression = (query, condition, fieldSpec, value) => {
     const operatorName = this.resolveOperatorName(condition, fieldSpec)
     const operator = ComparisonOperator[operatorName]
