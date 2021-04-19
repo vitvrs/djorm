@@ -215,6 +215,19 @@ describe('select', () => {
       )
     })
 
+    it('updates new user object primary key', async () => {
+      const user = new models.User({
+        name: 'John Runner',
+        email: 'test.runner@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+      await user.save()
+      expect(user.pk).not.toBe(null)
+      expect(user.pk).not.toBe(undefined)
+      expect(typeof user.pk).toBe('number')
+    })
+
     it('deletes user', async () => {
       const user = await models.User.objects.get({ id: 1 })
       await user.delete()
