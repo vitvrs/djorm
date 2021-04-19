@@ -83,6 +83,8 @@ const installComponent = async component => {
       component,
       '--quiet'
     ])
+    p.stdout.pipe(process.stdout)
+    p.stderr.pipe(process.stderr)
     p.on('error', reject)
     p.on('close', resolve)
   })
@@ -115,14 +117,6 @@ const stopDatastore = async p => {
     p.on('exit', () => setTimeout(resolve, 1000))
     p.on('close', resolve)
     p.kill('SIGKILL')
-  })
-}
-
-const requireDatastore = () => {
-  beforeAll(async () => {
-    jest.setTimeout(300000)
-    await installSdk()
-    await installDatastore()
   })
 }
 
@@ -167,8 +161,9 @@ const setupDb = dbPath => {
 }
 
 module.exports = {
-  requireDatastore,
   getSdkPath,
+  installSdk,
+  installDatastore,
   startDatastore,
   stopDatastore,
   setupDb

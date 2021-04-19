@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "lerna-isolate bundle"
+    "build": "lerna-isolate bundle",
+    "prepare": "node ./scripts/postinstall.js"
   },
   "dependencies": {
     "djorm": "file:packages/djorm",
