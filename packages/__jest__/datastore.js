@@ -65,6 +65,10 @@ const extractSdk = async (downloadPath, extractPath) => {
   }
 }
 
+const configureSdkProject = async () => {
+  process.env.CLOUDSDK_CORE_PROJECT = 'djorm-test-suite'
+}
+
 const installSdk = async () => {
   const downloadUrl = sdkUrl
   const downloadPath = getSdkDownloadPath(downloadUrl)
@@ -72,6 +76,7 @@ const installSdk = async () => {
 
   await downloadSdk(downloadUrl, downloadPath)
   await extractSdk(downloadPath, extractPath)
+  await configureSdkProject()
   await installBeta()
 }
 
