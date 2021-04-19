@@ -26,6 +26,9 @@ class AttrModel {
   }
 
   static from (value) {
+    if (!value) {
+      return null
+    }
     const Model = this
     if (value instanceof Model) {
       return value
