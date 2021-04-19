@@ -65,8 +65,36 @@ const extractSdk = async (downloadPath, extractPath) => {
   }
 }
 
+const getProjectId = async () => {
+  return await new Promise((resolve, reject) => {
+    let data = ''
+    const p = spawn(getSdkBin(), ['config', 'get-value', 'project'])
+    p.stdout.pipe(process.stdout)
+    p.stderr.pipe(process.stderr)
+    p.stderr.on('data', d => {
+      data += d
+    })
+    p.on('close', () => resolve(data.trim()))
+    p.on('error', reject)
+  })
+}
+
 const configureSdkProject = async () => {
-  process.env.CLOUDSDK_CORE_PROJECT = 'djorm-test-suite'
+  const projectId = await getProjectId()
+  if (projectId === '(unset)') {
+    return await new Promise((resolve, reject) => {
+      const p = spawn(getSdkBin(), [
+        'config',
+        'set',
+        'project',
+        'djorm-test-suite'
+      ])
+      p.stdout.pipe(process.stdout)
+      p.stderr.pipe(process.stderr)
+      p.on('close', resolve)
+      p.on('error', reject)
+    })
+  }
 }
 
 const installSdk = async () => {
