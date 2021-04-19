@@ -22,7 +22,7 @@ function getFieldValue (inst, fieldName) {
   return fieldName && inst.get(fieldName)
 }
 
-class FileStorage {
+class FileStorage extends AttrModel {
   getReadStream (filePath) {}
   getWriteStream (filePath) {}
   async exists (filePath) {}
