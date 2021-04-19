@@ -32,9 +32,8 @@ class DatastoreDatabase extends Database {
     this.connected = false
   }
 
-  async execDb (qs) {
-    // TODO
-    throw new NotImplemented()
+  async execDb (query) {
+    return await query()
   }
 
   async queryDb (query) {
