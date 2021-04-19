@@ -10,6 +10,7 @@ class GcpFileStorage extends FileStorage {
   static clientEmail = new CharField()
   static privateKey = new CharField()
   static bucketName = new CharField()
+  static basePath = new CharField()
 
   get storage () {
     return new Storage({
