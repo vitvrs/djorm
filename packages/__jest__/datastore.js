@@ -104,6 +104,8 @@ const startDatastore = async port => {
       `--host-port=localhost:${port}`,
       '--no-store-on-disk'
     ])
+    p.stdout.pipe(process.stdout)
+    p.stderr.pipe(process.stderr)
     p.stderr.on('data', row => {
       if (String(row).includes('is now running')) {
         resolve(p)
