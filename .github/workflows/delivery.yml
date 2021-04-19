@@ -48,8 +48,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - uses: actions/download-artifact@v2
         with:
-          name: github-artifact
-      - name: Publish npm package
+          name: dist
+      - name: Publish npm packages
         run: lerna publish from-package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
