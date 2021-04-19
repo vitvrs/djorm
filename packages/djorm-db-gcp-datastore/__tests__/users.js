@@ -1,62 +1,15 @@
-const DatastoreDatabase = require('..')
 const fields = require('djorm/fields')
 const path = require('path')
 const pool = require('djorm/db/DatabasePool')
-const getPort = require('get-port')
 
-const { startDatastore, stopDatastore } = require('__jest__/datastore')
-const { Datastore } = require('@google-cloud/datastore')
+const { setupDb } = require('__jest__/datastore')
 const { DatabaseModel } = require('djorm/models')
 const { TargetStream } = require('__mocks__/TargetStream')
-
-const setupDb = dbName => {
-  let dsProcess
-  let port
-
-  beforeEach(async () => {
-    port = await getPort()
-    dsProcess = await startDatastore(port)
-  })
-
-  beforeEach(async () => {
-    const models = require(path.join(
-      __dirname,
-      '..',
-      '__samples__',
-      `${dbName}.js`
-    ))
-    const dsSettings = {
-      apiEndpoint: `http://localhost:${port}`,
-      namespace: 'test',
-      projectId: 'test-project'
-    }
-    const ds = new Datastore(dsSettings)
-    const db = new DatastoreDatabase(dsSettings)
-    const p = new pool.DatabasePool()
-    await p.connect(db)
-    pool.instance = p
-    await Promise.all(
-      Object.entries(models).map(([Model, items]) =>
-        Promise.all(
-          items.map(data => {
-            const key = ds.key([Model, data.id])
-            const entity = { key, data }
-            return ds.save(entity)
-          })
-        )
-      )
-    )
-  })
-
-  afterEach(async () => {
-    await stopDatastore(dsProcess)
-  })
-}
 
 describe('datastore select', () => {
   let models
 
-  setupDb('users-trivial')
+  setupDb(path.resolve(__dirname, '..', '__samples__', 'users-trivial.js'))
 
   beforeEach(async () => {
     class User extends DatabaseModel {

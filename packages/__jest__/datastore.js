@@ -1,9 +1,15 @@
+/* istanbul ignore file */
+
+const DatastoreDatabase = require('djorm-db-gcp-datastore')
 const fetch = require('node-fetch')
 const findCacheDir = require('find-cache-dir')
 const fs = require('fs')
+const getPort = require('get-port')
 const path = require('path')
+const pool = require('djorm/db/DatabasePool')
 const tar = require('tar')
 
+const { Datastore } = require('@google-cloud/datastore')
 const { spawn } = require('child_process')
 
 const sdkUrl =
@@ -120,4 +126,49 @@ const requireDatastore = () => {
   })
 }
 
-module.exports = { requireDatastore, getSdkPath, startDatastore, stopDatastore }
+const setupDb = dbPath => {
+  let dsProcess
+  let port
+
+  beforeAll(async () => {
+    port = await getPort()
+    dsProcess = await startDatastore(port)
+  })
+
+  afterAll(async () => {
+    await stopDatastore(dsProcess)
+  })
+
+  beforeEach(async () => {
+    const models = require(dbPath)
+    const dsSettings = {
+      apiEndpoint: `http://localhost:${port}`,
+      namespace: jest.requireActual('uuid').v4(),
+      projectId: 'test-project'
+    }
+    const ds = new Datastore(dsSettings)
+    const db = new DatastoreDatabase(dsSettings)
+    const p = new pool.DatabasePool()
+    await p.connect(db)
+    pool.instance = p
+    for (const [Model, items] of Object.entries(models)) {
+      for (const data of items) {
+        const key = ds.key([Model, data.id])
+        const entity = { key, data }
+        await ds.insert(entity)
+      }
+    }
+  })
+
+  afterEach(async () => {
+    await pool.instance.disconnect()
+  })
+}
+
+module.exports = {
+  requireDatastore,
+  getSdkPath,
+  startDatastore,
+  stopDatastore,
+  setupDb
+}
