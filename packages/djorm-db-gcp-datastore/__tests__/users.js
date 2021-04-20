@@ -6,7 +6,7 @@ const { setupDb } = require('__jest__/datastore')
 const { DatabaseModel } = require('djorm/models')
 const { TargetStream } = require('__mocks__/TargetStream')
 
-describe('datastore select', () => {
+describe.skip('datastore select', () => {
   let models
 
   setupDb(path.resolve(__dirname, '..', '__samples__', 'users-trivial.js'))
