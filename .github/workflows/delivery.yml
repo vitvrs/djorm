@@ -50,6 +50,6 @@ jobs:
         with:
           name: dist
       - name: Publish npm packages
-        run: lerna publish from-package
+        run: lerna publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
