@@ -11,8 +11,8 @@ const { promises } = require('fs')
 const { spawn } = require('child_process')
 
 const setupDb = dbName => {
-  const databaseName = 'test_database'
   const username = `${process.env.USERNAME}@localhost`
+  let databaseName
   let configFile
   let sockFile
   let dataDir
@@ -66,9 +66,10 @@ const setupDb = dbName => {
     })
   }
 
-  const configDb = async () => {
+  const configDb = async databaseName => {
     const migrationPath = path.resolve(__dirname, dbName)
     const data = await promises.readFile(migrationPath)
+    const sql = `CREATE DATABASE ${databaseName}; USE ${databaseName}; ${data}`
     await new Promise((resolve, reject) => {
       const p = spawn('mysql', [
         `--defaults-file=${configFile.path}`,
@@ -79,7 +80,7 @@ const setupDb = dbName => {
       ])
       p.stdin.setEncoding('utf-8')
       p.stderr.on('data', d => console.log(String(d)))
-      p.stdin.write(data)
+      p.stdin.write(sql)
       p.stdin.end()
       p.on('close', exitCode => {
         if (exitCode === 0) {
@@ -103,12 +104,18 @@ const setupDb = dbName => {
     })
   }
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await configServer()
     await initializeServer()
     await startServer()
-    await configDb()
+  })
 
+  beforeEach(async () => {
+    databaseName = `test_${jest
+      .requireActual('uuid')
+      .v4()
+      .replace(/-/g, '_')}`
+    await configDb(databaseName)
     const db = new MysqlDatabase({
       database: databaseName,
       username,
@@ -119,7 +126,7 @@ const setupDb = dbName => {
     pool.instance = p
   })
 
-  afterEach(async () => {
+  afterAll(async () => {
     await stopServer()
     await configFile.cleanup()
     await sockFile.cleanup()

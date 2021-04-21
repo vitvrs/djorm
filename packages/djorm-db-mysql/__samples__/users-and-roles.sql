@@ -1,7 +1,3 @@
-CREATE DATABASE test_database;
-
-USE test_database;
-
 CREATE TABLE `user` (
   `id`  INTEGER NOT NULL AUTO_INCREMENT,
   `name`  TEXT NOT NULL,
