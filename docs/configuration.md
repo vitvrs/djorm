@@ -33,3 +33,4 @@ app.listen(port, async () => {
 })
 ```
 
+Prev: [Create first model](./create-first-model.md)
