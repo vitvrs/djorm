@@ -64,7 +64,7 @@ class ForeignKey extends Relation {
 
   async fetch (inst) {
     const model = getModel(this.model)
-    return await model.objects.requireOne({
+    return await model.objects.get({
       [model.pkName]: inst.get(this.keyField)
     })
   }
