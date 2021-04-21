@@ -1,4 +1,6 @@
 const { And } = require('./And')
+const { getModelName } = require('../models/ModelRegistry')
+const { ObjectNotFound } = require('../errors')
 const { Q } = require('./QueryCondition')
 const { QueryColumn } = require('./QueryColumn')
 const { QueryIdentifier } = require('./QueryIdentifier')
@@ -75,6 +77,18 @@ class Select extends Query {
   async first () {
     const items = await this.limit(1).fetch()
     return items[0] || null
+  }
+
+  async get () {
+    const obj = await this.first()
+    if (!obj) {
+      throw new ObjectNotFound(
+        this.model
+          ? `Could not find specified "${getModelName(this.model)}"`
+          : 'Query did not return a result'
+      )
+    }
+    return obj
   }
 
   async last () {

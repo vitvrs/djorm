@@ -22,7 +22,7 @@ class ObjectManager {
   }
 
   async get (filter) {
-    return await this.query.filter(filter).first()
+    return await this.query.filter(filter).get()
   }
 
   createReadStream () {
