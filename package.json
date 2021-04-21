@@ -8,6 +8,7 @@
     "parser": "babel-eslint"
   },
   "scripts": {
+    "build:docs": "node scripts/generate-docs.js",
     "test": "jest",
     "build": "lerna-isolate bundle",
     "prepare": "node ./scripts/postinstall.js"
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "find-cache-dir": "^3.3.1",
+    "jsdoc": "^3.6.6",
     "lerna": "^3.20.2",
     "lerna-ministack": "^0.5.4",
     "node-fetch": "^2.6.1",
