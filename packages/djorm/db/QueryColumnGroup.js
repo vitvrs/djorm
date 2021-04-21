@@ -15,14 +15,18 @@ class QueryColumnGroup extends QueryShortcut {
   }
 
   breakdown () {
-    return this.columns.map(
-      name =>
-        new QueryColumn({
-          name,
-          source: this.source,
-          prefix: this.prefix
-        })
-    )
+    return this.columns.map(name => {
+      if (name instanceof QueryColumn) {
+        return name
+          .setProp('source', this.source)
+          .setProp('prefix', this.prefix)
+      }
+      return new QueryColumn({
+        name,
+        source: this.source,
+        prefix: this.prefix
+      })
+    })
   }
 }
 
