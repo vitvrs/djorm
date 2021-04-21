@@ -3,7 +3,7 @@
   "version": "0.1.4",
   "description": "Google Cloud Storage support for Djorm",
   "author": "Pavel Žák <pavel@zak.global>",
-  "homepage": "https://bitbucket.org/optimics/skoda-ig11-banner-generator#readme",
+  "homepage": "https://github.com/just-paja/djorm#readme",
   "license": "ISC",
   "main": "index.js",
   "files": [
@@ -17,13 +17,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/optimics/skoda-ig11-banner-generator.git"
+    "url": "git+https://github.com/just-paja/djorm.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.8.1",
-    "ig11-djorm": "file:../djorm"
+    "djorm": "file:../djorm"
   }
 }

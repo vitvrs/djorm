@@ -3,7 +3,7 @@ const {
   CharField,
   FileStorage,
   setSystemDefaultStorage
-} = require('ig11-djorm/fields')
+} = require('djorm/fields')
 
 class GcpFileStorage extends FileStorage {
   static projectId = new CharField()

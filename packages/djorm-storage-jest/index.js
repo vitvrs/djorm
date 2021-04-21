@@ -1,4 +1,4 @@
-const { FileStorage, setSystemDefaultStorage } = require('ig11-djorm/fields')
+const { FileStorage, setSystemDefaultStorage } = require('djorm/fields')
 
 class JestFileStorage extends FileStorage {
   getReadStream = jest.fn()
