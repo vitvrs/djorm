@@ -1,5 +1,5 @@
-const { PropModel } = require('./props')
+const { ImmutablePropModel } = require('./props')
 
-class QueryShortcut extends PropModel {}
+class QueryShortcut extends ImmutablePropModel {}
 
 module.exports = { QueryShortcut }
