@@ -1,12 +1,12 @@
 /* istanbul ignore file */
 
-const DatastoreDatabase = require('djorm-db-gcp-datastore')
+const DatastoreDatabase = require('../djorm-db-gcp-datastore')
 const fetch = require('node-fetch')
 const findCacheDir = require('find-cache-dir')
 const fs = require('fs')
 const getPort = require('get-port')
 const path = require('path')
-const pool = require('djorm/db/DatabasePool')
+const pool = require('../djorm/db/DatabasePool')
 const tar = require('tar')
 
 const { Datastore } = require('@google-cloud/datastore')
