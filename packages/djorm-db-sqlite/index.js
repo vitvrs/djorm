@@ -35,7 +35,11 @@ class SqliteDatabase extends Database {
   }
 
   async execDb (str) {
-    return this.db.prepare(str).run()
+    const result = this.db.prepare(str).run()
+    return {
+      ...result,
+      insertId: result.lastInsertRowid
+    }
   }
 
   async queryDb (str) {

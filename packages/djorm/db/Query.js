@@ -23,6 +23,10 @@ class Query extends ImmutablePropModel {
     return this.getProp('model')
   }
 
+  mapModel (value) {
+    return this.setProp('model', value)
+  }
+
   filter (props) {
     return this.initProp('conditions', defaultConditions).appendProp(
       'conditions',

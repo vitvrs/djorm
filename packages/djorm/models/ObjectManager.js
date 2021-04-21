@@ -25,6 +25,10 @@ class ObjectManager {
     return await this.query.filter(filter).get()
   }
 
+  async count () {
+    return await this.query.count()
+  }
+
   createReadStream () {
     return this.query.createReadStream()
   }

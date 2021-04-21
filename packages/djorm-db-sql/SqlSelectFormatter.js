@@ -1,5 +1,7 @@
+const { QueryAllRecords } = require('djorm/db/QueryAllRecords')
 const { QueryColumn } = require('djorm/db/QueryColumn')
 const { QueryFormatterError } = require('djorm/db/errors')
+const { QueryFunc } = require('djorm/db/QueryFunc')
 const { QueryIdentifier } = require('djorm/db/QueryIdentifier')
 const { QueryShortcut } = require('djorm/db/QueryShortcut')
 const { SqlFormatterBase } = require('./SqlFormatterBase')
@@ -41,6 +43,11 @@ class SqlSelectFormatter extends SqlFormatterBase {
     return `FROM ${this.formatIdentifier(qs.props.target)}`
   }
 
+  formatFunc (qs, expr) {
+    const sql = `${expr.name}(${this.formatSelection(qs, expr.args)})`
+    return expr.alias ? this.formatAlias(sql, expr.alias) : sql
+  }
+
   formatSelectionExpression (qs, expressionItem) {
     const expr =
       expressionItem instanceof QueryShortcut
@@ -51,6 +58,12 @@ class SqlSelectFormatter extends SqlFormatterBase {
     }
     if (expr instanceof QueryColumn) {
       return this.formatQueryColumn(expr)
+    }
+    if (expr instanceof QueryAllRecords) {
+      return '*'
+    }
+    if (expr instanceof QueryFunc) {
+      return this.formatFunc(qs, expr)
     }
     if (typeof expr === 'string') {
       return this.formatSafeName(expr)

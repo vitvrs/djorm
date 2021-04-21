@@ -2,10 +2,13 @@ const { And } = require('./And')
 const { getModelName } = require('../models/ModelRegistry')
 const { ObjectNotFound } = require('../errors')
 const { Q } = require('./QueryCondition')
+const { QueryAllRecords } = require('./QueryAllRecords')
 const { QueryColumn } = require('./QueryColumn')
+const { QueryFunc } = require('./QueryFunc')
 const { QueryIdentifier } = require('./QueryIdentifier')
 const { QueryJoin } = require('./QueryJoin')
 const { Query } = require('./Query')
+const { UnknownType } = require('./errors')
 
 const defaultSelection = () => []
 const defaultJoins = () => []
@@ -14,12 +17,13 @@ class Select extends Query {
   // TODO: Group By
 
   parseSelectionValue (value) {
-    if (typeof value instanceof QueryIdentifier) {
+    if (value instanceof QueryIdentifier) {
       return value
     }
     if (typeof value === 'string') {
       return new QueryColumn(value)
     }
+    throw new UnknownType(`Value "${value}" is not a valid selection type`)
   }
 
   select (...values) {
@@ -94,6 +98,20 @@ class Select extends Query {
   async last () {
     const items = await this.fetch()
     return items[items.length - 1] || null
+  }
+
+  async count () {
+    const result = await this.appendProp(
+      'selection',
+      new QueryFunc({
+        name: 'COUNT',
+        args: [new QueryAllRecords()],
+        alias: '__djorm_cnt'
+      })
+    )
+      .mapModel(null)
+      .first()
+    return result.__djorm_cnt
   }
 
   getMapper () {

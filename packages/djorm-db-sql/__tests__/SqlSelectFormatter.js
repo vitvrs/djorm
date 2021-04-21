@@ -4,10 +4,12 @@ const { CharField, PositiveIntegerField } = require('djorm/fields')
 const {
   And,
   Q,
-  Select,
+  QueryAllRecords,
   QueryColumn,
   QueryFormatterError,
+  QueryFunc,
   QueryJoin,
+  Select,
   Or
 } = require('djorm/db')
 
@@ -580,6 +582,19 @@ describe('SqlSelectFormatter', () => {
           '`users`.`role` AS `User__role`',
           "FROM `users` WHERE `users`.`role` = 'admin'"
         ].join(' ')
+      )
+    })
+
+    it('formats count query', () => {
+      const qs = new Select().from('users').select(
+        new QueryFunc({
+          name: 'COUNT',
+          args: [new QueryAllRecords()],
+          alias: 'cnt'
+        })
+      )
+      expect(driver.formatQuery(qs)).toBe(
+        'SELECT COUNT(*) AS `cnt` FROM `users`'
       )
     })
   })

@@ -88,7 +88,7 @@ describe('select', () => {
       ])
     })
 
-    it.only('streams all users', async () => {
+    it('streams all users', async () => {
       const dest = new TargetStream()
       await new Promise((resolve, reject) => {
         const src = models.User.objects.createReadStream()
@@ -247,6 +247,10 @@ describe('select', () => {
           inactive: false
         })
       )
+    })
+
+    it('counts users', async () => {
+      expect(await models.User.objects.count()).toBe(4)
     })
   })
 

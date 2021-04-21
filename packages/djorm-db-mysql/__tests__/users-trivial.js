@@ -221,4 +221,8 @@ describe('mysql select with users-trivial', () => {
       })
     )
   })
+
+  it('counts users', async () => {
+    expect(await models.User.objects.count()).toBe(4)
+  })
 })
