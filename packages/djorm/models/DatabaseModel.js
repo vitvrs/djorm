@@ -8,11 +8,7 @@ const { ObjectNotFound } = require('../errors')
 const { parseFieldObjects } = require('./AttrModel')
 const { Relation } = require('../fields/Relation')
 const { Update } = require('../db/Update')
-const {
-  getModelName,
-  getRelationship,
-  registerModel
-} = require('./ModelRegistry')
+const { getModelName, getRelationship } = require('./ModelRegistry')
 
 class DatabaseModel extends DatabaseModelBase {
   static NotFound = ObjectNotFound
@@ -47,10 +43,6 @@ class DatabaseModel extends DatabaseModelBase {
     return this.relationFields.filter(
       ([fieldName, field]) => field instanceof ForeignKey
     )
-  }
-
-  static register () {
-    return registerModel(this)
   }
 
   get pk () {

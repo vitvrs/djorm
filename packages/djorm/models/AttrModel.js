@@ -1,6 +1,6 @@
 const { FieldError } = require('../errors')
 const { concatValidators, filterUnique } = require('../filters')
-const { getModelName } = require('./ModelRegistry')
+const { getModelName, registerModel } = require('./ModelRegistry')
 
 let FieldModel = null
 
@@ -79,6 +79,10 @@ class AttrModel {
       ([name, field]) => name === fieldName
     )
     return field
+  }
+
+  static register () {
+    return registerModel(this)
   }
 
   get (fieldName) {
