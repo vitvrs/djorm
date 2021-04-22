@@ -19,9 +19,7 @@ const init = async config => {
   }
 }
 
-const shutdown = async () => {
-  require('./models/ModelRegistry').clearModels()
-}
+const shutdown = async () => {}
 
 module.exports = {
   configure,
