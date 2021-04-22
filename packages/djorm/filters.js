@@ -1,7 +1,11 @@
 const { NestedValidationError } = require('./errors')
 
-const serialize = obj =>
-  obj && obj.serializeValues ? obj.serializeValues() : obj
+const serialize = obj => {
+  if (obj instanceof Array) {
+    return obj.map(serialize)
+  }
+  return obj && obj.serializeValues ? obj.serializeValues() : obj
+}
 
 const filterUnique = (item, index, src) => src.indexOf(item) === index
 
