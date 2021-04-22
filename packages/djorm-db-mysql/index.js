@@ -55,8 +55,8 @@ class MysqlDatabase extends Database {
     return this.formatter.formatQuery(qs)
   }
 
-  stream (query) {
-    return this.db.query(query).stream()
+  stream (qs) {
+    return this.db.query(this.formatQuery(qs)).stream()
   }
 }
 

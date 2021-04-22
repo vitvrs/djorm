@@ -50,8 +50,8 @@ class SqliteDatabase extends Database {
     return this.formatter.formatQuery(qs)
   }
 
-  stream (query) {
-    return new SqliteReadStream(this.db.prepare(query))
+  stream (qs) {
+    return new SqliteReadStream(this.db.prepare(this.formatQuery(qs)))
   }
 }
 

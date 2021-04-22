@@ -54,7 +54,7 @@ class Database extends PropModel {
     throw new NotImplemented()
   }
 
-  stream (query) {
+  stream (qs) {
     throw new NotImplemented()
   }
 }

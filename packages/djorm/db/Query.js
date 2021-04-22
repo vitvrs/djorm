@@ -6,6 +6,7 @@ const { ImmutablePropModel } = require('./props')
 const { parseFieldObjects } = require('../models/AttrModel')
 const { Q } = require('./QueryCondition')
 const { QueryColumnGroup } = require('./QueryColumnGroup')
+const { QueryError } = require('./errors')
 const { QueryTable } = require('./QueryTable')
 
 const defaultConditions = () => []
@@ -41,7 +42,25 @@ class Query extends ImmutablePropModel {
         .setProp('selection', selection, true)
         .setProp('model', value, true)
     }
-    return this.setProp('target', value)
+    return this.setProp(
+      'target',
+      typeof value === 'string' ? value : new QueryTable(value)
+    )
+  }
+
+  parseTargetName (targetName) {
+    return targetName.split('.').reverse()
+  }
+
+  parseTarget () {
+    const target = this.props.target
+    if (typeof target === 'string') {
+      return this.parseTargetName(target)
+    }
+    if (target instanceof QueryTable) {
+      return this.parseTargetName(target.name)
+    }
+    throw new QueryError(`Unknown target type: "${target}"`)
   }
 
   getModelFields (model) {
@@ -96,7 +115,7 @@ class Query extends ImmutablePropModel {
   }
 
   createReadStream () {
-    return this.db.stream(this.db.formatQuery(this))
+    return this.db.stream(this)
   }
 }
 

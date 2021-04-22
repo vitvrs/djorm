@@ -65,12 +65,11 @@ class BigQueryDatabase extends Database {
   }
 
   stream (qs) {
-    const datasetId = this.parseDatasetId(qs.props.target)
-    const tableId = this.parseTableId(qs.props.target)
+    const [tableId, datasetId] = qs.parseTarget()
     return this.db
       .dataset(datasetId)
       .table(tableId)
-      .createQueryStream(this.formatter.formatQuery(qs))
+      .createQueryStream(this.formatQuery(qs))
   }
 }
 
