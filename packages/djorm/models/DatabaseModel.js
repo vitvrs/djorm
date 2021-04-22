@@ -50,6 +50,10 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   rel (relatedName) {
+    const field = this.constructor.getField(relatedName)
+    if (field) {
+      return field.queryTargetModel(this)
+    }
     return getRelationship(this.constructor, relatedName).queryParentModel(this)
   }
 

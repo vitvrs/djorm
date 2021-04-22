@@ -26,10 +26,6 @@ class ForeignKey extends Relation {
     }
   }
 
-  getDefault (inst) {
-    return this.queryTargetModel(inst)
-  }
-
   expand () {
     return this.expandedField
   }
