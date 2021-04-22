@@ -75,9 +75,13 @@ class AttrModel {
   }
 
   static getField (fieldName) {
-    const [, field] = this.fieldObjects.find(
+    const fieldAttrs = this.fieldObjects.find(
       ([name, field]) => name === fieldName
     )
+    if (!fieldAttrs) {
+      return null
+    }
+    const [, field] = fieldAttrs
     return field
   }
 
