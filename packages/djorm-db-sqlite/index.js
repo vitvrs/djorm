@@ -24,7 +24,7 @@ class SqliteDatabase extends Database {
     return this.props.path
   }
 
-  async connect () {
+  async connectDb () {
     this.db = sqlite(this.path)
     this.connected = true
   }

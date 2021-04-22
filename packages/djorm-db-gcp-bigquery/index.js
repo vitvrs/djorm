@@ -41,7 +41,7 @@ class BigQueryDatabase extends Database {
     }
   }
 
-  async connect () {
+  async connectDb () {
     this.db = new BigQuery(this.cfg)
     this.connected = true
   }

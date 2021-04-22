@@ -21,7 +21,7 @@ class DatastoreDatabase extends Database {
     return this.props.namespace
   }
 
-  async connect () {
+  async connectDb () {
     this.db = new Datastore(this.config)
     this.connected = true
   }

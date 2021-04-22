@@ -131,7 +131,7 @@ describe('env config with sqlite', () => {
     it('retrieves user role details from database', async () => {
       const user = await app.User.objects.get({ id: 2 })
       const userRole = await user.rel('userRoles').first()
-      const role = await userRole.get('role').first()
+      const role = await userRole.rel('role').first()
       expect(role).toEqual(new app.Role({ id: 3, name: 'Admin' }))
     })
 

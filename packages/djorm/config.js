@@ -12,12 +12,9 @@ const init = async config => {
 
   if (settings.databases) {
     const { Database } = require('./db/Database')
-    const { connect } = require('./db/DatabasePool')
-    await Promise.all(
-      Object.entries(settings.databases).map(async ([dbName, dbConfig]) => {
-        const db = Database.resolveDriver(dbConfig)
-        await connect(db, dbName)
-      })
+    const { configDb } = require('./db/DatabasePool')
+    Object.entries(settings.databases).map(([dbName, dbConfig]) =>
+      configDb(Database.resolveDriver(dbConfig), dbName)
     )
   }
 }

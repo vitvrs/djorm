@@ -24,7 +24,7 @@ class MysqlDatabase extends Database {
   formatter = new SqlFormatter()
   db = null
 
-  async connect () {
+  async connectDb () {
     this.db = mysql.createConnection({
       database: this.props.database,
       host: this.props.hostname,

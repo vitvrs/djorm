@@ -4,6 +4,7 @@ const { PropModel } = require('./props')
 
 class Database extends PropModel {
   connected = false
+  connectionPromise = null
   Mapper = DatabaseMapper
 
   static resolveDriver (dbConfig) {
@@ -11,19 +12,37 @@ class Database extends PropModel {
     return new Model(dbConfig)
   }
 
-  async connect () {
+  async connectDb () {
     throw new NotImplemented()
+  }
+
+  async connect () {
+    this.connectionPromise = this.connectDb()
+    await this.connectionPromise
+    this.connectionPromise = null
   }
 
   async disconnect () {
     throw new NotImplemented()
   }
 
+  async waitForConnection () {
+    if (!this.connected) {
+      if (this.connectionPromise) {
+        await this.connectionPromise
+      } else {
+        await this.connect()
+      }
+    }
+  }
+
   async query (str) {
+    await this.waitForConnection()
     return await this.queryDb(str)
   }
 
   async exec (str) {
+    await this.waitForConnection()
     return await this.execDb(str)
   }
 

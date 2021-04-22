@@ -122,7 +122,7 @@ const setupDb = dbName => {
       port
     })
     const p = new pool.DatabasePool()
-    await p.connect(db)
+    await p.connectDb(db)
     pool.instance = p
   })
 

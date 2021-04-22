@@ -1,18 +1,32 @@
 const { Database } = require('./Database')
-const { DatabaseError, NotConnected } = require('./errors')
+const { DatabaseError } = require('./errors')
 
 class DatabasePool {
   databases = {}
 
-  async connect (db, dbName = 'default') {
+  configDb (db, dbName = 'default') {
     if (db instanceof Database) {
       this.databases[dbName] = db
-      await db.connect()
     } else {
       throw new DatabaseError(
         `Database "${dbName}" must be instance of Database`
       )
     }
+  }
+
+  async connectDb (db, dbName = 'default') {
+    this.configDb(db, dbName)
+    await this.connectDbInstance(dbName)
+  }
+
+  async connectDbInstance (dbName) {
+    await this.databases[dbName].connect()
+  }
+
+  async connectAll () {
+    await Promise.all(
+      Object.keys(this.databases).map(dbName => this.connectDbInstance(dbName))
+    )
   }
 
   async disconnect () {
@@ -25,9 +39,6 @@ class DatabasePool {
     if (!db) {
       throw new DatabaseError(`Database "${dbName}" is not available`)
     }
-    if (!db.connected) {
-      throw new NotConnected(`Database "${dbName}" is not connected`)
-    }
     return db
   }
 }
@@ -36,9 +47,10 @@ let poolSingleton = new DatabasePool()
 
 module.exports = {
   DatabasePool,
-  connect: async (...args) => await poolSingleton.connect(...args),
+  connect: async (...args) => await poolSingleton.connectDb(...args),
   disconnect: async () => await poolSingleton.disconnect(),
   getDb: name => poolSingleton.getDb(name),
+  configDb: (db, dbName) => poolSingleton.configDb(db, dbName),
   get instance () {
     return poolSingleton
   },

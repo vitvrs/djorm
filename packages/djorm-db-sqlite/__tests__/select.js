@@ -18,7 +18,7 @@ const setupDb = dbName => {
       path: tmpFile.path
     })
     const p = new pool.DatabasePool()
-    await p.connect(db)
+    await p.connectDb(db)
     pool.instance = p
   })
 
