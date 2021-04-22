@@ -84,9 +84,12 @@ class SqlFormatterBase extends QueryFormatter {
       conditionProps.parent(condition)
       return this.formatQueryCondition(qs, conditionProps)
     }
+    const validConditions = Object.entries(conditionProps).filter(
+      ([, value]) => typeof value !== 'undefined'
+    )
     return this.formatConditionBrackets(
-      conditionProps,
-      Object.entries(conditionProps)
+      validConditions,
+      validConditions
         .map(([fieldSpec, value]) =>
           this.formatConditionExpression(qs, condition, fieldSpec, value)
         )
@@ -111,7 +114,10 @@ class SqlFormatterBase extends QueryFormatter {
 
   formatWhere (qs) {
     if (qs.props.conditions) {
-      return `WHERE ${this.formatQueryConditions(qs, qs.props.conditions)}`
+      const conds = this.formatQueryConditions(qs, qs.props.conditions)
+      if (conds) {
+        return `WHERE ${conds}`
+      }
     }
     return ''
   }

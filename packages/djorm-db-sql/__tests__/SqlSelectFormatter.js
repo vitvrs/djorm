@@ -597,5 +597,29 @@ describe('SqlSelectFormatter', () => {
         'SELECT COUNT(*) AS `cnt` FROM `users`'
       )
     })
+
+    it('strips undefined values from conditions', () => {
+      const qs = new Select()
+        .from('users')
+        .select('id', 'name')
+        .filter({
+          id: 15,
+          name: undefined
+        })
+      expect(driver.formatQuery(qs)).toBe(
+        'SELECT `id`, `name` FROM `users` WHERE `users`.`id` = 15'
+      )
+    })
+
+    it('strips where given it contains only undefined values', () => {
+      const qs = new Select()
+        .from('users')
+        .select('id', 'name')
+        .filter({
+          id: undefined,
+          name: undefined
+        })
+      expect(driver.formatQuery(qs)).toBe('SELECT `id`, `name` FROM `users`')
+    })
   })
 })
