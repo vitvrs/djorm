@@ -11,7 +11,7 @@
     "build:docs": "node scripts/generate-docs.js",
     "test": "jest",
     "build": "lerna-isolate bundle",
-    "prepare": "NODE_PATH=packages node ./scripts/postinstall.js"
+    "prepare": "NODE_PATH=.:packages node ./scripts/postinstall.js"
   },
   "dependencies": {
     "djorm": "file:packages/djorm",
