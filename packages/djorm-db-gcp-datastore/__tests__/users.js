@@ -68,8 +68,8 @@ describe.skip('datastore select', () => {
 
   it('streams all users', async () => {
     const dest = new TargetStream()
+    const src = await models.User.objects.stream()
     await new Promise((resolve, reject) => {
-      const src = models.User.objects.createReadStream()
       src
         .on('error', reject)
         .pipe(dest)

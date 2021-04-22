@@ -64,7 +64,7 @@ class BigQueryDatabase extends Database {
     return this.formatter.formatQuery(qs)
   }
 
-  stream (qs) {
+  streamDb (qs) {
     const [tableId, datasetId] = qs.parseTarget()
     return this.db
       .dataset(datasetId)

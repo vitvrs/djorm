@@ -178,7 +178,7 @@ const setupDb = dbPath => {
     const ds = new Datastore(dsSettings)
     const db = new DatastoreDatabase(dsSettings)
     const p = new pool.DatabasePool()
-    await p.connect(db)
+    await p.connectDb(db)
     pool.instance = p
     for (const [Model, items] of Object.entries(models)) {
       for (const data of items) {

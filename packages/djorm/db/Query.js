@@ -114,8 +114,8 @@ class Query extends ImmutablePropModel {
     return await this.db.query(this.db.formatQuery(this))
   }
 
-  createReadStream () {
-    return this.db.stream(this)
+  async stream () {
+    return await this.db.stream(this)
   }
 }
 

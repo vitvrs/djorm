@@ -12,12 +12,12 @@ describe('env config with sqlite', () => {
     beforeEach(app.initialize)
     beforeEach(app.shutdown)
 
-    it('clears models on shutdown', async () => {
-      expect(getModels()).toEqual({})
+    it('does not clear models on shutdown', async () => {
+      expect(getModels()).not.toEqual({})
     })
 
-    it('clears relationships on shutdown', async () => {
-      expect(getRelationships()).toEqual({})
+    it('does not clear relationships on shutdown', async () => {
+      expect(getRelationships()).not.toEqual({})
     })
   })
 

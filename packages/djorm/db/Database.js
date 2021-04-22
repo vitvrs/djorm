@@ -54,7 +54,12 @@ class Database extends PropModel {
     throw new NotImplemented()
   }
 
-  stream (qs) {
+  async stream (qs) {
+    await this.waitForConnection()
+    return this.streamDb(qs)
+  }
+
+  streamDb (qs) {
     throw new NotImplemented()
   }
 }
