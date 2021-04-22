@@ -30,6 +30,8 @@ class Database extends PropModel {
     if (!this.connected) {
       if (this.connectionPromise) {
         await this.connectionPromise
+        // Skip frame to allow the initiating query to trigger first
+        await new Promise(resolve => setTimeout(resolve, 0))
       } else {
         await this.connect()
       }
