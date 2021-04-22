@@ -8,6 +8,7 @@ const { QueryFunc } = require('./QueryFunc')
 const { QueryIdentifier } = require('./QueryIdentifier')
 const { QueryJoin } = require('./QueryJoin')
 const { Query } = require('./Query')
+const { QueryShortcut } = require('./QueryShortcut')
 const { UnknownType } = require('./errors')
 
 const defaultSelection = () => []
@@ -17,7 +18,7 @@ class Select extends Query {
   // TODO: Group By
 
   parseSelectionValue (value) {
-    if (value instanceof QueryIdentifier) {
+    if (value instanceof QueryIdentifier || value instanceof QueryShortcut) {
       return value
     }
     if (typeof value === 'string') {

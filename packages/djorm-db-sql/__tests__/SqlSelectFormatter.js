@@ -6,6 +6,7 @@ const {
   Q,
   QueryAllRecords,
   QueryColumn,
+  QueryColumnGroup,
   QueryFormatterError,
   QueryFunc,
   QueryJoin,
@@ -620,6 +621,17 @@ describe('SqlSelectFormatter', () => {
           name: undefined
         })
       expect(driver.formatQuery(qs)).toBe('SELECT `id`, `name` FROM `users`')
+    })
+
+    it('selects column group', () => {
+      const qs = new Select()
+        .from('users')
+        .select(
+          new QueryColumnGroup({ source: 'users', columns: ['id', 'name'] })
+        )
+      expect(driver.formatQuery(qs)).toBe(
+        'SELECT `users`.`id`, `users`.`name` FROM `users`'
+      )
     })
   })
 })
