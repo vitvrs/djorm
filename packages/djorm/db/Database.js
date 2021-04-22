@@ -4,8 +4,13 @@ const { PropModel } = require('./props')
 
 class Database extends PropModel {
   connected = false
-  connectionPromise = null
+  connecting = false
   Mapper = DatabaseMapper
+
+  constructor (...args) {
+    super(...args)
+    this.queue = []
+  }
 
   static resolveDriver (dbConfig) {
     const Model = require(dbConfig.driver)
@@ -17,9 +22,18 @@ class Database extends PropModel {
   }
 
   async connect () {
-    this.connectionPromise = this.connectDb()
-    await this.connectionPromise
-    this.connectionPromise = null
+    this.connecting = true
+    await this.connectDb()
+    this.connecting = false
+    this.resolveQueue()
+  }
+
+  async resolveQueue () {
+    await new Promise(resolve => setTimeout(resolve, 0))
+    let callback
+    while ((callback = this.queue.shift())) {
+      callback()
+    }
   }
 
   async disconnect () {
@@ -28,10 +42,10 @@ class Database extends PropModel {
 
   async waitForConnection () {
     if (!this.connected) {
-      if (this.connectionPromise) {
-        await this.connectionPromise
-        // Skip frame to allow the initiating query to trigger first
-        await new Promise(resolve => setTimeout(resolve, 0))
+      if (this.connecting) {
+        await new Promise(resolve => {
+          this.queue.push(resolve)
+        })
       } else {
         await this.connect()
       }

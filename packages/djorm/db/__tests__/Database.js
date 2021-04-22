@@ -23,7 +23,7 @@ describe('Database', () => {
     db.queryDb.mockResolvedValue()
     const promise = db.query('SELECT FUN FROM TESTS')
     expect(db.connectDb).toHaveBeenCalled()
-    jest.advanceTimersByTime(501)
+    jest.advanceTimersByTime(505)
     await expect(promise).resolves.toEqual()
   })
 
@@ -34,10 +34,24 @@ describe('Database', () => {
     )
     db.queryDb.mockResolvedValue()
     const connectPromise = db.connect()
+    db.query('SELECT FUN FROM TESTS')
+    expect(db.connectDb).toHaveBeenCalledTimes(1)
+    jest.advanceTimersByTime(505)
+    await expect(connectPromise).resolves.toEqual()
+  })
+
+  it('query waits for connection and executes query given db is already connecting', async () => {
+    const db = new DbMock()
+    db.connectDb.mockImplementation(async () => {
+      await new Promise(resolve => setTimeout(resolve, 500))
+    })
+    db.queryDb.mockResolvedValue()
+    const connectPromise = db.connect()
     const queryPromise = db.query('SELECT FUN FROM TESTS')
     expect(db.connectDb).toHaveBeenCalledTimes(1)
-    jest.advanceTimersByTime(501)
-    await expect(connectPromise).resolves.toEqual()
-    await expect(queryPromise).resolves.toEqual()
+    jest.runAllTimers()
+    await connectPromise
+    jest.runAllTimers()
+    await queryPromise
   })
 })
