@@ -10,15 +10,14 @@ class DatabaseMapper extends Transform {
     const prefixLength = prefix.length
     return item =>
       new Model(
-        Object.entries(item)
-          .filter(([fieldValue]) => fieldValue.startsWith(prefix))
-          .reduce(
-            (aggr, [fieldName, fieldValue]) => ({
-              ...aggr,
-              [fieldName.substr(prefixLength)]: fieldValue
-            }),
-            {}
-          )
+        Object.entries(item).reduce((aggr, [fieldName, fieldValue]) => {
+          if (fieldName.startsWith(prefix)) {
+            aggr[fieldName.substr(prefixLength)] = fieldValue
+          } else if (!fieldName.includes('__')) {
+            aggr[fieldName] = fieldValue
+          }
+          return aggr
+        }, {})
       )
   }
 
