@@ -25,6 +25,7 @@ module.exports = {
   configure,
   init,
   shutdown,
+  getSettings: () => currentConfig,
   get settings () {
     return currentConfig
   }
