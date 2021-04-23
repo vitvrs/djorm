@@ -2,23 +2,37 @@ const { getModelName } = require('../models/ModelRegistry')
 const { Transform } = require('stream')
 
 class DatabaseMapper extends Transform {
+  static parseFieldName (fieldName, prefix) {
+    if (fieldName.startsWith(prefix)) {
+      return fieldName.substr(prefix.length)
+    } else if (!fieldName.includes('__')) {
+      return fieldName
+    }
+    return null
+  }
+
   static createMapper = Model => {
     if (!Model) {
       return null
     }
     const prefix = `${getModelName(Model)}__`
-    const prefixLength = prefix.length
-    return item =>
-      new Model(
-        Object.entries(item).reduce((aggr, [fieldName, fieldValue]) => {
-          if (fieldName.startsWith(prefix)) {
-            aggr[fieldName.substr(prefixLength)] = fieldValue
-          } else if (!fieldName.includes('__')) {
-            aggr[fieldName] = fieldValue
+    return item => {
+      const inst = new Model()
+      const entries = Object.entries(item)
+      for (const [fieldName, fieldValue] of entries) {
+        const fieldNameStripped = this.parseFieldName(fieldName, prefix)
+        if (fieldNameStripped) {
+          try {
+            inst.set(fieldNameStripped, fieldValue)
+          } catch (e) {
+            // Avoid killing mapper by parsing errors
+            inst.set(fieldNameStripped, null)
+            // @TODO: Warn about this error!
           }
-          return aggr
-        }, {})
-      )
+        }
+      }
+      return inst
+    }
   }
 
   constructor (qs) {
