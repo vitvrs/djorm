@@ -139,7 +139,9 @@ class DatabaseModel extends DatabaseModelBase {
           .reduce(
             (aggr, [key, field]) => ({
               ...aggr,
-              [key]: this.get(key)
+              [key]: field.serialize
+                ? field.serialize(this.get(key))
+                : this.get(key)
             }),
             {}
           )

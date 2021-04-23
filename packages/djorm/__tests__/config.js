@@ -178,5 +178,23 @@ describe('env config with sqlite', () => {
         })
       )
     })
+
+    it('selects json field with null data', async () => {
+      const job = await app.Job.objects.get({ id: 1 })
+      expect(job.props).toEqual(null)
+    })
+
+    it('selects json field with JSON object', async () => {
+      const job = await app.Job.objects.get({ id: 2 })
+      expect(job.props).toEqual({
+        userId: 1,
+        deletePrivateData: ['logs', 'personal']
+      })
+    })
+
+    it('selects json field with JSON syntax error as null', async () => {
+      const job = await app.Job.objects.get({ id: 3 })
+      expect(job.props).toEqual(null)
+    })
   })
 })

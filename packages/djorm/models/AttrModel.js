@@ -98,6 +98,10 @@ class AttrModel {
     return value
   }
 
+  set (fieldName, value) {
+    return this.setValue(fieldName, value)
+  }
+
   setValue (fieldName, value) {
     const field = this.constructor.fields[fieldName]
     try {
@@ -110,6 +114,7 @@ class AttrModel {
       }
       throw e
     }
+    return this
   }
 
   setValues (params = {}) {

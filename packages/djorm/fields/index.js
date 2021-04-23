@@ -7,6 +7,7 @@ module.exports = {
   ...require('./FileField'),
   ...require('./ForeignKey'),
   ...require('./IntegerField'),
+  ...require('./JsonField'),
   ...require('./ObjectField'),
   ...require('./PositiveIntegerField'),
   ...require('./TextField'),

@@ -47,6 +47,14 @@ class AuditLog extends DatabaseModel {
   static createdAt = new fields.DateTimeField()
 }
 
+class Job extends DatabaseModel {
+  static id = new fields.PositiveIntegerField()
+  static type = new fields.CharField()
+  static props = new fields.JsonField()
+  static createdAt = new fields.DateTimeField()
+  static updatedAt = new fields.DateTimeField()
+}
+
 let tmpFile
 const setupDb = async dbFile => {
   const dbPath = path.resolve(__dirname, dbFile)
@@ -77,6 +85,7 @@ const shutdown = async () => {
 
 module.exports = {
   AuditLog,
+  Job,
   User,
   Role,
   UserRole,
