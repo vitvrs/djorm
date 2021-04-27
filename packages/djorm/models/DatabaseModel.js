@@ -8,7 +8,7 @@ const { ObjectNotFound } = require('../errors')
 const { parseFieldObjects } = require('./AttrModel')
 const { Relation } = require('../fields/Relation')
 const { Update } = require('../db/Update')
-const { getModelName, getRelationship } = require('./ModelRegistry')
+const { isAbstract, getModelName, getRelationship } = require('./ModelRegistry')
 
 class DatabaseModel extends DatabaseModelBase {
   static NotFound = ObjectNotFound
@@ -128,27 +128,32 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   serializeDbValues () {
-    let values = []
+    const fields = []
     let obj = this.constructor
 
     do {
-      values = values.concat({
-        model: obj,
-        values: parseFieldObjects(obj)
-          .filter(([key, field]) => field.db)
-          .reduce(
-            (aggr, [key, field]) => ({
-              ...aggr,
-              [key]: field.serialize
-                ? field.serialize(this.get(key))
-                : this.get(key)
-            }),
-            {}
-          )
-      })
+      const values = parseFieldObjects(obj)
+        .filter(([key, field]) => field.db)
+        .reduce(
+          (aggr, [key, field]) => ({
+            ...aggr,
+            [key]: field.serialize
+              ? field.serialize(this.get(key))
+              : this.get(key)
+          }),
+          {}
+        )
+      if (isAbstract(obj)) {
+        fields[0].values = { ...fields[0].values, ...values }
+      } else {
+        fields.unshift({
+          model: obj,
+          values
+        })
+      }
       obj = Object.getPrototypeOf(obj)
-    } while (obj && obj !== DatabaseModel && (!obj.meta || !obj.meta.abstract))
-    return values.reverse()
+    } while (obj && obj !== DatabaseModel)
+    return fields
   }
 }
 

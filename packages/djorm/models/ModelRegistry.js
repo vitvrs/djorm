@@ -64,6 +64,11 @@ const clearModels = () => {
   clearObj(relationships)
 }
 
+const isAbstract = model => {
+  const meta = Object.getOwnPropertyDescriptor(model, 'meta')
+  return Boolean(meta && meta.value && meta.value.abstract)
+}
+
 module.exports = {
   clearModels,
   getModel,
@@ -71,6 +76,7 @@ module.exports = {
   getModels,
   getRelationship,
   getRelationships,
+  isAbstract,
   registerModel,
   unregisterModel
 }

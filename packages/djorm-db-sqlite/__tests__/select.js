@@ -46,8 +46,32 @@ describe('select', () => {
         }
       }
 
+      class Campaign extends DatabaseModel {
+        static id = new fields.PositiveIntegerField()
+        static name = new fields.CharField()
+      }
+
+      class JobBase extends DatabaseModel {
+        static id = new fields.PositiveIntegerField()
+        static status = new fields.CharField()
+        static props = new fields.JsonField()
+        static meta = class {
+          static abstract = true
+        }
+      }
+
+      class Job extends JobBase {
+        static campaign = new fields.ForeignKey({ model: 'Campaign' })
+        static client = new fields.ForeignKey({
+          model: 'User',
+          keyField: 'clientId'
+        })
+      }
+
       User.register()
-      models = { User }
+      Job.register()
+      Campaign.register()
+      models = { Campaign, Job, User }
     })
 
     afterEach(async () => {
@@ -251,6 +275,17 @@ describe('select', () => {
 
     it('counts users', async () => {
       expect(await models.User.objects.count()).toBe(4)
+    })
+
+    it('creates job', async () => {
+      const job = new models.Job({
+        status: 'request',
+        props: { foo: 'bar' },
+        clientId: 1,
+        campaignId: 1
+      })
+      await job.save()
+      expect(job.id).toBe(1)
     })
   })
 
