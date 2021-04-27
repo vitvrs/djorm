@@ -104,6 +104,13 @@ class AttrModel {
 
   setValue (fieldName, value) {
     const field = this.constructor.fields[fieldName]
+    if (!(field instanceof FieldModel)) {
+      throw new Error(
+        `Unknown key "${fieldName}" for model "${getModelName(
+          this.constructor
+        )}"`
+      )
+    }
     try {
       this[fieldName] = field.parse(value, this)
     } catch (e) {
@@ -118,17 +125,9 @@ class AttrModel {
   }
 
   setValues (params = {}) {
-    const fields = this.constructor.fields
     const entries = Object.entries(params)
     for (const [key, value] of entries) {
-      const field = fields[key]
-      if (field instanceof FieldModel) {
-        this.setValue(key, value)
-      } else {
-        throw new Error(
-          `Unknown key "${key}" for model "${getModelName(this.constructor)}"`
-        )
-      }
+      this.setValue(key, value)
     }
   }
 
