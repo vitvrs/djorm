@@ -55,8 +55,20 @@ describe('select', () => {
         static id = new fields.PositiveIntegerField()
         static status = new fields.CharField()
         static props = new fields.JsonField()
+        static createdAt = new fields.DateTimeField()
+        static updatedAt = new fields.DateTimeField()
         static meta = class {
           static abstract = true
+        }
+
+        async create () {
+          this.createdAt = new Date()
+          return await super.create()
+        }
+
+        async update () {
+          this.updatedAt = new Date()
+          return await super.update()
         }
       }
 

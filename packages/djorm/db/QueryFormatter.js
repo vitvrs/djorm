@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const { ComparisonOperator } = require('./ComparisonOperator')
 const { QueryError } = require('./errors')
 
@@ -35,7 +37,14 @@ class QueryFormatter {
     })
   }
 
+  formatDate (value) {
+    return `'${moment(value).format('YYYY-MM-DDTHH:mm:ss.SSS')}'`
+  }
+
   formatValue (value) {
+    if (value instanceof Date) {
+      return this.formatDate(value)
+    }
     if (typeof value === 'number') {
       return String(value)
     }
