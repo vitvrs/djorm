@@ -13,3 +13,5 @@ Please note that datastore support is very basic as it is not capable of complex
 * Batch update, upsert
 * Delete via complex filters
 * Update via complex filters
+
+[Docs](https://github.com/just-paja/djorm/tree/master/docs)

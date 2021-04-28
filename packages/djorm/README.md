@@ -1,5 +1,5 @@
-# `djorm-db-mysql`
+# `djorm`
 
-MySQL bindings for djorm
+Djorm core.
 
 [Docs](https://github.com/just-paja/djorm/tree/master/docs)
