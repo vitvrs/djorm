@@ -7,7 +7,7 @@
   "license": "ISC",
   "main": "lib/djorm-db-sqlite.js",
   "files": [
-    "lib"
+    "*.js"
   ],
   "standard": {
     "env": [
