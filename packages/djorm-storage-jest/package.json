@@ -1,7 +1,7 @@
 {
   "name": "djorm-storage-jest",
   "version": "0.1.5-alpha.4",
-  "description": "> TODO: description",
+  "description": "Dummy storage for djorm under jest",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
   "license": "ISC",

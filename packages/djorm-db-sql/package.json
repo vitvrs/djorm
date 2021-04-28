@@ -1,11 +1,11 @@
 {
   "name": "djorm-db-sql",
   "version": "0.1.5-alpha.5",
-  "description": "> TODO: description",
+  "description": "Common SQL formatter for djorm",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
   "license": "ISC",
-  "main": "lib/djorm-db-sql.js",
+  "main": "index.js",
   "files": [
     "*.js"
   ],
