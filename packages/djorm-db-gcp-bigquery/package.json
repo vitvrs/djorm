@@ -16,8 +16,7 @@
     "parser": "babel-eslint"
   },
   "dependencies": {
-    "djorm-db-sql": "file:../djorm-db-sql",
-    "mysql": "^2.18.1"
+    "djorm-db-sql": "file:../djorm-db-sql"
   },
   "repository": {
     "type": "git",
