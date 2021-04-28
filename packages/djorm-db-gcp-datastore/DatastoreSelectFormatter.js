@@ -1,11 +1,6 @@
 const { DatastoreFormatterBase } = require('./DatastoreFormatterBase')
 
 class DatastoreSelectFormatter extends DatastoreFormatterBase {
-  constructor (db) {
-    super()
-    this.db = db
-  }
-
   formatQuery (qs) {
     return () =>
       [this.mapFilter, this.mapOrderBy, this.mapLimit, this.mapOffset].reduce(

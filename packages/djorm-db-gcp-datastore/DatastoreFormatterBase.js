@@ -3,9 +3,13 @@ const { Q } = require('djorm/db/QueryCondition')
 const { QueryFormatter } = require('djorm/db/QueryFormatter')
 
 class DatastoreFormatterBase extends QueryFormatter {
-  constructor (db) {
+  constructor (driver) {
     super()
-    this.db = db
+    this.driver = driver
+  }
+
+  get db () {
+    return this.driver.db
   }
 
   formatKey (model, pk) {

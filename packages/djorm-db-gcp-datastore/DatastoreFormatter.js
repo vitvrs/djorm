@@ -6,12 +6,12 @@ const { Select } = require('djorm/db/Select')
 const { Update } = require('djorm/db/Update')
 
 class DatastoreFormatter extends QueryFormatter {
-  constructor (db) {
+  constructor (driver) {
     super()
-    this.db = db
+    this.driver = driver
   }
 
-  requireFormatter = Model => new (require(`./${Model}`)[Model])(this.db)
+  requireFormatter = Model => new (require(`./${Model}`)[Model])(this.driver)
 
   formatQuery (qs) {
     if (qs instanceof Select) {

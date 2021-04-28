@@ -41,7 +41,7 @@ class DatastoreDatabase extends Database {
   }
 
   formatQuery (qs) {
-    return new this.Formatter(this.db).formatQuery(qs)
+    return new this.Formatter(this).formatQuery(qs)
   }
 
   streamDb (qs) {
