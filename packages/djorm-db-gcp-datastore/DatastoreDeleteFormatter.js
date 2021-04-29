@@ -9,7 +9,7 @@ class DatastoreDeleteFormatter extends DatastoreFormatterBase {
     }
   }
 
-  mapCondition = (query, fieldName, operator, value) => {
+  mapCondition = (qs, query, fieldName, operator, value) => {
     if (operator !== ComparisonOperator.eq) {
       throw new NotImplemented(
         'Datastore db support only eq operator for deletion'

@@ -182,8 +182,9 @@ const setupDb = dbPath => {
     pool.instance = p
     for (const [Model, items] of Object.entries(models)) {
       for (const data of items) {
-        const key = ds.key([Model, data.id])
-        const entity = { key, data }
+        const { id, ...fields } = data
+        const key = ds.key([Model, id])
+        const entity = { key, data: fields }
         await ds.insert(entity)
       }
     }

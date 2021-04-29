@@ -2,15 +2,29 @@ const { DatastoreFormatterBase } = require('./DatastoreFormatterBase')
 
 class DatastoreSelectFormatter extends DatastoreFormatterBase {
   formatQuery (qs) {
-    return () =>
-      [this.mapFilter, this.mapOrderBy, this.mapLimit, this.mapOffset].reduce(
-        (aggr, modifier) => modifier(qs, aggr),
-        this.db.createQuery(this.db.namespace, qs.props.target)
-      )
+    return () => {
+      const [query, modifiers] = this.createModifiers(qs)
+      return modifiers.reduce((aggr, modifier) => modifier(qs, aggr), query)
+    }
   }
 
-  mapCondition = (query, fieldName, operator, value) =>
-    query.filter(fieldName, operator, value)
+  createModifiers (qs) {
+    const modifiers = [
+      this.mapFilter,
+      this.mapOrderBy,
+      this.mapLimit,
+      this.mapOffset
+    ]
+    const query = this.db.createQuery(this.db.namespace, qs.props.target)
+    return [query, modifiers]
+  }
+
+  mapCondition = (qs, query, fieldName, operator, value) => {
+    if (qs.model && qs.model.pkName === fieldName) {
+      return query.filter('__key__', operator, this.formatKey(qs.model, value))
+    }
+    return query.filter(fieldName, operator, value)
+  }
 
   mapOrderByDirective = (query, oi) => {
     const [name, descending] = this.parseOrderDirective(oi)

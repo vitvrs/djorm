@@ -169,6 +169,38 @@ describe.skip('datastore select', () => {
     )
   })
 
+  it('selects user by id', async () => {
+    const result = await models.User.objects.get({ id: 4 })
+    expect(result).toEqual(
+      new models.User({
+        id: 4,
+        name: 'Merver Chin',
+        email: 'merver.chin@gmail.com',
+        superuser: true,
+        inactive: false
+      })
+    )
+  })
+
+  it('ignores undefined conditions', async () => {
+    const result = await models.User.objects
+      .filter({
+        name: 'Merver Chin',
+        superuser: undefined,
+        inactive: undefined
+      })
+      .first()
+    expect(result).toEqual(
+      new models.User({
+        id: 4,
+        name: 'Merver Chin',
+        email: 'merver.chin@gmail.com',
+        superuser: true,
+        inactive: false
+      })
+    )
+  })
+
   it('updates new user object primary key', async () => {
     const user = new models.User({
       name: 'John Runner',

@@ -2,6 +2,8 @@ const { ComparisonOperator } = require('djorm/db/ComparisonOperator')
 const { Q } = require('djorm/db/QueryCondition')
 const { QueryFormatter } = require('djorm/db/QueryFormatter')
 
+const filterNonEmpty = item => Boolean(item)
+
 class DatastoreFormatterBase extends QueryFormatter {
   constructor (driver) {
     super()
@@ -10,6 +12,10 @@ class DatastoreFormatterBase extends QueryFormatter {
 
   get db () {
     return this.driver.db
+  }
+
+  getPrimaryKey (qs) {
+    return qs.model && qs.model.pkName
   }
 
   formatKey (model, pk) {
@@ -29,42 +35,45 @@ class DatastoreFormatterBase extends QueryFormatter {
       : [this.formatValue(qs, qs.props.values)]
   }
 
-  mapConditionExpression = (query, condition, fieldSpec, value) => {
+  mapConditionExpression = (qs, query, condition, fieldSpec, value) => {
     const operatorName = this.resolveOperatorName(condition, fieldSpec)
     const operator = ComparisonOperator[operatorName]
     const fieldName = fieldSpec.replace(this.operatorMatch, '')
-    return this.mapCondition(query, fieldName, operator, value)
+    return this.mapCondition(qs, query, fieldName, operator, value)
   }
 
-  mapSubCondition = (query, condition, conditionProps) => {
+  mapSubCondition = (qs, query, condition, conditionProps) => {
     if (conditionProps instanceof Q) {
       conditionProps.parent(condition)
-      return this.mapQueryCondition(query, conditionProps)
+      return this.mapQueryCondition(qs, query, conditionProps)
     }
     return Object.entries(conditionProps).reduce(
       (aggr, [fieldSpec, value]) =>
-        this.mapConditionExpression(query, condition, fieldSpec, value),
+        filterNonEmpty(value)
+          ? this.mapConditionExpression(qs, query, condition, fieldSpec, value)
+          : aggr,
       query
     )
   }
 
-  mapQueryCondition = (query, condition) => {
-    return condition.conditions.reduce(
-      (aggr, c) => this.mapSubCondition(aggr, condition, c),
-      query
-    )
+  mapQueryCondition = (qs, query, condition) => {
+    return condition.conditions
+      .filter(filterNonEmpty)
+      .reduce((aggr, c) => this.mapSubCondition(qs, aggr, condition, c), query)
   }
 
-  mapQueryConditions = (query, conditions) => {
-    return conditions.reduce(
-      (aggr, condition) => this.mapQueryCondition(aggr, condition),
-      query
-    )
+  mapQueryConditions = (qs, query, conditions) => {
+    return conditions
+      .filter(filterNonEmpty)
+      .reduce(
+        (aggr, condition) => this.mapQueryCondition(qs, aggr, condition),
+        query
+      )
   }
 
   mapFilter = (qs, query) => {
     if (qs.props.conditions) {
-      return this.mapQueryConditions(query, qs.props.conditions)
+      return this.mapQueryConditions(qs, query, qs.props.conditions)
     }
     return query
   }
