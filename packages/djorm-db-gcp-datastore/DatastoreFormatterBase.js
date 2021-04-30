@@ -14,6 +14,10 @@ class DatastoreFormatterBase extends QueryFormatter {
     return this.driver.db
   }
 
+  getKeyValue (item) {
+    return item && item.key && (item.key.id || item.key.name)
+  }
+
   getPrimaryKey (qs) {
     return qs.model && qs.model.pkName
   }

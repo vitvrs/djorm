@@ -5,18 +5,19 @@ class DatastoreInsertFormatter extends DatastoreFormatterBase {
     return async () => {
       const values = await this.prepareKeys(qs, this.formatValues(qs))
       await this.db.insert(values)
+      const last = values[values.length - 1]
       return {
-        insertId: values.length && values[values.length - 1].key.id
+        insertId: this.getKeyValue(last)
       }
     }
   }
 
   prepareKeys = async (qs, values) => {
-    const keyLess = values.filter(item => !item.key.id)
+    const keyLess = values.filter(item => !this.getKeyValue(item))
     const partialKey = this.formatKey(qs.props.model)
     const [ids] = await this.db.allocateIds(partialKey, keyLess.length)
     return values.map(item =>
-      item.key.id
+      this.getKeyValue(item)
         ? item
         : {
             ...item,
