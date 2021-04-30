@@ -234,6 +234,37 @@ describe.skip('datastore select', () => {
     )
   })
 
+  it('inserts user with specific ID', async () => {
+    class DefaultIdUser extends DatabaseModel {
+      static id = new fields.PositiveIntegerField({ default: () => 1001 })
+      static name = new fields.CharField()
+      static email = new fields.CharField()
+      static superuser = new fields.BooleanField()
+      static inactive = new fields.BooleanField()
+      static tableName = 'user'
+
+      static meta = class {
+        static modelName = 'DefaultIdUser'
+      }
+    }
+    const user = new DefaultIdUser({
+      name: 'John Runner',
+      email: 'test.runner@gmail.com',
+      superuser: false,
+      inactive: false
+    })
+    await user.save()
+    expect(await DefaultIdUser.objects.get({ id: 1001 })).toEqual(
+      expect.objectContaining({
+        id: 1001,
+        name: 'John Runner',
+        email: 'test.runner@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    )
+  })
+
   it('deletes user', async () => {
     const user = await models.User.objects.get({ id: 1 })
     await user.delete()

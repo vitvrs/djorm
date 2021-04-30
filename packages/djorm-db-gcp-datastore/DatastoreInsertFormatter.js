@@ -26,16 +26,13 @@ class DatastoreInsertFormatter extends DatastoreFormatterBase {
   }
 
   formatValue = (qs, data) => ({
-    key: this.formatKey(qs.props.model, data.pk),
+    key: this.formatKey(qs.props.model, data[qs.model.pkName]),
     data
   })
 
   formatValues = qs =>
     qs.props.values instanceof Array
-      ? qs.props.values.map(data => ({
-          key: this.formatKey(qs.props.model, data),
-          data
-        }))
+      ? qs.props.values.map(data => this.formatValue(qs, data))
       : [this.formatValue(qs, qs.props.values)]
 }
 
