@@ -7,7 +7,9 @@ const configure = config => {
 }
 
 const init = async config => {
-  configure(config)
+  if (config) {
+    configure(config)
+  }
   const settings = currentConfig
 
   if (settings.databases) {
