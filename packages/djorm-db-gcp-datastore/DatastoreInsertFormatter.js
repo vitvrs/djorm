@@ -4,7 +4,7 @@ class DatastoreInsertFormatter extends DatastoreFormatterBase {
   formatQuery (qs) {
     return async () => {
       const values = await this.prepareKeys(qs, this.formatValues(qs))
-      await this.db.insert(values)
+      await this.db.upsert(values)
       const last = values[values.length - 1]
       return {
         insertId: this.getKeyValue(last)
