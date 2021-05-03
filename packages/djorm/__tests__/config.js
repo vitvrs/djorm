@@ -1,6 +1,7 @@
 const app = require('../__samples__/trivial-app')
 
 const { ModelError } = require('../errors')
+const { Or } = require('../db')
 const {
   getModel,
   getModels,
@@ -215,6 +216,33 @@ describe('env config with sqlite', () => {
       await app.UserJob.objects.delete.filter({ id: 1 }).exec()
       await app.Job.objects.delete.filter({ id__in: [1, 2, 3] }).exec()
       expect(await app.Job.objects.all()).toEqual([])
+    })
+
+    it('selects users using or operator', async () => {
+      expect(
+        await app.User.objects.filter(new Or({ id: 1 }, { id: 3 })).all()
+      ).toEqual([
+        new app.User({
+          id: 1,
+          name: 'Harmony Vasquez',
+          email: 'harmony.vasquez@gmail.com',
+          superuser: false,
+          inactive: false
+        }),
+        new app.User({
+          id: 3,
+          name: 'Neil Henry',
+          email: 'neil.henry@iol.com',
+          superuser: false,
+          inactive: true
+        })
+      ])
+    })
+
+    it('counts users using or operator', async () => {
+      expect(
+        await app.User.objects.filter(new Or({ id: 1 }, { id: 3 })).count()
+      ).toEqual(2)
     })
   })
 })
