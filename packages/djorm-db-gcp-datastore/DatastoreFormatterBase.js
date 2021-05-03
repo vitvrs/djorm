@@ -29,7 +29,8 @@ class DatastoreFormatterBase extends QueryFormatter {
   formatValue (qs, data) {
     return {
       key: this.formatKey(qs.props.model, data[qs.props.model.pkName]),
-      data
+      data,
+      excludeLargeProperties: true
     }
   }
 
