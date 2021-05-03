@@ -1,12 +1,13 @@
 const { And } = require('./And')
 const { DatabaseModelBase } = require('../models/DatabaseModelBase')
 const { filterUnique } = require('../filters')
-const { getModelName } = require('../models/ModelRegistry')
 const { ImmutablePropModel } = require('./props')
 const { parseFieldObjects } = require('../models/AttrModel')
 const { Q } = require('./QueryCondition')
 const { QueryColumnGroup } = require('./QueryColumnGroup')
+const { QueryColumn } = require('./QueryColumn')
 const { QueryError } = require('./errors')
+const { QueryJoin } = require('./QueryJoin')
 const { QueryTable } = require('./QueryTable')
 
 const defaultConditions = () => []
@@ -37,9 +38,10 @@ class Query extends ImmutablePropModel {
 
   target (value) {
     if (value.prototype && value.prototype instanceof DatabaseModelBase) {
-      const [selection] = this.getModelFields(value)
+      const [selection, joins] = this.getModelFields(value)
       return this.setProp('target', value.table)
         .setProp('selection', selection, true)
+        .setProp('joins', joins, true)
         .setProp('model', value, true)
     }
     return this.setProp(
@@ -78,26 +80,22 @@ class Query extends ImmutablePropModel {
       } else {
         if (obj !== model) {
           joins.push(
-            new QueryTable({
+            new QueryJoin({
               name: obj.table,
               alias: obj.table,
-              on: [
-                {
-                  left: { source: obj.table, name: obj.pkName },
-                  column: {
-                    source: model.table,
-                    name: model.pkName
-                  }
-                }
-              ]
+              conditions: {
+                [model.pkName]: new QueryColumn({
+                  source: obj.table,
+                  name: obj.pkName
+                })
+              }
             })
           )
         }
         selection.push(
           new QueryColumnGroup({
             source: obj.table,
-            columns: fieldNames,
-            prefix: getModelName(obj)
+            columns: fieldNames
           })
         )
       }

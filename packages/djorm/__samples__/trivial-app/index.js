@@ -55,6 +55,10 @@ class Job extends DatabaseModel {
   static updatedAt = new fields.DateTimeField()
 }
 
+class UserJob extends Job {
+  static user = new fields.ForeignKey({ model: 'User' })
+}
+
 let tmpFile
 const setupDb = async dbFile => {
   const dbPath = path.resolve(__dirname, dbFile)
@@ -67,6 +71,7 @@ const initialize = async () => {
   AuditLog.register()
   Role.register()
   User.register()
+  UserJob.register()
   UserRole.register()
   await config.init({
     databases: {
@@ -88,6 +93,7 @@ module.exports = {
   Job,
   User,
   Role,
+  UserJob,
   UserRole,
   initialize,
   shutdown

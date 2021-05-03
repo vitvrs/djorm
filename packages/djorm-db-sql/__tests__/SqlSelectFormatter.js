@@ -1,6 +1,10 @@
 const { SqlFormatter } = require('..')
 const { DatabaseModel } = require('djorm/models')
-const { CharField, PositiveIntegerField } = require('djorm/fields')
+const {
+  BooleanField,
+  CharField,
+  PositiveIntegerField
+} = require('djorm/fields')
 const {
   And,
   Q,
@@ -28,6 +32,15 @@ describe('SqlSelectFormatter', () => {
     static table = 'users'
     static meta = class {
       static modelName = 'User'
+    }
+  }
+
+  class Profile extends User {
+    static nick = new CharField()
+    static public = new BooleanField()
+    static table = 'profiles'
+    static meta = class {
+      static modelName = 'Profile'
     }
   }
 
@@ -578,9 +591,9 @@ describe('SqlSelectFormatter', () => {
       expect(driver.formatQuery(qs)).toBe(
         [
           'SELECT',
-          '`users`.`id` AS `User__id`,',
-          '`users`.`name` AS `User__name`,',
-          '`users`.`role` AS `User__role`',
+          '`users`.`id`,',
+          '`users`.`name`,',
+          '`users`.`role`',
           "FROM `users` WHERE `users`.`role` = 'admin'"
         ].join(' ')
       )
@@ -631,6 +644,23 @@ describe('SqlSelectFormatter', () => {
         )
       expect(driver.formatQuery(qs)).toBe(
         'SELECT `users`.`id`, `users`.`name` FROM `users`'
+      )
+    })
+
+    it('selects profiles', () => {
+      const qs = new Select().from(Profile)
+      expect(driver.formatQuery(qs)).toBe(
+        [
+          'SELECT',
+          '`profiles`.`nick`,',
+          '`profiles`.`public`,',
+          '`users`.`id`,',
+          '`users`.`name`,',
+          '`users`.`role`',
+          'FROM `profiles`',
+          'INNER JOIN `users` AS `users` ON',
+          '(`profiles`.`id` = `users`.`id`)'
+        ].join(' ')
       )
     })
   })

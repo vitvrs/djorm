@@ -159,9 +159,9 @@ describe('env config with sqlite', () => {
     })
 
     it('deletes user role', async () => {
-      const userRole = await app.UserRole.objects.get({ id: 1 })
+      const userRole = await app.UserRole.objects.get({ id: 3 })
       await userRole.delete()
-      expect(await app.UserRole.objects.filter({ id: 1 }).first()).toEqual(null)
+      expect(await app.UserRole.objects.filter({ id: 3 }).first()).toEqual(null)
     })
 
     it('updates user', async () => {
@@ -195,6 +195,20 @@ describe('env config with sqlite', () => {
     it('selects json field with JSON syntax error as null', async () => {
       const job = await app.Job.objects.get({ id: 3 })
       expect(job.props).toEqual(null)
+    })
+
+    it('selects nested model user job', async () => {
+      const job = await app.UserJob.objects.filter({ id: 1 }).first()
+      expect(job).toEqual(
+        new app.UserJob({
+          id: 1,
+          userId: 1,
+          type: 'test_null_props',
+          props: null,
+          createdAt: '2021-04-23T10:54:50',
+          updatedAt: '2021-04-23T10:54:50'
+        })
+      )
     })
   })
 })

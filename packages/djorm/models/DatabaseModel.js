@@ -18,11 +18,14 @@ class DatabaseModel extends DatabaseModelBase {
   static dbName = 'default'
 
   static get objects () {
-    if (!this.managerInstance) {
-      const Manager = this.manager
-      this.managerInstance = new Manager(this)
+    const cache = Object.getOwnPropertyDescriptor(this, 'managerInstance')
+    if (cache && cache.value) {
+      return cache.value
     }
-    return this.managerInstance
+    const Manager = this.manager
+    const value = new Manager(this)
+    Object.defineProperty(this, 'managerInstance', { value })
+    return value
   }
 
   static get db () {
