@@ -23,7 +23,9 @@ function registerModelRelations (modelName, model) {
   const modelRelations = model.relationFields
   if (modelRelations) {
     for (const [, field] of modelRelations) {
-      field.parentModel = modelName
+      if (!field.parentModel) {
+        field.parentModel = modelName
+      }
       relationships[getRelationRefName(field.model, field.relatedName)] = field
     }
   }
