@@ -35,9 +35,10 @@ class DatastoreDatabase extends Database {
     return await query()
   }
 
-  async queryDb (query) {
-    const [result] = await this.db.runQuery(query())
-    return result
+  async queryDb (configureQuery) {
+    const query = configureQuery()
+    const [result] = await this.db.runQuery(query)
+    return query.postprocess ? query.postprocess(result) : result
   }
 
   formatQuery (qs) {

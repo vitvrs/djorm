@@ -1,10 +1,10 @@
 const { And } = require('./And')
+const { Count } = require('./Count')
 const { getModelName } = require('../models/ModelRegistry')
 const { ObjectNotFound } = require('../errors')
 const { Q } = require('./QueryCondition')
 const { QueryAllRecords } = require('./QueryAllRecords')
 const { QueryColumn } = require('./QueryColumn')
-const { QueryFunc } = require('./QueryFunc')
 const { QueryIdentifier } = require('./QueryIdentifier')
 const { QueryJoin } = require('./QueryJoin')
 const { Query } = require('./Query')
@@ -104,8 +104,7 @@ class Select extends Query {
   async count () {
     const result = await this.appendProp(
       'selection',
-      new QueryFunc({
-        name: 'COUNT',
+      new Count({
         args: [new QueryAllRecords()],
         alias: '__djorm_cnt'
       })

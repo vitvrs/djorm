@@ -1,10 +1,28 @@
 const { DatastoreFormatterBase } = require('./DatastoreFormatterBase')
+const { Count } = require('djorm/db/Count')
 
 class DatastoreSelectFormatter extends DatastoreFormatterBase {
   formatQuery (qs) {
     return () => {
       const [query, modifiers] = this.createModifiers(qs)
-      return modifiers.reduce((aggr, modifier) => modifier(qs, aggr), query)
+      const dsQuery = modifiers.reduce(
+        (aggr, modifier) => modifier(qs, aggr),
+        query
+      )
+      const count = qs.props.selection.find(item => item instanceof Count)
+      // @HACK: Assume this is count query and add dummy postprocessor
+      if (count) {
+        const dsq = dsQuery.select('__key__')
+        dsq.postprocess = results => {
+          return [
+            {
+              __djorm_cnt: results.length
+            }
+          ]
+        }
+        return dsq
+      }
+      return dsQuery
     }
   }
 
