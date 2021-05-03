@@ -12,14 +12,16 @@ class DatastoreSelectFormatter extends DatastoreFormatterBase {
       const count = qs.props.selection.find(item => item instanceof Count)
       // @HACK: Assume this is count query and add dummy postprocessor
       if (count) {
-        const dsq = dsQuery.select('__key__')
-        dsq.postprocess = results => {
-          return [
-            {
-              __djorm_cnt: results.length
-            }
-          ]
-        }
+        const dsq = dsQuery
+          .select('__key__')
+          .limit(-1)
+          .offset(0)
+
+        dsq.postprocess = results => [
+          {
+            __djorm_cnt: results.length
+          }
+        ]
         return dsq
       }
       return dsQuery
