@@ -54,6 +54,9 @@ class QueryFormatter {
     if (typeof value === 'boolean') {
       return value ? '1' : '0'
     }
+    if (value === null) {
+      return 'NULL'
+    }
     throw new QueryError(
       `Unknown value type: "${typeof value}" for value "${value}"`
     )

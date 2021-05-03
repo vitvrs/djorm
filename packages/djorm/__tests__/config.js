@@ -212,6 +212,33 @@ describe('env config with sqlite', () => {
       )
     })
 
+    it('stores null charfield', async () => {
+      const user = new app.User({
+        name: 'Foo Bar',
+        email: null,
+        superuser: false,
+        inactive: false
+      })
+      await user.save()
+      expect(
+        await app.User.objects.filter({ id: user.id }).first()
+      ).toHaveProperty('email', null)
+    })
+
+    it('stores null JSON field', async () => {
+      const job = new app.UserJob({
+        props: null,
+        userId: 1,
+        type: 'foo',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      await job.save()
+      expect(
+        await app.UserJob.objects.filter({ id: job.id }).first()
+      ).toHaveProperty('props', null)
+    })
+
     it('deletes jobs via object manager', async () => {
       await app.UserJob.objects.delete.filter({ id: 1 }).exec()
       await app.Job.objects.delete.filter({ id__in: [1, 2, 3] }).exec()
