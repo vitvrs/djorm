@@ -1,6 +1,6 @@
 {
   "name": "djorm-db-sql",
-  "version": "0.1.5-alpha.13",
+  "version": "0.1.5-alpha.14",
   "description": "Common SQL formatter for djorm",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
