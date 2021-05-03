@@ -3,6 +3,7 @@ const { LogicOperator } = require('djorm/db/LogicOperator')
 const { Q } = require('djorm/db/QueryCondition')
 const { QueryColumn } = require('djorm/db/QueryColumn')
 const { QueryFormatter } = require('djorm/db/QueryFormatter')
+const { QueryIdentifier } = require('djorm/db/QueryIdentifier')
 
 const nonEmpty = item => Boolean(item)
 
@@ -23,13 +24,28 @@ class SqlFormatterBase extends QueryFormatter {
       .join(' ')
   }
 
+  formatIdentifier (identifier) {
+    if (identifier instanceof QueryIdentifier) {
+      const name = this.formatSafeName(identifier.name)
+      return identifier.alias ? this.formatAlias(name, identifier.alias) : name
+    }
+    return this.formatSafeName(identifier)
+  }
+
   formatSafeName (sqlIdentifier) {
     return `\`${sqlIdentifier}\``
   }
 
+  formatIdentifierLink (identifier) {
+    if (identifier instanceof QueryIdentifier) {
+      return this.formatSafeName(identifier.alias || identifier.name)
+    }
+    return this.formatSafeName(identifier)
+  }
+
   formatQueryColumn (expr, ignoreAlias = false) {
     const source = [
-      expr.source && this.formatSafeName(expr.source),
+      expr.source && this.formatIdentifierLink(expr.source),
       this.formatSafeName(expr.name)
     ]
       .filter(nonEmpty)

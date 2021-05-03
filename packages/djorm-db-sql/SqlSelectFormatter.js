@@ -2,7 +2,6 @@ const { QueryAllRecords } = require('djorm/db/QueryAllRecords')
 const { QueryColumn } = require('djorm/db/QueryColumn')
 const { QueryFormatterError } = require('djorm/db/errors')
 const { QueryFunc } = require('djorm/db/QueryFunc')
-const { QueryIdentifier } = require('djorm/db/QueryIdentifier')
 const { QueryShortcut } = require('djorm/db/QueryShortcut')
 const { SqlFormatterBase } = require('./SqlFormatterBase')
 
@@ -29,14 +28,6 @@ class SqlSelectFormatter extends SqlFormatterBase {
 
   formatAlias (statement, alias) {
     return `${statement} AS ${this.formatSafeName(alias)}`
-  }
-
-  formatIdentifier (identifier) {
-    if (identifier instanceof QueryIdentifier) {
-      const name = this.formatSafeName(identifier.name)
-      return identifier.alias ? this.formatAlias(name, identifier.alias) : name
-    }
-    return this.formatSafeName(identifier)
   }
 
   formatFrom (qs) {
