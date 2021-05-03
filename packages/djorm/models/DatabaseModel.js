@@ -127,22 +127,28 @@ class DatabaseModel extends DatabaseModelBase {
     }
   }
 
+  static getDatabaseFields () {
+    return this.fieldObjects.filter(([key, field]) => field.db)
+  }
+
+  static getOwnDatabaseFields () {
+    return parseFieldObjects(this).filter(([key, field]) => field.db)
+  }
+
   serializeDbValues () {
     const fields = []
     let obj = this.constructor
 
     do {
-      const values = parseFieldObjects(obj)
-        .filter(([key, field]) => field.db)
-        .reduce(
-          (aggr, [key, field]) => ({
-            ...aggr,
-            [key]: field.serialize
-              ? field.serialize(this.get(key))
-              : this.get(key)
-          }),
-          {}
-        )
+      const values = obj.getOwnDatabaseFields().reduce(
+        (aggr, [key, field]) => ({
+          ...aggr,
+          [key]: field.serialize
+            ? field.serialize(this.get(key))
+            : this.get(key)
+        }),
+        {}
+      )
       if (isAbstract(obj)) {
         fields[0].values = { ...fields[0].values, ...values }
       } else {

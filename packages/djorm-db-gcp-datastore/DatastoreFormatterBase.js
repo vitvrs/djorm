@@ -27,10 +27,15 @@ class DatastoreFormatterBase extends QueryFormatter {
   }
 
   formatValue (qs, data) {
+    const excludeFromIndexes = qs.props.model
+      .getDatabaseFields()
+      .filter(([key, field]) => !field.indexable)
+      .map(([key]) => key)
     return {
       key: this.formatKey(qs.props.model, data[qs.props.model.pkName]),
       data,
-      excludeLargeProperties: true
+      excludeLargeProperties: true,
+      excludeFromIndexes
     }
   }
 
