@@ -1,3 +1,4 @@
+const { Delete } = require('../db/Delete')
 const { Select } = require('../db/Select')
 
 class ObjectManager {
@@ -7,6 +8,10 @@ class ObjectManager {
 
   get db () {
     return this.model.db
+  }
+
+  get delete () {
+    return Delete.fromDb(this.db).target(this.model)
   }
 
   get query () {

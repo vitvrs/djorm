@@ -210,5 +210,11 @@ describe('env config with sqlite', () => {
         })
       )
     })
+
+    it('deletes jobs via object manager', async () => {
+      await app.UserJob.objects.delete.filter({ id: 1 }).exec()
+      await app.Job.objects.delete.filter({ id__in: [1, 2, 3] }).exec()
+      expect(await app.Job.objects.all()).toEqual([])
+    })
   })
 })
