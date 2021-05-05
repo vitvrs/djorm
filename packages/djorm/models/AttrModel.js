@@ -129,6 +129,7 @@ class AttrModel {
     for (const [key, value] of entries) {
       this.setValue(key, value)
     }
+    return this
   }
 
   serializeValues () {
