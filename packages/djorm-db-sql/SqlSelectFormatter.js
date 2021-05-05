@@ -79,7 +79,9 @@ class SqlSelectFormatter extends SqlFormatterBase {
       lt: 'gte',
       neq: 'eq',
       in: 'notin',
-      notin: 'in'
+      notin: 'in',
+      isnull: 'notnull',
+      notnull: 'isnull'
     }
     return map[operatorName]
   }

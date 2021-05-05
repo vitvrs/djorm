@@ -65,6 +65,19 @@ class SqlFormatterBase extends QueryFormatter {
         .map(value => this.formatValue(value))
         .join(',')})`
     }
+    if (
+      (operator === ComparisonOperator.isnull && value) ||
+      (operator === ComparisonOperator.notnull && !value)
+    ) {
+      return 'IS NULL'
+    }
+    if (
+      (operator === ComparisonOperator.isnull && !value) ||
+      (operator === ComparisonOperator.notnull && value)
+    ) {
+      return 'NOT NULL'
+    }
+
     return `${operator} ${this.formatValue(value)}`
   }
 

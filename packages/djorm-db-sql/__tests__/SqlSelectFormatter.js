@@ -663,5 +663,61 @@ describe('SqlSelectFormatter', () => {
         ].join(' ')
       )
     })
+
+    it('filters by null true', () => {
+      const qs = new Select().from(User).filter({ name__isnull: true })
+      expect(driver.formatQuery(qs)).toBe(
+        [
+          'SELECT',
+          '`users`.`id`,',
+          '`users`.`name`,',
+          '`users`.`role`',
+          'FROM `users`',
+          'WHERE `users`.`name` IS NULL'
+        ].join(' ')
+      )
+    })
+
+    it('filters by null false', () => {
+      const qs = new Select().from(User).filter({ name__isnull: false })
+      expect(driver.formatQuery(qs)).toBe(
+        [
+          'SELECT',
+          '`users`.`id`,',
+          '`users`.`name`,',
+          '`users`.`role`',
+          'FROM `users`',
+          'WHERE `users`.`name` NOT NULL'
+        ].join(' ')
+      )
+    })
+
+    it('filters by not null true', () => {
+      const qs = new Select().from(User).filter({ name__notnull: true })
+      expect(driver.formatQuery(qs)).toBe(
+        [
+          'SELECT',
+          '`users`.`id`,',
+          '`users`.`name`,',
+          '`users`.`role`',
+          'FROM `users`',
+          'WHERE `users`.`name` NOT NULL'
+        ].join(' ')
+      )
+    })
+
+    it('filters by not null false', () => {
+      const qs = new Select().from(User).filter({ name__notnull: false })
+      expect(driver.formatQuery(qs)).toBe(
+        [
+          'SELECT',
+          '`users`.`id`,',
+          '`users`.`name`,',
+          '`users`.`role`',
+          'FROM `users`',
+          'WHERE `users`.`name` IS NULL'
+        ].join(' ')
+      )
+    })
   })
 })
