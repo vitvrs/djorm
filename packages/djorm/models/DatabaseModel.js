@@ -119,6 +119,14 @@ class DatabaseModel extends DatabaseModelBase {
     return await this.create()
   }
 
+  async reload () {
+    const obj = await this.constructor.objects.get({
+      [this.constructor.pkName]: this.pk
+    })
+    const values = obj.serializeValues()
+    return this.setValues(values)
+  }
+
   async delete () {
     let obj = this.constructor
     while (obj && obj !== DatabaseModel && (!obj.meta || !obj.meta.abstract)) {
