@@ -1,15 +1,37 @@
-let logger = null
+const noop = () => {}
+
+const defaultLogger = {
+  debug: noop,
+  error: console.error,
+  fatal: console.fatal,
+  info: noop,
+  trace: noop,
+  silent: noop,
+  warn: console.warn
+}
+
+let logger = defaultLogger
 
 const init = inst => {
   logger = inst
 }
 
 const shutdown = () => {
-  logger = null
+  logger = defaultLogger
 }
 
+const getLogger = () => logger
+const proxy = method => (...args) => getLogger()[method](...args)
+
 module.exports = {
-  getLogger: () => logger,
+  debug: proxy('debug'),
+  error: proxy('error'),
+  fatal: proxy('fatal'),
+  getLogger,
+  info: proxy('info'),
   init,
-  shutdown
+  shutdown,
+  trace: proxy('trace'),
+  silent: proxy('silent'),
+  warn: proxy('warn')
 }
