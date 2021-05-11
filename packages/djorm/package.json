@@ -15,6 +15,7 @@
   "files": [
     "db",
     "fields",
+    "init",
     "models",
     "*.js"
   ],

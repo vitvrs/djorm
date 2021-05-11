@@ -11,13 +11,11 @@ const init = async config => {
     configure(config)
   }
   const settings = currentConfig
-
+  if (settings.apps) {
+    require('./init/apps').init(settings.apps)
+  }
   if (settings.databases) {
-    const { Database } = require('./db/Database')
-    const { configDb } = require('./db/DatabasePool')
-    Object.entries(settings.databases).map(([dbName, dbConfig]) =>
-      configDb(Database.resolveDriver(dbConfig), dbName)
-    )
+    require('./init/databases').init(settings.databases)
   }
 }
 
