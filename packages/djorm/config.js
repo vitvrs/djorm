@@ -1,7 +1,7 @@
 let currentConfig = {
-  name: 'djorm',
   apps: [],
   databases: {},
+  name: 'djorm',
   logger: {
     level: 'info',
     transport: null,
@@ -12,29 +12,28 @@ let currentConfig = {
 const configure = config => {
   currentConfig = { ...currentConfig, ...config }
 }
+const getSettings = () => currentConfig
 
-const init = async config => {
-  if (config) {
-    configure(config)
-  }
-  const settings = currentConfig
+const init = async () => {
+  const settings = getSettings()
   if (settings.apps) {
-    require('./init/apps').init(settings)
+    await require('./init/apps').init(settings)
   }
-  require('./init/logger').init(settings)
+  await require('./init/logger').init(settings)
   if (settings.databases) {
-    require('./init/databases').init(settings.databases)
+    await require('./init/databases').init(settings.databases)
   }
 }
 
 const shutdown = async () => {
-  require('./init/apps').shutdown(currentConfig)
+  const settings = getSettings()
+  require('./init/apps').shutdown(settings)
   require('./init/logger').shutdown()
 }
 
 module.exports = {
   configure,
+  getSettings,
   init,
-  shutdown,
-  getSettings: () => currentConfig
+  shutdown
 }

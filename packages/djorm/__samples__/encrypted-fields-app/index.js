@@ -31,7 +31,7 @@ const setupDb = async dbFile => {
 const initialize = async () => {
   await setupDb('db.sqlite')
   User.register()
-  await config.init({
+  config.configure({
     secretKey: 'v*tp_r#f54fz$8w$ds(m=)o3mfl&zr92&gwx9qy)1wymudkp#4',
     databases: {
       default: {
@@ -40,6 +40,7 @@ const initialize = async () => {
       }
     }
   })
+  await config.init()
 }
 
 const shutdown = async () => {

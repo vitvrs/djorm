@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "djorm": "file:packages/djorm",
+    "djorm-cloud-jobs": "file:packages/djorm-cloud-jobs",
     "djorm-db-gcp-bigquery": "file:packages/djorm-db-gcp-bigquery",
     "djorm-db-gcp-datastore": "file:packages/djorm-db-gcp-datastore",
     "djorm-db-mysql": "file:packages/djorm-db-mysql",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "find-cache-dir": "^3.3.1",
+    "jest-date-mock": "^1.0.8",
     "jsdoc": "^3.6.6",
     "lerna": "^3.20.2",
     "lerna-ministack": "^0.5.4",

@@ -1,0 +1,27 @@
+{
+  "name": "djorm-cloud-jobs",
+  "version": "0.1.5-alpha.16",
+  "description": "Tiny library that helps you run huge workloads as small distributed jobs in cloud environment",
+  "author": "Pavel Žák <pavel@zak.global>",
+  "homepage": "https://github.com/just-paja/djorm#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "files": [
+    "*.js"
+  ],
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "parser": "babel-eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/just-paja/djorm.git"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^2.11.0",
+    "djorm": "^0.1.5-alpha.16",
+    "moment-timezone": "^0.5.33"
+  }
+}

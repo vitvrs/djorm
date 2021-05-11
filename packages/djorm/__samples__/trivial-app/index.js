@@ -73,7 +73,7 @@ const initialize = async () => {
   User.register()
   UserJob.register()
   UserRole.register()
-  await config.init({
+  config.configure({
     databases: {
       default: {
         driver: 'djorm-db-sqlite',
@@ -81,6 +81,7 @@ const initialize = async () => {
       }
     }
   })
+  await config.init()
 }
 
 const shutdown = async () => {
