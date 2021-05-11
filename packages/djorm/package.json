@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "camelcase": "^6.2.0",
-    "moment-timezone": "^0.5.33"
+    "moment-timezone": "^0.5.33",
+    "pino": "^6.11.3"
   }
 }

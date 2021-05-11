@@ -14,14 +14,14 @@ const shutdownApp = async app => {
   }
 }
 
-const init = async apps => {
-  for (const app of apps) {
+const init = async settings => {
+  for (const app of settings.apps) {
     await initApp(app)
   }
 }
 
-const shutdown = async apps => {
-  for (const app of apps) {
+const shutdown = async settings => {
+  for (const app of settings.apps) {
     await shutdownApp(app)
   }
 }
