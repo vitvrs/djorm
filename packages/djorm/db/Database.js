@@ -1,6 +1,7 @@
 const { DatabaseMapper } = require('./DatabaseMapper')
 const { NotImplemented } = require('../errors')
 const { PropModel } = require('./props')
+const { debug, trace } = require('../logger')
 
 class Database extends PropModel {
   connected = false
@@ -23,8 +24,10 @@ class Database extends PropModel {
 
   async connect () {
     this.connecting = true
+    trace(`Connecting to ${this.props.driver} database`)
     await this.connectDb()
     this.connecting = false
+    debug(`Connected to ${this.props.driver} database`)
     this.resolveQueue()
   }
 
@@ -54,11 +57,13 @@ class Database extends PropModel {
 
   async query (str) {
     await this.waitForConnection()
+    debug(str)
     return await this.queryDb(str)
   }
 
   async exec (str) {
     await this.waitForConnection()
+    debug(str)
     return await this.execDb(str)
   }
 
