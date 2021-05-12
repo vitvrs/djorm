@@ -134,7 +134,7 @@ class AttrModel {
 
   serializeValues () {
     return this.constructor.fieldObjects
-      .filter(([key, field]) => field.db)
+      .filter(([key, field]) => !field.private)
       .reduce(
         (aggr, [key, field]) => ({
           ...aggr,
@@ -167,6 +167,7 @@ FieldModel = GenericField
 
 class Field extends GenericField {
   static default = new Field()
+  static private = new Field({ default: false })
   static secret = new Field()
   static validator = new Field()
 

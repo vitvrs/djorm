@@ -123,7 +123,7 @@ class DatabaseModel extends DatabaseModelBase {
     const obj = await this.constructor.objects.get({
       [this.constructor.pkName]: this.pk
     })
-    const values = obj.serializeValues()
+    const values = obj.serializeDbValues()
     return this.setValues(values)
   }
 
