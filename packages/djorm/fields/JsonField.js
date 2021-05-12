@@ -10,6 +10,10 @@ class JsonField extends TextField {
   parse (value) {
     return typeof value === 'string' ? JSON.parse(value) : value
   }
+
+  fromDb (value) {
+    return this.parse(super.fromDb(value))
+  }
 }
 
 module.exports = { JsonField }

@@ -9,6 +9,7 @@ module.exports = {
   ...require('./IntegerField'),
   ...require('./JsonField'),
   ...require('./ObjectField'),
+  ...require('./PasswordField'),
   ...require('./PositiveIntegerField'),
   ...require('./TextField'),
   ...require('./TrivialField'),
