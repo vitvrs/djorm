@@ -93,7 +93,11 @@ class AttrModel {
     const value = this[fieldName]
     if (value === undefined) {
       const field = this.constructor.getField(fieldName)
-      return field.getDefault(this)
+      const defaultValue = field.getDefault(this)
+      if (defaultValue !== undefined) {
+        this.set(fieldName, defaultValue)
+      }
+      return defaultValue
     }
     return value
   }
