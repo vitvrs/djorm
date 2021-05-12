@@ -1,6 +1,6 @@
 {
   "name": "djorm-db-gcp-bigquery",
-  "version": "0.1.5-alpha.16",
+  "version": "0.1.6-alpha.0",
   "description": "BigQuery bindings for djorm",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
