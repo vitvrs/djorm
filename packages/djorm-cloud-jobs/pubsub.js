@@ -1,5 +1,6 @@
-const { PubSub } = require('@google-cloud/pubsub')
 const { getSettings } = require('djorm/config')
+const { PubSub } = require('@google-cloud/pubsub')
+const { serialize } = require('djorm/filters')
 
 let pubsub
 let topicMap
@@ -23,7 +24,7 @@ function shutdown () {
 }
 
 function formatMessage (message) {
-  return Buffer.from(JSON.stringify(message))
+  return Buffer.from(JSON.stringify(serialize(message)))
 }
 
 function parseMessage (message) {
@@ -37,7 +38,7 @@ async function publishMessage (topicName, message) {
 }
 
 function resolveTopic (jobType) {
-  return topicMap[jobType]
+  return (topicMap && topicMap[jobType]) || undefined
 }
 
 module.exports = {

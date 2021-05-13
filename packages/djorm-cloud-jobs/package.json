@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@google-cloud/pubsub": "^2.11.0",
-    "djorm": "^0.1.5-alpha.16",
+    "djorm": "file:../djorm",
     "moment-timezone": "^0.5.33"
   }
 }

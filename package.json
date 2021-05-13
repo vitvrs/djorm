@@ -32,6 +32,7 @@
     "lerna-ministack": "^0.5.4",
     "node-fetch": "^2.6.1",
     "tar": "^6.1.0",
-    "tmp-promise": "^3.0.2"
+    "tmp-promise": "^3.0.2",
+    "workerpool": "^6.1.4"
   }
 }

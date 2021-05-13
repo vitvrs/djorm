@@ -1,8 +1,0 @@
----
-indexes:
-  - kind: job
-    properties:
-      - name: checksum
-      - name: live
-      - name: createdAt
-        direction: desc

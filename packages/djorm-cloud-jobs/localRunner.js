@@ -1,4 +1,4 @@
-const { error, info } = require('djorm/config')
+const { error, info } = require('djorm/logger')
 const { formatMessage } = require('./pubsub')
 const { getEntrypoint } = require('./entry')
 const { pool } = require('workerpool')
@@ -11,7 +11,7 @@ module.exports = {
     const poolPath = path.join(__dirname, 'localJob.js')
     const jobPool = pool(poolPath)
     await jobPool
-      .exec('runTask', [entry, { data: formatMessage(message) }])
+      .exec('runJob', [entry, { data: formatMessage(message) }])
       .catch(e => {
         error(e)
         error(e.stdout)

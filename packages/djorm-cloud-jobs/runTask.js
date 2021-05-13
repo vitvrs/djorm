@@ -76,9 +76,6 @@ async function runTask (handlers, job) {
       }
     } catch (e) {
       info(`Caught error: ${formatError(e)}`)
-      if (process.env.NODE_ENV === 'test') {
-        throw e
-      }
       await runStage(handlers, job, JobStatus.failure, e)
       // This job will be recycled instead of fulfilling (rerun request stage)
       await job.retry(e)

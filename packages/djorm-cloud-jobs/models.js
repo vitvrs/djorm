@@ -171,7 +171,7 @@ class JobBase extends DatabaseModel {
       throw new SpawnError('Cannot spawn job without ID.')
     }
     const message = serialize(this)
-    if (getSettings().jobs.local) {
+    if (getSettings().cloudJobs.local) {
       const { runLocalJob } = require('./localRunner')
       await runLocalJob(this.get('topic'), message)
     } else {
