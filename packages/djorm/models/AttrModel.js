@@ -1,4 +1,4 @@
-const { FieldError } = require('../errors')
+const { FieldError, UnknownField } = require('../errors')
 const { concatValidators, filterUnique } = require('../filters')
 const { getModelName, registerModel } = require('./ModelRegistry')
 
@@ -78,11 +78,12 @@ class AttrModel {
     const fieldAttrs = this.fieldObjects.find(
       ([name, field]) => name === fieldName
     )
-    if (!fieldAttrs) {
-      return null
+    if (fieldAttrs && fieldAttrs[1] instanceof FieldModel) {
+      return fieldAttrs[1]
     }
-    const [, field] = fieldAttrs
-    return field
+    throw new UnknownField(
+      `Unknown field "${fieldName}" for model "${getModelName(this)}"`
+    )
   }
 
   static register () {
@@ -103,14 +104,7 @@ class AttrModel {
   }
 
   set (fieldName, value) {
-    const field = this.constructor.fields[fieldName]
-    if (!(field instanceof FieldModel)) {
-      throw new Error(
-        `Unknown key "${fieldName}" for model "${getModelName(
-          this.constructor
-        )}"`
-      )
-    }
+    const field = this.constructor.getField(fieldName)
     try {
       this[fieldName] = field.parse(value, this)
     } catch (e) {

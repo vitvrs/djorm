@@ -12,6 +12,7 @@ class ConfigError extends DjormError {}
 class ModelError extends DjormError {}
 
 class FieldError extends ModelError {}
+class UnknownField extends FieldError {}
 class ValueError extends FieldError {}
 
 class ValidationError extends ValueError {
@@ -95,6 +96,7 @@ module.exports = {
   NotImplemented,
   ObjectNotFound,
   serializeError,
+  UnknownField,
   ValidationError,
   ValueError
 }

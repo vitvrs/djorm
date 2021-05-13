@@ -4,7 +4,7 @@ const { ForeignKey } = require('../fields/ForeignKey')
 const { getDb } = require('../db/DatabasePool')
 const { Insert } = require('../db/Insert')
 const { ObjectManager } = require('./ObjectManager')
-const { ObjectNotFound } = require('../errors')
+const { ObjectNotFound, UnknownField } = require('../errors')
 const { parseFieldObjects } = require('./AttrModel')
 const { Relation } = require('../fields/Relation')
 const { Update } = require('../db/Update')
@@ -53,11 +53,16 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   rel (relatedName) {
-    const field = this.constructor.getField(relatedName)
-    if (field) {
-      return field.queryTargetModel(this)
+    try {
+      return this.constructor.getField(relatedName).queryTargetModel(this)
+    } catch (e) {
+      if (e instanceof UnknownField) {
+        return getRelationship(this.constructor, relatedName).queryParentModel(
+          this
+        )
+      }
+      throw e
     }
-    return getRelationship(this.constructor, relatedName).queryParentModel(this)
   }
 
   async fetchRelationship (fieldName) {
