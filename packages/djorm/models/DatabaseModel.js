@@ -62,7 +62,7 @@ class DatabaseModel extends DatabaseModelBase {
 
   async fetchRelationship (fieldName) {
     if (!this.get(fieldName)) {
-      this.setValue(
+      this.set(
         fieldName,
         await this.constructor.getField(fieldName).fetch(this)
       )
@@ -77,7 +77,7 @@ class DatabaseModel extends DatabaseModelBase {
         .map(async ([field, value]) => [field, await value.save()])
     )
     values.forEach(([field, value]) => {
-      this.setValue(field.keyField, value.get(value.constructor.pkName))
+      this.set(field.keyField, value.get(value.constructor.pkName))
     })
   }
 
@@ -91,7 +91,7 @@ class DatabaseModel extends DatabaseModelBase {
         .values({ ...row.values, ...inject })
         .exec()
       if (result.insertId) {
-        this.setValue(row.model.pkName, result.insertId)
+        this.set(row.model.pkName, result.insertId)
         // Set this back to the cascade ^^
         inject = { ...inject, [row.model.pkName]: result.insertId }
       }

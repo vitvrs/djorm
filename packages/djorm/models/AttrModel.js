@@ -103,10 +103,6 @@ class AttrModel {
   }
 
   set (fieldName, value) {
-    return this.setValue(fieldName, value)
-  }
-
-  setValue (fieldName, value) {
     const field = this.constructor.fields[fieldName]
     if (!(field instanceof FieldModel)) {
       throw new Error(
@@ -131,7 +127,7 @@ class AttrModel {
   setValues (params = {}) {
     const entries = Object.entries(params)
     for (const [key, value] of entries) {
-      this.setValue(key, value)
+      this.set(key, value)
     }
     return this
   }
