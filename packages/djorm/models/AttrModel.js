@@ -169,6 +169,14 @@ class Field extends GenericField {
     return value
   }
 
+  fromDb (value) {
+    return this.parse(value)
+  }
+
+  serialize (value) {
+    return value
+  }
+
   hasDefault () {
     return this.default !== undefined
   }

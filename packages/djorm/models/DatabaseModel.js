@@ -4,7 +4,7 @@ const { ForeignKey } = require('../fields/ForeignKey')
 const { getDb } = require('../db/DatabasePool')
 const { Insert } = require('../db/Insert')
 const { ObjectManager } = require('./ObjectManager')
-const { ObjectNotFound, UnknownField } = require('../errors')
+const { FieldError, ObjectNotFound, UnknownField } = require('../errors')
 const { parseFieldObjects } = require('./AttrModel')
 const { Relation } = require('../fields/Relation')
 const { Update } = require('../db/Update')
@@ -63,6 +63,21 @@ class DatabaseModel extends DatabaseModelBase {
       }
       throw e
     }
+  }
+
+  setFromDb (fieldName, value) {
+    const field = this.constructor.getField(fieldName)
+    try {
+      this[fieldName] = field.fromDb(value, this)
+    } catch (e) {
+      if (e instanceof FieldError) {
+        e.message = `${e.message} when processing value for ${getModelName(
+          this.constructor
+        )}.${fieldName}`
+      }
+      throw e
+    }
+    return this
   }
 
   async fetchRelationship (fieldName) {
@@ -159,9 +174,7 @@ class DatabaseModel extends DatabaseModelBase {
       const values = obj.getOwnDatabaseFields().reduce(
         (aggr, [key, field]) => ({
           ...aggr,
-          [key]: field.serialize
-            ? field.serialize(this.get(key))
-            : this.get(key)
+          [key]: field.serialize(this.get(key))
         }),
         {}
       )

@@ -23,7 +23,7 @@ class DatabaseMapper extends Transform {
         const fieldNameStripped = this.parseFieldName(fieldName, prefix)
         if (fieldNameStripped) {
           try {
-            inst.set(fieldNameStripped, fieldValue)
+            inst.setFromDb(fieldNameStripped, fieldValue)
           } catch (e) {
             // Avoid killing mapper by parsing errors
             inst.set(fieldNameStripped, null)
