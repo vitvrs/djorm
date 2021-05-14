@@ -12,19 +12,34 @@ const {
   PositiveIntegerField
 } = require('djorm/fields')
 
+/** This is the format of a database row pulled when counting job stats
+ * @typedef {object} JobStatsRow
+ * @prop {JobStatus} status
+ * @prop {int} sums
+ */
+
+/** Job stats formatted for convenient access. Properties are named after
+ * {JobStatus} and typed as {int}
+ * @typedef {object} JobStats
+ * @link {JobStatus}
+ */
+
 /** Enum of all possible job states
- * @type object
- * @prop trigger {string} Job has been triggered, but nothing has been done yet.
- * @prop request {string} Job has been requested and is currently being processed.
- * @prop stopped {string} Job has been stopped. Some processes might still be finishing up, but nothing new will be started.
- * @prop success {string} Job main process was successful.
- * @prop failure {string} Job main process failed.
+ * @readonly
+ * @enum {string}
  */
 const JobStatus = {
+  /** @type {string} Job has been triggered, but nothing has been done yet */
   trigger: 'trigger',
+  /** @type {string} Job has been requested and is currently being processed */
   request: 'request',
+  /** @type {string} Job has been stopped. Some processes might still be
+   *   finishing up, but nothing new will be started
+   */
   stopped: 'stopped',
+  /** @type {string} Job main process was successful */
   success: 'success',
+  /** @type {string} Job main process failed */
   failure: 'failure'
 }
 
@@ -39,7 +54,7 @@ const JobRunning = {
 }
 
 /** Enum of all possible job handler names
- * @type object
+ * @enum {string}
  */
 const JobStatusHandler = {
   [JobStatus.trigger]: 'onTrigger',
@@ -50,17 +65,21 @@ const JobStatusHandler = {
 
 const sum = numbers => numbers.reduce((aggr, num) => aggr + num)
 
+/** Base class for jobs
+ * @abstract
+ * @augments {DatabaseModel}
+ */
 class JobBase extends DatabaseModel {
-  static Status = JobStatus
-  static Running = JobRunning
-  static StatusHandler = JobStatusHandler
-
+  /** @type {int} id Primary unique identifier of the job */
   static id = new PositiveIntegerField()
 
+  /** @type {string} checksum Props and type checksum, useful to find identical
+   *   jobs by querying the database. */
   static checksum = new CharField({
     default: inst => inst.constructor.getChecksum(inst.type, inst.props)
   })
 
+  /** @type {JobBase} parent Parent job foreign key */
   static parent = new ForeignKey({
     model: 'Job',
     parentModel: 'Job',
@@ -69,6 +88,7 @@ class JobBase extends DatabaseModel {
     relatedName: 'children'
   })
 
+  /** @type {JobBase} parent Root job foreign key */
   static root = new ForeignKey({
     model: 'Job',
     parentModel: 'Job',
@@ -77,15 +97,59 @@ class JobBase extends DatabaseModel {
     relatedName: 'descendants'
   })
 
+  /** @type {string} topic The topic on which will the job be communicated.
+   *   This topic must be configured in the used communication system. Job
+   *   topic must always be present in cloudJobs configuration routing to
+   *   secure that child jobs are spawned on the same topic.
+   *  @example 'scrape-users'
+   *  @example 'scrape-pets'
+   *  */
   static topic = new CharField({ default: inst => resolveTopic(inst.type) })
+
+  /** @type {string} topic Job type is used to identify a specific workflow
+   *   It can be used to split large workloads into smaller pieces that can
+   *   be run in parallel. For example, fetching users can be split into
+   *
+   *   1. fetching user list to get list of API listing pages,
+   *   2. fetching a API listing page by URL
+   *   3. fetching user detail by URL
+   *  @example 'user:fetch:list:overview'
+   *  @example 'user:fetch:list:page'
+   *  @example 'user:fetch:profile'
+   */
   static type = new CharField()
+
+  /** @type {boolean} live Automatically calculated value describing it the job
+   *   is still alive or not. Living jobs are expected to produce some
+   *   computation or results. Job is alive given the status is `trigger` or
+   *   `request`, otherwise it's not.
+   */
   static live = new BooleanField({ default: true })
-  static status = new CharField({ default: JobStatus.trigger })
+
+  /** @type {JobStatus} status Job status */
+  static status = new CharField({
+    default: JobStatus.trigger,
+    choices: Object.values(JobStatus)
+  })
+
+  /** @type {int} retried How many times was this job retried */
   static retried = new PositiveIntegerField({ default: 0 })
+
+  /** @type {int} maxRetries Maximum number of retry attempts */
   static maxRetries = new PositiveIntegerField({ default: 3 })
+
+  /** @type {object} props Job props as a JSON object. This field is stored
+   *   in the jobs database. */
   static props = new JsonField()
+
+  /**
+   * @type {Date} createdAt When was this job created?
+   * @default 'now' */
   static createdAt = new DateTimeField({ default: () => new Date() })
+
+  /** @type {Date} updatedAt When was this job last updated? */
   static updatedAt = new DateTimeField({ default: () => new Date() })
+
   static childStats = new Field()
   static descendantStats = new Field()
 
@@ -93,6 +157,13 @@ class JobBase extends DatabaseModel {
     static abstract = true
   }
 
+  /** Check the database for a job with the same props. If there is a job
+   *  alive, it will return the living job instead of spawning a new one.
+   *
+   * @async
+   * @param {object} jobProps
+   * @returns {JobBase}
+   */
   static async debounce (jobProps) {
     const Model = this
     const job = new Model(jobProps)
@@ -103,10 +174,17 @@ class JobBase extends DatabaseModel {
     return existing && existing.live ? existing : await job.save()
   }
 
-  static getChecksum (type, props) {
+  /** Caclculate checksum for the job props and type to allow identifying it
+   * quickly in the database
+   *
+   * @param {string} jobType
+   * @param {object} jobProps
+   * @returns {string} Calculated sha1 checksum
+   */
+  static getChecksum (jobType, jobProps) {
     return require('crypto')
       .createHash('sha1')
-      .update(`${type}-${JSON.stringify(props)}`)
+      .update(`${jobType}-${JSON.stringify(jobProps)}`)
       .digest('hex')
   }
 
@@ -115,6 +193,11 @@ class JobBase extends DatabaseModel {
     this.childrenIds = []
   }
 
+  /** Format job stats numbers into convenient format.
+   *
+   * @param {JobStatsRow[]}
+   * @returns {JobStats}
+   */
   static formatStats (numbers) {
     return numbers.reduce(
       (aggr, row) => ({ ...aggr, [row.status]: sum(row.sums) }),
@@ -122,6 +205,11 @@ class JobBase extends DatabaseModel {
     )
   }
 
+  /** Fetch job stats with a filter
+   * @async
+   * @param {object} filter
+   * @return {JobStatsRow[]}
+   */
   static async fetchJobStats (filter) {
     return await Promise.all(
       Object.values(JobStatus).map(async status => {
@@ -134,6 +222,11 @@ class JobBase extends DatabaseModel {
     )
   }
 
+  /** Fetch child and descendant stats for this job. The data are stored in
+   *  {childStats} and {descendantStats}.
+   * @async
+   * @returns {JobBase} The same job instance
+   */
   async fetchStats () {
     const promises = []
     promises.push(this.constructor.fetchJobStats({ parentId: this.id }))
@@ -150,22 +243,51 @@ class JobBase extends DatabaseModel {
     return this
   }
 
+  /** Override of DatabaseModel's create method. Spawns the job into the
+   *  communication topic given.
+   *
+   * @async
+   * @param {bool} preventSpawn Will not spawn the job if true
+   * @default false
+   * @returns {JobBase} The same job instance
+   */
   async create (preventSpawn = false) {
     await super.create()
-    if (
-      this.get('status') === this.constructor.Status.trigger &&
-      !preventSpawn
-    ) {
+    if (this.get('status') === JobStatus.trigger && !preventSpawn) {
       await this.spawn()
     }
     return this
   }
 
+  /** Override of DatabaseModel's update method. Sets value of
+   *  {@link JobBase#updatedAt} to current date time before saving the instance
+   *  fields.
+   *
+   * @async
+   * @returns {JobBase} The same job instance
+   */
   async update () {
     this.updatedAt = new Date()
     return await super.update()
   }
 
+  /** Override of DatabaseModel's save method. Calculates value of
+   * {@link JobBase#live} property.
+   * @async
+   * @returns {JobBase} The same instance
+   */
+  async save () {
+    this.live = JobRunning.filter.includes(this.get('status'))
+    return await super.save()
+  }
+
+  /** Spawn execution of this job. This will run the cloud job in the
+   *  infrastructure by pushing a message about the job into the job's topic
+   *  unless `cloudJobs.local` is `true`. Then it will attempt to run the job
+   *  locally as worker pool. Can only spawn jobs with IDs.
+   *
+   * @returns {JobBase} The same job instance
+   */
   async spawn () {
     if (!this.pk) {
       throw new SpawnError('Cannot spawn job without ID.')
@@ -180,8 +302,26 @@ class JobBase extends DatabaseModel {
     return this
   }
 
+  /** Spawn child of the job. This child will be treated as a part of the job's
+   *  workload. The parent job will be considered alive until all the children
+   *  are successful or at least one fails. This applies to childrens
+   *  descendants as well.
+   *
+   * @async
+   * @param {object} jobProps Job model properties, the same you pass to the
+   *  constructor model.
+   * @returns {JobBase} The child job instance
+   * @example
+   *  job.spawnChild({
+   *    type: 'user:fetch:profile',
+   *    props: {
+   *      uri: 'http://example.com/user/1
+   *    }
+   *  })
+   */
   async spawnChild (jobProps) {
-    const childJob = new Job({
+    const Model = this.constructor
+    const childJob = new Model({
       ...jobProps,
       status: JobStatus.trigger,
       props: {
@@ -197,11 +337,10 @@ class JobBase extends DatabaseModel {
     return childJob
   }
 
-  async save () {
-    this.live = JobRunning.filter.includes(this.get('status'))
-    return await super.save()
-  }
-
+  /** Terminate the job execution
+   * @async
+   * @returns {JobBase} The same instance
+   */
   async stop () {
     this.status = JobStatus.stopped
     // @TODO: Stop descendants
@@ -210,6 +349,13 @@ class JobBase extends DatabaseModel {
     return await this.save()
   }
 
+  /** Retry the job execution. This method is used on failure. It checks if
+   *  number of attempts is withing tolerance and re-spawns the job execution.
+   *
+   * @async
+   * @throws {RetryError} In case the job reaches retry limit
+   * @returns {JobBase} The same instance
+   */
   async retry () {
     if (this.get('retried') < this.get('maxRetries')) {
       this.retried = (this.retried || 0) + 1
@@ -221,6 +367,9 @@ class JobBase extends DatabaseModel {
   }
 }
 
+/** Convenience class for people in hurry. Implements JobBase.
+ * @augments {JobBase}
+ */
 class Job extends JobBase {}
 
 Job.register()

@@ -61,14 +61,56 @@ const resolveJobHandlers = (work, jobType) => {
   throw new RuntimeError(`No handler for "${jobType}"`)
 }
 
+/** Workload description. It
+ *  can either be a function or status handlers.
+ *
+ * @typedef {Object} WorkloadSpecs
+ * @example
+ *  // Handle any job type
+ *  async job => { \/**\/ }
+ * @example
+ *  // Handle specific job types
+ *  {
+ *    'user:fetch:list:overview': async job => { \/**\/ },
+ *    'user:fetch:list:page': async job => { \/**\/ },
+ *    'user:fetch:profile': async job => { \/**\/ },
+ *  }
+ * @example
+ *  // Handle any job type and provide status handlers
+ *  {
+ *    onRequest: async job => { \/**\/ },
+ *    onSuccess: async job => { \/**\/ },
+ *    onFailure: async job => { \/**\/ },
+ *  }
+ * @example
+ *  // Handle specific job types and provide status handlers
+ *  {
+ *    'user:fetch:list:overview': {
+ *      onRequest: async job => { \/**\/ },
+ *      onSuccess: async job => { \/**\/ },
+ *    },
+ *    'user:fetch:list:page': async job => { \/**\/ },
+ *    'user:fetch:profile': async job => { \/**\/ },
+ *  }
+ **/
+
+/**
+ * @typedef {object} SubscriptionSpecs
+ * @prop {string} filename The entrypoint filename.
+ *  Required to run the job locally.
+ * @prop {Class} model Job model used to pass job instances. By default it is
+ *  {@link Job}.
+ * @prop {WorkloadSpecs} tasks Logic defining the workload done under this
+ *  subscription
+ * @prop {string} topic Subscription topic, required to
+ *  run jobs locally.
+ */
+
 /**
  * Creates subscription that can be exported as the cloud function entry
  * module. Use "runJob" as the entrypoint.
  *
- * @param {Object} subscriptionSpecs
- * @param {Object|Function} subscriptionSpecs.tasks
- * @param {string} subscriptionSpecs.topic
- * @param {string} subscriptionSpecs.filename
+ * @param {SubscriptionSpecs} subscriptionSpecs Subscription specification
  * @returns {Object} Use this as module.exports. It contains "runJob", the entrypoint.
  */
 const createSubscription = ({ tasks, topic, filename }) => {

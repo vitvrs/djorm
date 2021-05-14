@@ -1,7 +1,21 @@
+/** Failures related to djorm-cloud-jobs
+ * @augments {Error}
+ */
 class JobError extends Error {}
 
+/** Failures when retrying job execution
+ * @augments {JobError}
+ */
 class RetryError extends JobError {}
+
+/** failures when spawning job
+ * @augments {joberror}
+ */
 class SpawnError extends JobError {}
+
+/** Failures during job run time
+ * @augments {JobError}
+ */
 class RuntimeError extends JobError {}
 
 function formatError (e) {

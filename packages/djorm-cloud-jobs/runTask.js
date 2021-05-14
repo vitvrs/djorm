@@ -36,7 +36,7 @@ const closeupParent = async (job, stage) => {
  * @param task.onRequest {Function}
  * @param task.onSuccess {Function}
  * @param task.onFailure {Function}
- * @param {Job} job
+ * @param {JobBase} job
  * @param stage {string}
  * @returns {Object}
  */
@@ -56,7 +56,7 @@ async function runStage (handlers, job, stage, ...args) {
 /** Run task through usual async process stages
  * @async
  * @param task {Object} Developer defined task handlers
- * @param job {Job}
+ * @param job {JobBase}
  * @param topic {string} PubSub topic
  * @returns void
  */
