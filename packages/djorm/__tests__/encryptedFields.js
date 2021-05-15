@@ -8,7 +8,7 @@ describe('env config with sqlite', () => {
   it('password field stores hashed value', async () => {
     const user = new app.User({
       name: 'Jon',
-      password: app.User.password.getPasswordHash('4151^xiw)fd4fz@!')
+      password: '4151^xiw)fd4fz@!'
     })
     await user.save()
     expect(user.password).toBe(
@@ -19,7 +19,7 @@ describe('env config with sqlite', () => {
   it('encrypted text field stores encrypted value', async () => {
     const user = new app.User({
       name: 'Jon',
-      password: app.User.password.getPasswordHash('4151^xiw)fd4fz@!'),
+      password: 'hello',
       privateKey: '4151^xiw)fd4fz@!'
     })
     await user.save()
