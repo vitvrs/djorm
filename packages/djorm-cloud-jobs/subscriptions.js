@@ -1,10 +1,10 @@
 const { error, info } = require('djorm/logger')
-const { Job } = require('./models')
+const { getModel } = require('djorm/models')
+const { getSettings, init, shutdown } = require('djorm/config')
 const { parseMessage } = require('./pubsub')
 const { registerEntrypoint } = require('./entry')
 const { runTask } = require('./runTask')
 const { RuntimeError } = require('./errors')
-const { init, shutdown } = require('djorm/config')
 
 /**
  * Creates job process wrapper which initializes djorm, takes care of it's
@@ -98,8 +98,6 @@ const resolveJobHandlers = (work, jobType) => {
  * @typedef {object} SubscriptionSpecs
  * @prop {string} filename The entrypoint filename.
  *  Required to run the job locally.
- * @prop {Class} model Job model used to pass job instances. By default it is
- *  {@link Job}.
  * @prop {WorkloadSpecs} tasks Logic defining the workload done under this
  *  subscription
  * @prop {string} topic Subscription topic, required to
@@ -113,10 +111,10 @@ const resolveJobHandlers = (work, jobType) => {
  * @param {SubscriptionSpecs} subscriptionSpecs Subscription specification
  * @returns {Object} Use this as module.exports. It contains "runJob", the entrypoint.
  */
-const createSubscription = ({ filename, model, tasks, topic }) => {
+const createSubscription = ({ filename, tasks, topic }) => {
   /** Listen to PubSub messages for car configurations to render */
   async function subscribeToMessages (message, context) {
-    const Model = model || Job
+    const Model = getModel(getSettings().cloudJobs.model || 'Job')
     const job = Model.from(parseMessage(message))
     if (job) {
       if (!job.id) {
