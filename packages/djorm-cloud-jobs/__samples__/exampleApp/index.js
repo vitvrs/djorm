@@ -5,7 +5,7 @@ const { configure } = require('djorm/config')
 const tmpFile = { name: '/tmp/djorm-cloud-jobs-example-app.sqlite' }
 
 configure({
-  apps: ['djorm-cloud-jobs/pubsub'],
+  apps: ['djorm-cloud-jobs/config'],
   databases: {
     default: {
       driver: 'djorm-db-sqlite',

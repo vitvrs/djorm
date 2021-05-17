@@ -22,8 +22,8 @@ const runLocalJob = async (topic, message) => {
       error(e)
       error(e.stdout)
       error(e.stderr)
-      jobPool.terminate()
     })
+  jobPool.terminate()
 }
 
 module.exports = {
