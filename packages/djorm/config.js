@@ -12,7 +12,12 @@ let currentConfig = {
 const configure = config => {
   currentConfig = { ...currentConfig, ...config }
 }
-const getSettings = () => currentConfig
+const getSettings = (configPath, defaultValue = null) => {
+  if (!configPath) {
+    return currentConfig
+  }
+  return require('jsonpath').value(currentConfig, configPath) || defaultValue
+}
 
 const init = async () => {
   const settings = getSettings()

@@ -114,8 +114,9 @@ const resolveJobHandlers = (work, jobType) => {
 const createSubscription = ({ filename, tasks, topic }) => {
   /** Listen to PubSub messages for car configurations to render */
   async function subscribeToMessages (message, context) {
-    const Model = getModel(getSettings().cloudJobs.model || 'Job')
-    const job = Model.from(parseMessage(message))
+    const job = getModel(getSettings('cloudJobs.model', 'Job')).from(
+      parseMessage(message)
+    )
     if (job) {
       if (!job.id) {
         await job.create(true)
