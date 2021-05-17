@@ -113,10 +113,11 @@ const resolveJobHandlers = (work, jobType) => {
  * @param {SubscriptionSpecs} subscriptionSpecs Subscription specification
  * @returns {Object} Use this as module.exports. It contains "runJob", the entrypoint.
  */
-const createSubscription = ({ tasks, topic, filename }) => {
+const createSubscription = ({ filename, model, tasks, topic }) => {
   /** Listen to PubSub messages for car configurations to render */
   async function subscribeToMessages (message, context) {
-    const job = Job.from(parseMessage(message))
+    const Model = model || Job
+    const job = Model.from(parseMessage(message))
     if (job) {
       if (!job.id) {
         await job.create(true)
