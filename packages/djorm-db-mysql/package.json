@@ -1,6 +1,6 @@
 {
   "name": "djorm-db-mysql",
-  "version": "0.1.7-alpha.0",
+  "version": "0.1.7-alpha.1",
   "description": "MySQL bindings for djorm",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
