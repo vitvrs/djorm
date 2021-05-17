@@ -29,6 +29,7 @@ const shutdown = async () => {
   const settings = getSettings()
   require('./init/apps').shutdown(settings)
   require('./init/logger').shutdown()
+  await require('./init/databases').shutdown()
 }
 
 module.exports = {

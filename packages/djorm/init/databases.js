@@ -6,4 +6,9 @@ const init = async databases => {
   )
 }
 
-module.exports = { init }
+const shutdown = async () => {
+  const { disconnect } = require('../db/DatabasePool')
+  await disconnect()
+}
+
+module.exports = { init, shutdown }
