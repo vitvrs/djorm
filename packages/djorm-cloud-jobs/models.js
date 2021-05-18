@@ -81,8 +81,8 @@ class JobBase extends DatabaseModel {
 
   /** @type {JobBase} parent Parent job foreign key */
   static parent = new ForeignKey({
-    model: 'Job',
-    parentModel: 'Job',
+    model: getSettings('cloudJobs.model', 'Job'),
+    parentModel: getSettings('cloudJobs.model', 'Job'),
     keyField: 'parentId',
     keyFieldType: CharField,
     relatedName: 'children'
@@ -90,8 +90,8 @@ class JobBase extends DatabaseModel {
 
   /** @type {JobBase} parent Root job foreign key */
   static root = new ForeignKey({
-    model: 'Job',
-    parentModel: 'Job',
+    model: getSettings('cloudJobs.model', 'Job'),
+    parentModel: getSettings('cloudJobs.model', 'Job'),
     keyField: 'rootId',
     keyFieldType: CharField,
     relatedName: 'descendants'
