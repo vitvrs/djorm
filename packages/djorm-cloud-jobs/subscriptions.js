@@ -32,7 +32,11 @@ function createProcessWrapper (fn) {
         process.exit(255)
       }
     } finally {
-      await shutdown()
+      // Do not shutdown in test environment
+      const config = getSettings('cloudJobs', {})
+      if (!(config.local && !config.pool)) {
+        await shutdown()
+      }
     }
   }
 }
