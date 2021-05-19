@@ -38,11 +38,13 @@ class Database extends PropModel {
   }
 
   async connect () {
-    this.connecting = true
-    trace(`Connecting to ${this.props.driver} database`)
-    await this.connectDb()
-    this.connecting = false
-    debug(`Connected to ${this.props.driver} database`)
+    if (!this.connected) {
+      this.connecting = true
+      trace(`Connecting to ${this.props.driver} database`)
+      await this.connectDb()
+      this.connecting = false
+      debug(`Connected to ${this.props.driver} database`)
+    }
     this.resolveQueue()
   }
 
