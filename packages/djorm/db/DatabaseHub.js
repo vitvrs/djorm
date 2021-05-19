@@ -23,12 +23,6 @@ class DatabaseHub {
     await this.databases[dbName].connect()
   }
 
-  async connectAll () {
-    await Promise.all(
-      Object.keys(this.databases).map(dbName => this.connectDbInstance(dbName))
-    )
-  }
-
   async disconnect () {
     await Promise.all(Object.values(this.databases).map(db => db.disconnect()))
     this.databases = {}
