@@ -18,6 +18,8 @@ const getModelName = model => {
   return modelName
 }
 
+const getAllModels = () => Object.values(models)
+const getAllRelationships = () => Object.values(refs)
 const getModels = () => models
 const getRelationships = () => refs
 const getRelationRefName = (modelName, relatedName) =>
@@ -92,6 +94,8 @@ const clearModels = () => {
 
 module.exports = {
   clearModels,
+  getAllModels,
+  getAllRelationships,
   getModel,
   getModelName,
   getModels,

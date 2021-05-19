@@ -21,6 +21,7 @@
     "djorm-cloud-jobs": "file:packages/djorm-cloud-jobs",
     "djorm-db-gcp-bigquery": "file:packages/djorm-db-gcp-bigquery",
     "djorm-db-gcp-datastore": "file:packages/djorm-db-gcp-datastore",
+    "djorm-db-migrations": "file:packages/djorm-db-migrations",
     "djorm-db-mysql": "file:packages/djorm-db-mysql",
     "djorm-db-sql": "file:packages/djorm-db-sql",
     "djorm-db-sqlite": "file:packages/djorm-db-sqlite",
