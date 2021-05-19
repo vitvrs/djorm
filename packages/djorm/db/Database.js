@@ -58,8 +58,10 @@ class Database extends PropModel {
 
   async disconnect () {
     this.cancelDisconnectPlan()
-    await this.disconnectDb()
-    debug(`Disconnected from ${this.props.driver} database`)
+    if (this.connected) {
+      await this.disconnectDb()
+      debug(`Disconnected from ${this.props.driver} database`)
+    }
   }
 
   async disconnectDb () {
