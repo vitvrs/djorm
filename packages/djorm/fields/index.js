@@ -2,6 +2,7 @@ const { Field } = require('../models/AttrModel')
 
 module.exports = {
   ...require('./ArrayField'),
+  ...require('./AutoField'),
   ...require('./BooleanField'),
   ...require('./CharField'),
   ...require('./DateField'),
@@ -12,6 +13,7 @@ module.exports = {
   ...require('./IntegerField'),
   ...require('./JsonField'),
   ...require('./ObjectField'),
+  ...require('./ObjectArrayField'),
   ...require('./PasswordField'),
   ...require('./PositiveIntegerField'),
   ...require('./TextField'),

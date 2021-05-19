@@ -3,6 +3,9 @@ const { Field } = require('../models/AttrModel')
 
 class TrivialField extends Field {
   static choices = new Field()
+  static unique = new Field({ default: false })
+  static primary = new Field({ default: false })
+  static null = new Field({ default: false })
   db = true
   indexable = true
 

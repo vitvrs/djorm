@@ -1,0 +1,25 @@
+{
+  "name": "djorm-db-migrations",
+  "version": "0.1.7-alpha.4",
+  "description": "Generate and execute database migrations.",
+  "author": "Pavel Žák <pavel@zak.global>",
+  "homepage": "https://github.com/just-paja/djorm#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "files": [
+    "*.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/just-paja/djorm.git"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "parser": "babel-eslint"
+  },
+  "bugs": {
+    "url": "https://github.com/just-paja/djorm/issues"
+  }
+}
