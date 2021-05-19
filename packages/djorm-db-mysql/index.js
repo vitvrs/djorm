@@ -37,7 +37,7 @@ class MysqlDatabase extends Database {
     this.connected = true
   }
 
-  async disconnect () {
+  async disconnectDb () {
     await promise(this.db.end, this.db)
     this.db = null
     this.connected = false

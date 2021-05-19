@@ -7,8 +7,7 @@ const init = async databases => {
 }
 
 const shutdown = async () => {
-  const { disconnect } = require('../db/DatabaseHub')
-  await disconnect()
+  await require('../db/DatabaseHub').disconnect()
 }
 
 module.exports = { init, shutdown }

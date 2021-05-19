@@ -2,13 +2,13 @@ class PropModel {
   constructor (props = {}, negatj = false) {
     this.props = props
   }
+
+  getProp (name, defaultValue) {
+    return this.props[name] || defaultValue
+  }
 }
 
 class ImmutablePropModel extends PropModel {
-  getProp (name) {
-    return this.props[name]
-  }
-
   setProp (name, value, mutate = false) {
     if (mutate) {
       this.props[name] = value

@@ -29,7 +29,7 @@ class SqliteDatabase extends Database {
     this.connected = true
   }
 
-  async disconnect () {
+  async disconnectDb () {
     this.db = null
     this.connected = false
   }

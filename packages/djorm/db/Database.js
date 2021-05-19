@@ -6,6 +6,7 @@ const { debug, trace } = require('../logger')
 class Database extends PropModel {
   connected = false
   connecting = false
+  disconnectTimeout = null
   Mapper = DatabaseMapper
 
   constructor (...args) {
@@ -16,6 +17,20 @@ class Database extends PropModel {
   static resolveDriver (dbConfig) {
     const Model = require(dbConfig.driver)
     return new Model(dbConfig)
+  }
+
+  planDisconnect () {
+    this.cancelDisconnectPlan()
+    this.disconnectTimeout = setTimeout(
+      () => this.disconnect(),
+      this.getProp('inactiveTimeout', 300)
+    )
+  }
+
+  cancelDisconnectPlan () {
+    if (this.disconnectTimeout) {
+      clearTimeout(this.disconnectTimeout)
+    }
   }
 
   async connectDb () {
@@ -40,6 +55,12 @@ class Database extends PropModel {
   }
 
   async disconnect () {
+    this.cancelDisconnectPlan()
+    await this.disconnectDb()
+    debug(`Disconnected from ${this.props.driver} database`)
+  }
+
+  async disconnectDb () {
     throw new NotImplemented()
   }
 
@@ -58,13 +79,17 @@ class Database extends PropModel {
   async query (str) {
     await this.waitForConnection()
     debug(str)
-    return await this.queryDb(str)
+    const res = await this.queryDb(str)
+    this.planDisconnect()
+    return res
   }
 
   async exec (str) {
     await this.waitForConnection()
     debug(str)
-    return await this.execDb(str)
+    const res = await this.execDb(str)
+    this.planDisconnect()
+    return res
   }
 
   async execDb () {
