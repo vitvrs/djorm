@@ -1,4 +1,4 @@
-const pool = require('djorm/db/DatabasePool')
+const hub = require('djorm/db/DatabaseHub')
 const fields = require('djorm/fields')
 
 const { DatabaseModel } = require('djorm/models')
@@ -28,7 +28,7 @@ describe('mysql select with users-trivial', () => {
   })
 
   afterEach(async () => {
-    await pool.disconnect()
+    await hub.disconnect()
   })
 
   it('selects all users', async () => {

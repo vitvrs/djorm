@@ -1,6 +1,6 @@
 const fields = require('djorm/fields')
 const path = require('path')
-const pool = require('djorm/db/DatabasePool')
+const hub = require('djorm/db/DatabaseHub')
 
 const { setupDb } = require('__jest__/datastore')
 const { DatabaseModel } = require('djorm/models')
@@ -29,7 +29,7 @@ describe.skip('datastore select', () => {
   })
 
   afterEach(async () => {
-    await pool.disconnect()
+    await hub.disconnect()
   })
 
   it('selects all users', async () => {

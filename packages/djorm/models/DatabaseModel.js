@@ -1,7 +1,7 @@
 const { DatabaseModelBase } = require('./DatabaseModelBase')
 const { Delete } = require('../db/Delete')
 const { ForeignKey } = require('../fields/ForeignKey')
-const { getDb } = require('../db/DatabasePool')
+const { getDb } = require('../db/DatabaseHub')
 const { Insert } = require('../db/Insert')
 const { ObjectManager } = require('./ObjectManager')
 const { FieldError, ObjectNotFound, UnknownField } = require('../errors')

@@ -1,5 +1,5 @@
 const path = require('path')
-const pool = require('djorm/db/DatabasePool')
+const hub = require('djorm/db/DatabaseHub')
 const SqliteDatabase = require('..')
 const fields = require('djorm/fields')
 const tmp = require('tmp-promise')
@@ -17,9 +17,9 @@ const setupDb = dbName => {
     const db = new SqliteDatabase({
       path: tmpFile.path
     })
-    const p = new pool.DatabasePool()
+    const p = new hub.DatabaseHub()
     await p.connectDb(db)
-    pool.instance = p
+    hub.instance = p
   })
 
   afterEach(async () => {
@@ -87,7 +87,7 @@ describe('select', () => {
     })
 
     afterEach(async () => {
-      await pool.disconnect()
+      await hub.disconnect()
     })
 
     it('selects all users', async () => {
@@ -344,7 +344,7 @@ describe('select', () => {
     })
 
     afterEach(async () => {
-      await pool.disconnect()
+      await hub.disconnect()
     })
 
     it('selects user roles', async () => {

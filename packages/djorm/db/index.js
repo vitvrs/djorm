@@ -2,7 +2,7 @@ module.exports = {
   ...require('./And'),
   ...require('./ComparisonOperator'),
   ...require('./Count'),
-  ...require('./DatabasePool'),
+  ...require('./DatabaseHub'),
   ...require('./Delete'),
   ...require('./Insert'),
   ...require('./LogicOperator'),

@@ -1,7 +1,7 @@
 const { Database } = require('./Database')
 const { DatabaseError } = require('./errors')
 
-class DatabasePool {
+class DatabaseHub {
   databases = {}
 
   configDb (db, dbName = 'default') {
@@ -43,18 +43,18 @@ class DatabasePool {
   }
 }
 
-let poolSingleton = new DatabasePool()
+let hubSingleton = new DatabaseHub()
 
 module.exports = {
-  DatabasePool,
-  connect: async (...args) => await poolSingleton.connectDb(...args),
-  disconnect: async () => await poolSingleton.disconnect(),
-  getDb: name => poolSingleton.getDb(name),
-  configDb: (db, dbName) => poolSingleton.configDb(db, dbName),
+  DatabaseHub,
+  connect: async (...args) => await hubSingleton.connectDb(...args),
+  disconnect: async () => await hubSingleton.disconnect(),
+  getDb: name => hubSingleton.getDb(name),
+  configDb: (db, dbName) => hubSingleton.configDb(db, dbName),
   get instance () {
-    return poolSingleton
+    return hubSingleton
   },
-  set instance (pool) {
-    poolSingleton = pool
+  set instance (hub) {
+    hubSingleton = hub
   }
 }

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 const path = require('path')
-const pool = require('djorm/db/DatabasePool')
+const hub = require('djorm/db/DatabaseHub')
 const MysqlDatabase = require('..')
 const tmp = require('tmp-promise')
 const getPort = require('get-port')
@@ -121,9 +121,9 @@ const setupDb = dbName => {
       username,
       port
     })
-    const p = new pool.DatabasePool()
+    const p = new hub.DatabaseHub()
     await p.connectDb(db)
-    pool.instance = p
+    hub.instance = p
   })
 
   afterAll(async () => {

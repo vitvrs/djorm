@@ -6,7 +6,7 @@ const findCacheDir = require('find-cache-dir')
 const fs = require('fs')
 const getPort = require('get-port')
 const path = require('path')
-const pool = require('../djorm/db/DatabasePool')
+const hub = require('../djorm/db/DatabaseHub')
 const tar = require('tar')
 
 const { Datastore } = require('@google-cloud/datastore')
@@ -177,9 +177,9 @@ const setupDb = dbPath => {
     }
     const ds = new Datastore(dsSettings)
     const db = new DatastoreDatabase(dsSettings)
-    const p = new pool.DatabasePool()
-    await p.connectDb(db)
-    pool.instance = p
+    const h = new hub.DatabaseHub()
+    await h.connectDb(db)
+    hub.instance = h
     for (const [Model, items] of Object.entries(models)) {
       for (const data of items) {
         const { id, ...fields } = data
@@ -192,7 +192,7 @@ const setupDb = dbPath => {
   })
 
   afterEach(async () => {
-    await pool.instance.disconnect()
+    await hub.instance.disconnect()
   })
 }
 
