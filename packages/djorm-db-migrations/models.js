@@ -6,6 +6,8 @@ const { ObjectArrayField } = require('djorm/fields/ObjectArrayField')
 class DatabaseMigration extends DatabaseModel {
   static identifier = new CharField({ unique: true })
   static operations = new ObjectArrayField({ objectClass: EntityOperation })
+
+  serialize () {}
 }
 
 module.exports = { DatabaseMigration }
