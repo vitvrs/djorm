@@ -1,14 +1,23 @@
 const moment = require('moment-timezone')
 
 const { TrivialField } = require('./TrivialField')
+const { ValueError } = require('../errors')
 
 /** Field used for datetime values */
 class DateTimeField extends TrivialField {
   parse (value) {
-    if (typeof value === 'string') {
-      return super.parse(moment(value).toDate())
+    if (value instanceof Date) {
+      return value
     }
-    return super.parse(value)
+    const parsed = moment(value)
+    if (!parsed.isValid()) {
+      throw new ValueError(`Value "${value}" is not a valid Date/Time`)
+    }
+    return parsed.toDate()
+  }
+
+  serialize (value) {
+    return moment(value).toISOString()
   }
 }
 

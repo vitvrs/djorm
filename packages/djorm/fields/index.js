@@ -3,6 +3,7 @@ const { Field } = require('../models/AttrModel')
 module.exports = {
   ...require('./BooleanField'),
   ...require('./CharField'),
+  ...require('./DateField'),
   ...require('./DateTimeField'),
   ...require('./FileField'),
   ...require('./ForeignKey'),
