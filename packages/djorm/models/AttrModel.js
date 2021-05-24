@@ -126,16 +126,17 @@ class AttrModel {
     return this
   }
 
-  serializeValues () {
-    return this.constructor.fieldObjects
-      .filter(([key, field]) => !field.private)
-      .reduce(
-        (aggr, [key, field]) => ({
-          ...aggr,
-          [key]: this.get(key)
-        }),
-        {}
-      )
+  toJson (includePrivate = false) {
+    return this.constructor.fieldObjects.reduce((aggr, [key, field]) => {
+      if (field.private && !includePrivate) {
+        return aggr
+      }
+      const value = field.serialize(this.get(key))
+      if (typeof value !== 'undefined') {
+        aggr[key] = value
+      }
+      return aggr
+    }, {})
   }
 
   async validate () {

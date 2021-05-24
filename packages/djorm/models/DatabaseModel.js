@@ -174,7 +174,7 @@ class DatabaseModel extends DatabaseModelBase {
       const values = obj.getOwnDatabaseFields().reduce(
         (aggr, [key, field]) => ({
           ...aggr,
-          [key]: field.serialize(this.get(key))
+          [key]: field.toDb(this.get(key))
         }),
         {}
       )
