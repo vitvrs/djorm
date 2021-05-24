@@ -173,6 +173,10 @@ class Field extends GenericField {
     return this.parse(value)
   }
 
+  toDb (value) {
+    return this.serialize(value)
+  }
+
   serialize (value) {
     return value
   }
