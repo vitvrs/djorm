@@ -16,6 +16,10 @@ class DateTimeField extends TrivialField {
     return parsed.toDate()
   }
 
+  toDb (value) {
+    return value
+  }
+
   serialize (value) {
     return moment(value).toISOString()
   }

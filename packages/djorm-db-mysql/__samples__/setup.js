@@ -30,7 +30,8 @@ const setupDb = dbName => {
         '[mysqld]',
         `datadir=${dataDir.path}`,
         `socket=${sockFile.path}`,
-        `port=${port}`
+        `port=${port}`,
+        'default-time-zone = "+00:00"'
       ].join('\n')
     )
   }
@@ -119,7 +120,8 @@ const setupDb = dbName => {
     const db = new MysqlDatabase({
       database: databaseName,
       username,
-      port
+      port,
+      timezone: 'Z'
     })
     const p = new hub.DatabaseHub()
     await p.connectDb(db)

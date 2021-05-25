@@ -31,7 +31,8 @@ class MysqlDatabase extends Database {
       password: this.props.password,
       socketPath: this.props.socketPath,
       user: this.props.username,
-      port: this.props.port
+      port: this.props.port,
+      timezone: this.props.timezone
     })
     await promise(this.db.connect, this.db)
     this.connected = true

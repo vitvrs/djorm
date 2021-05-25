@@ -1,6 +1,7 @@
 const hub = require('djorm/db/DatabaseHub')
 const fields = require('djorm/fields')
 
+const { advanceTo, clear } = require('jest-date-mock')
 const { DatabaseModel } = require('djorm/models')
 const { setupDb } = require('../__samples__/setup')
 const { TargetStream } = require('__mocks__/TargetStream')
@@ -10,6 +11,10 @@ describe('mysql select with users-trivial', () => {
 
   setupDb('users-trivial.sql')
 
+  beforeEach(() => {
+    advanceTo(new Date(Date.UTC(2021, 4, 25, 0, 0, 0)))
+  })
+
   beforeEach(async () => {
     class User extends DatabaseModel {
       static id = new fields.PositiveIntegerField()
@@ -17,9 +22,15 @@ describe('mysql select with users-trivial', () => {
       static email = new fields.CharField()
       static superuser = new fields.BooleanField()
       static inactive = new fields.BooleanField()
+      static createdAt = new fields.DateTimeField()
 
       static meta = class {
         static modelName = 'User'
+      }
+
+      async create () {
+        this.set('createdAt', new Date())
+        return super.create()
       }
     }
 
@@ -29,12 +40,14 @@ describe('mysql select with users-trivial', () => {
 
   afterEach(async () => {
     await hub.disconnect()
+    clear()
   })
 
   it('selects all users', async () => {
     const result = await models.User.objects.all()
     expect(result).toEqual([
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
         id: 1,
         name: 'Harmony Vasquez',
         email: 'harmony.vasquez@gmail.com',
@@ -42,6 +55,7 @@ describe('mysql select with users-trivial', () => {
         inactive: false
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
         id: 2,
         name: 'Jasper Fraley',
         email: 'jasper.fraley@seznam.cz',
@@ -49,6 +63,7 @@ describe('mysql select with users-trivial', () => {
         inactive: false
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 22, 22, 22)),
         id: 3,
         name: 'Neil Henry',
         email: 'neil.henry@iol.com',
@@ -56,6 +71,7 @@ describe('mysql select with users-trivial', () => {
         inactive: true
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
         id: 4,
         name: 'Merver Chin',
         email: 'merver.chin@gmail.com',
@@ -77,6 +93,7 @@ describe('mysql select with users-trivial', () => {
 
     expect(dest.data).toEqual([
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
         id: 1,
         name: 'Harmony Vasquez',
         email: 'harmony.vasquez@gmail.com',
@@ -84,6 +101,7 @@ describe('mysql select with users-trivial', () => {
         inactive: false
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
         id: 2,
         name: 'Jasper Fraley',
         email: 'jasper.fraley@seznam.cz',
@@ -91,6 +109,7 @@ describe('mysql select with users-trivial', () => {
         inactive: false
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 22, 22, 22)),
         id: 3,
         name: 'Neil Henry',
         email: 'neil.henry@iol.com',
@@ -98,6 +117,7 @@ describe('mysql select with users-trivial', () => {
         inactive: true
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
         id: 4,
         name: 'Merver Chin',
         email: 'merver.chin@gmail.com',
@@ -111,6 +131,7 @@ describe('mysql select with users-trivial', () => {
     const result = await models.User.objects.orderBy('-name').all()
     expect(result).toEqual([
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 22, 22, 22)),
         id: 3,
         name: 'Neil Henry',
         email: 'neil.henry@iol.com',
@@ -118,6 +139,7 @@ describe('mysql select with users-trivial', () => {
         inactive: true
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
         id: 4,
         name: 'Merver Chin',
         email: 'merver.chin@gmail.com',
@@ -125,6 +147,7 @@ describe('mysql select with users-trivial', () => {
         inactive: false
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
         id: 2,
         name: 'Jasper Fraley',
         email: 'jasper.fraley@seznam.cz',
@@ -132,6 +155,7 @@ describe('mysql select with users-trivial', () => {
         inactive: false
       }),
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
         id: 1,
         name: 'Harmony Vasquez',
         email: 'harmony.vasquez@gmail.com',
@@ -145,6 +169,7 @@ describe('mysql select with users-trivial', () => {
     const result = await models.User.objects.filter({ superuser: true }).first()
     expect(result).toEqual(
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
         id: 2,
         name: 'Jasper Fraley',
         email: 'jasper.fraley@seznam.cz',
@@ -158,6 +183,7 @@ describe('mysql select with users-trivial', () => {
     const result = await models.User.objects.filter({ superuser: true }).last()
     expect(result).toEqual(
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
         id: 4,
         name: 'Merver Chin',
         email: 'merver.chin@gmail.com',
@@ -179,6 +205,7 @@ describe('mysql select with users-trivial', () => {
       await models.User.objects.filter({ name: 'Test Runner' }).first()
     ).toEqual(
       new models.User({
+        createdAt: new Date(Date.UTC(2021, 4, 25, 0, 0, 0)),
         id: 5,
         name: 'Test Runner',
         email: 'test.runner@gmail.com',
@@ -213,6 +240,7 @@ describe('mysql select with users-trivial', () => {
     await user.save()
     expect(await models.User.objects.filter({ id: 1 }).first()).toEqual(
       new models.User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
         id: 1,
         name: 'Test Runner 2',
         email: 'harmony.vasquez@gmail.com',
