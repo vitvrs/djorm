@@ -6,6 +6,9 @@ const { ValueError } = require('../errors')
 /** Field used for datetime values */
 class DateTimeField extends TrivialField {
   parse (value) {
+    if (!value) {
+      return value
+    }
     if (value instanceof Date) {
       return value
     }
