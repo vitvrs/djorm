@@ -11,9 +11,12 @@ class DatastoreDatabase extends Database {
   get config () {
     return {
       apiEndpoint: this.props.apiEndpoint,
-      credentials: this.props.credentials,
       namespace: this.namespace,
-      projectId: this.props.projectId
+      projectId: this.props.projectId,
+      credentials: {
+        client_email: this.props.username,
+        private_key: this.props.password
+      }
     }
   }
 

@@ -37,12 +37,15 @@ class BigQueryDatabase extends Database {
   get config () {
     return {
       projectId: this.props.projectId,
-      credentials: this.props.credentials
+      credentials: {
+        client_email: this.props.username,
+        private_key: this.props.password
+      }
     }
   }
 
   async connectDb () {
-    this.db = new BigQuery(this.cfg)
+    this.db = new BigQuery(this.config)
     this.connected = true
   }
 
