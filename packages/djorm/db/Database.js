@@ -19,6 +19,10 @@ class Database extends PropModel {
     return new Model(dbConfig)
   }
 
+  getSchema () {
+    return this.props.schema
+  }
+
   planDisconnect () {
     this.cancelDisconnectPlan()
     this.disconnectTimeout = setTimeout(

@@ -4,7 +4,7 @@ const { BigQuery } = require('@google-cloud/bigquery')
 
 /** @typedef BigQueryDatabaseConfig
  * @property {string} driver      Driver to use, 'djorm-db-gcp-bigquery'
- * @property {string} [dataset]   Dataset name to use
+ * @property {string} [schema]   Dataset name to use
  * @property {string} [location]  [BigQuery dataset location](https://cloud.google.com/bigquery/docs/locations) used when Djorm creates datasets. Uses BigQuery default if omitted.
  * @property {string} [password]  Password used to authenticate against BigQuery. It is read from environment if omitted.
  * @property {string} [projectId] Djorm will operate on this project ID. It is read from environment if omitted.
@@ -16,7 +16,7 @@ const { BigQuery } = require('@google-cloud/bigquery')
  *   databases: {
  *     default: {
  *       driver: 'djorm-db-gcp-bigquery',
- *       dataset: 'my-dataset',
+ *       schema: 'my-dataset',
  *       location: 'EU',
  *       password: '-----BEGIN PRIVATE KEY-----\nmy-private-key...',
  *       projectId: 'my-project-id',

@@ -10,6 +10,8 @@ const { Relation } = require('../fields/Relation')
 const { Update } = require('../db/Update')
 const { isAbstract, getModelName, getRelationship } = require('./ModelRegistry')
 
+const nonEmpty = item => Boolean(item)
+
 class DatabaseModel extends DatabaseModelBase {
   static NotFound = ObjectNotFound
   static pkName = 'id'
@@ -33,7 +35,12 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   static get table () {
-    return this.tableName || getModelName(this).toLowerCase()
+    return [
+      this.db.getSchema(),
+      this.tableName || getModelName(this).toLowerCase()
+    ]
+      .filter(nonEmpty)
+      .join('.')
   }
 
   static get relationFields () {
