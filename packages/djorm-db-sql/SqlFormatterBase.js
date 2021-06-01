@@ -24,26 +24,30 @@ class SqlFormatterBase extends QueryFormatter {
       .join(' ')
   }
 
-  formatIdentifier (identifier) {
+  formatIdentifier (identifier, withSchema = false) {
     if (identifier instanceof QueryIdentifier) {
-      const name = this.formatSafeName(identifier.name)
+      const name = this.formatSafePath(identifier.name, withSchema)
       return identifier.alias ? this.formatAlias(name, identifier.alias) : name
     }
-    return this.formatSafeName(identifier)
+    return this.formatSafePath(identifier, withSchema)
   }
 
   formatSafeName (sqlIdentifier) {
-    return sqlIdentifier
-      .split('.')
-      .map(name => `\`${name}\``)
-      .join('.')
+    return `\`${sqlIdentifier}\``
+  }
+
+  formatSafePath (sqlIdentifier, withSchema = false) {
+    const parts = sqlIdentifier.split('.')
+    return withSchema
+      ? parts.map(this.formatSafeName).join('.')
+      : this.formatSafeName(parts[parts.length - 1])
   }
 
   formatIdentifierLink (identifier) {
     if (identifier instanceof QueryIdentifier) {
-      return this.formatSafeName(identifier.alias || identifier.name)
+      return this.formatSafePath(identifier.alias || identifier.name)
     }
-    return this.formatSafeName(identifier)
+    return this.formatSafePath(identifier)
   }
 
   formatQueryColumn (expr, ignoreAlias = false) {

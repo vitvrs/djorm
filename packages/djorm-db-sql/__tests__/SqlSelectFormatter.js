@@ -63,6 +63,18 @@ describe('SqlSelectFormatter', () => {
       )
     })
 
+    it('strips schema from columns', () => {
+      const qs = new Select().from('my_dataset.users').select(
+        new QueryColumnGroup({
+          source: 'my_dataset.users',
+          columns: ['id', 'name']
+        })
+      )
+      expect(driver.formatQuery(qs)).toBe(
+        'SELECT `users`.`id`, `users`.`name` FROM `my_dataset`.`users`'
+      )
+    })
+
     it('formats query with one "eq" filter', () => {
       const qs = new Select()
         .from('users')

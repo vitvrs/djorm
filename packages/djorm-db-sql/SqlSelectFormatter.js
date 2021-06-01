@@ -31,7 +31,7 @@ class SqlSelectFormatter extends SqlFormatterBase {
   }
 
   formatFrom (qs) {
-    return `FROM ${this.formatIdentifier(qs.props.target)}`
+    return `FROM ${this.formatIdentifier(qs.props.target, true)}`
   }
 
   formatFunc (qs, expr) {
