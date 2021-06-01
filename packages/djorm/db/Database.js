@@ -46,6 +46,7 @@ class Database extends PropModel {
       this.connecting = true
       trace(`Connecting to ${this.props.driver} database`)
       await this.connectDb()
+      this.connected = true
       this.connecting = false
       debug(`Connected to ${this.props.driver} database`)
     }
@@ -64,6 +65,7 @@ class Database extends PropModel {
     this.cancelDisconnectPlan()
     if (this.connected) {
       await this.disconnectDb()
+      this.connected = false
       debug(`Disconnected from ${this.props.driver} database`)
     }
   }

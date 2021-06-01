@@ -26,12 +26,10 @@ class SqliteDatabase extends Database {
 
   async connectDb () {
     this.db = sqlite(this.path)
-    this.connected = true
   }
 
   async disconnectDb () {
     this.db = null
-    this.connected = false
   }
 
   async execDb (str) {

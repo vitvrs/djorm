@@ -26,12 +26,10 @@ class DatastoreDatabase extends Database {
 
   async connectDb () {
     this.db = new Datastore(this.config)
-    this.connected = true
   }
 
   async disconnectDb () {
     this.db = null
-    this.connected = false
   }
 
   async execDb (query) {

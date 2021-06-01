@@ -35,13 +35,13 @@ class MysqlDatabase extends Database {
       timezone: this.props.timezone
     })
     await promise(this.db.connect, this.db)
-    this.connected = true
   }
 
   async disconnectDb () {
-    await promise(this.db.end, this.db)
+    let db = this.db
     this.db = null
-    this.connected = false
+    await promise(db.end, db)
+    db = null
   }
 
   async execDb (str) {

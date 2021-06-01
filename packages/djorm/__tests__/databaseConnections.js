@@ -19,7 +19,7 @@ describe('database connection', () => {
     it('disconnects after some time', async () => {
       await app.User.objects.all()
       expect(getDb('default')).toHaveProperty('connected', true)
-      jest.runAllTimers()
+      await jest.runAllTimers()
       expect(getDb('default')).toHaveProperty('connected', false)
     })
   })
