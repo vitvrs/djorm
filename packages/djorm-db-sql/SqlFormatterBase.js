@@ -33,7 +33,10 @@ class SqlFormatterBase extends QueryFormatter {
   }
 
   formatSafeName (sqlIdentifier) {
-    return `\`${sqlIdentifier}\``
+    return sqlIdentifier
+      .split('.')
+      .map(name => `\`${name}\``)
+      .join('.')
   }
 
   formatIdentifierLink (identifier) {

@@ -56,6 +56,13 @@ describe('SqlSelectFormatter', () => {
       expect(driver.formatQuery(qs)).toBe('SELECT `id`, `name` FROM `users`')
     })
 
+    it('formats query with table path expression', () => {
+      const qs = new Select().from('my_dataset.users').select('id', 'name')
+      expect(driver.formatQuery(qs)).toBe(
+        'SELECT `id`, `name` FROM `my_dataset`.`users`'
+      )
+    })
+
     it('formats query with one "eq" filter', () => {
       const qs = new Select()
         .from('users')
