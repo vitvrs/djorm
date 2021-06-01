@@ -36,6 +36,7 @@ class BigQueryDatabase extends Database {
 
   get config () {
     return {
+      location: this.props.location,
       projectId: this.props.projectId,
       credentials: {
         client_email: this.props.username,
