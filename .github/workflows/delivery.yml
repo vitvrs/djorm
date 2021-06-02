@@ -33,7 +33,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          path: dist/
+          path: |
+            dist/
+            packages/djorm-docs/build
 
   publish-npm:
     name: Publish npm packages
@@ -55,3 +57,17 @@ jobs:
         run: lerna publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
+
+  publish-docs:
+    name: Publish docs
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist
+      - uses: JamesIves/github-pages-deploy-action@4.1.3
+        with:
+          branch: gh-pages
+          folder: packages/djorm-docs/build
