@@ -1,0 +1,1 @@
+(self.webpackChunkdjorm_docs=self.webpackChunkdjorm_docs||[]).push([[28],{3054:function(o){"use strict";o.exports=JSON.parse('{"allTagsPath":"/djorm/blog/tags","slug":"hola","name":"hola","count":1,"permalink":"/djorm/blog/tags/hola"}')}}]);
