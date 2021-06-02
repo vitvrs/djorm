@@ -1,4 +1,6 @@
 node_modules
 /coverage
 /dist
+/packages/djorm-docs/build
+/packages/djorm-docs/.docusaurus
 

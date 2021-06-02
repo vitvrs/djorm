@@ -21,6 +21,7 @@
     "djorm-db-mysql": "file:packages/djorm-db-mysql",
     "djorm-db-sql": "file:packages/djorm-db-sql",
     "djorm-db-sqlite": "file:packages/djorm-db-sqlite",
+    "djorm-docs": "file:packages/djorm-docs",
     "djorm-storage-gcp": "file:packages/djorm-storage-gcp",
     "djorm-storage-jest": "file:packages/djorm-storage-jest"
   },

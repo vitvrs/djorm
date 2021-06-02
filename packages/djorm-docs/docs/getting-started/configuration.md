@@ -1,7 +1,9 @@
+---
+sidebar_position: 2
+---
 # Configuration
 
-Djorm gets configured via `configure` and `boot` methods from [djorm/config](../packages/djorm/config.js).
-
+Djorm gets configured via `configure` method from [djorm/config](/docs/settings).
 
 ## Express.js
 

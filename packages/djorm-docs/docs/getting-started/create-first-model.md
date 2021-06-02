@@ -1,4 +1,7 @@
-## Create first model
+---
+sidebar_position: 3
+---
+# Create first model
 
 ```javascript
 const { DatabaseModel } = require('djorm/models')
