@@ -3,7 +3,7 @@ module.exports = {
   title: 'Djorm',
   tagline: 'Django ORM in Node.js. Again.',
   url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  baseUrl: '/djorm/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
