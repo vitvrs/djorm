@@ -738,5 +738,46 @@ describe('SqlSelectFormatter', () => {
         ].join(' ')
       )
     })
+
+    it('creates simple distinct query', () => {
+      const qs = new Select()
+        .from(User)
+        .filter({ name__notnull: false })
+        .distinct()
+      expect(driver.formatQuery(qs)).toBe(
+        [
+          'SELECT',
+          'DISTINCT',
+          '`users`.`id`,',
+          '`users`.`name`,',
+          '`users`.`role`',
+          'FROM `users`',
+          'WHERE `users`.`name` IS NULL'
+        ].join(' ')
+      )
+    })
+
+    it('creates distinct query with column list', () => {
+      const qs = new Select()
+        .from(User)
+        .filter({ name__notnull: false })
+        .distinct(
+          new QueryColumnGroup({
+            source: 'users',
+            columns: ['name', 'role']
+          })
+        )
+      expect(driver.formatQuery(qs)).toBe(
+        [
+          'SELECT',
+          'DISTINCT(`users`.`name`, `users`.`role`)',
+          '`users`.`id`,',
+          '`users`.`name`,',
+          '`users`.`role`',
+          'FROM `users`',
+          'WHERE `users`.`name` IS NULL'
+        ].join(' ')
+      )
+    })
   })
 })

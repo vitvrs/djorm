@@ -38,7 +38,7 @@ class Select extends Query {
     return this.target(value)
   }
 
-  distinct (fields) {
+  distinct (fields = []) {
     return this.setProp('distinct', fields)
   }
 

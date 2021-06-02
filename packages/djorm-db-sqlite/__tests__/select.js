@@ -363,5 +363,25 @@ describe('select', () => {
         })
       ])
     })
+
+    it('selects distinct user roles', async () => {
+      const user = await models.User.objects.first()
+      const items = await user
+        .rel('userRoles')
+        .distinct()
+        .all()
+      expect(items).toEqual([
+        new models.UserRole({
+          id: 1,
+          roleId: 1,
+          userId: 1
+        }),
+        new models.UserRole({
+          id: 2,
+          roleId: 2,
+          userId: 1
+        })
+      ])
+    })
   })
 })

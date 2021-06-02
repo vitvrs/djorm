@@ -9,6 +9,7 @@ class SqlSelectFormatter extends SqlFormatterBase {
   formatQuery (qs) {
     return this.formatSqlParts(
       this.formatHeader(qs),
+      this.formatDistinction(qs),
       this.formatSelection(qs),
       this.formatFrom(qs),
       this.formatJoin(qs),
@@ -24,6 +25,15 @@ class SqlSelectFormatter extends SqlFormatterBase {
 
   formatHeader (qs) {
     return 'SELECT'
+  }
+
+  formatDistinction (qs) {
+    if (!qs.props.distinct) {
+      return ''
+    }
+    const args = this.formatSelection(qs, [qs.props.distinct])
+    const argsStr = args ? `(${args})` : ''
+    return `DISTINCT${argsStr}`
   }
 
   formatAlias (statement, alias) {
