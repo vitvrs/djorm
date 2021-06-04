@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build:docs": "node scripts/generate-docs.js",
+    "dev": "lerna run dev --parallel --stream",
     "test": "jest",
     "build": "npm run build:packages && npm run build:isolate",
     "build:packages": "lerna run build --parallel --stream",
