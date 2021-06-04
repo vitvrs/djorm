@@ -1,0 +1,1 @@
+(self.webpackChunkdjorm_docs=self.webpackChunkdjorm_docs||[]).push([[973],{6353:function(e){"use strict";e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Welcome","permalink":"/djorm/blog/welcome"},{"title":"Hello","permalink":"/djorm/blog/hello-world"},{"title":"Hola","permalink":"/djorm/blog/hola"}]}')}}]);
