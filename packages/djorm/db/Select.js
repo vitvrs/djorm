@@ -102,13 +102,12 @@ class Select extends Query {
   }
 
   async count () {
-    const result = await this.appendProp(
-      'selection',
+    const result = await this.setProp('selection', [
       new Count({
         args: [new QueryAllRecords()],
         alias: '__djorm_cnt'
       })
-    )
+    ])
       .mapModel(null)
       .first()
     return result.__djorm_cnt
