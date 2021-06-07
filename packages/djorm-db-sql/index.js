@@ -28,8 +28,9 @@ class SqlFormatter extends QueryFormatter {
 }
 
 module.exports = {
+  SqlDeleteFormatter,
   SqlFormatter,
-  SqlSelectFormatter,
   SqlInsertFormatter,
+  SqlSelectFormatter,
   SqlUpdateFormatter
 }

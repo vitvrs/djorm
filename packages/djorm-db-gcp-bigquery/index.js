@@ -1,6 +1,16 @@
-const { Database } = require('djorm/db/Database')
-const { SqlFormatter } = require('djorm-db-sql')
 const { BigQuery } = require('@google-cloud/bigquery')
+const { Database } = require('djorm/db/Database')
+const { Delete } = require('djorm/db/Delete')
+const { Insert } = require('djorm/db/Insert')
+const { Select } = require('djorm/db/Select')
+const { Update } = require('djorm/db/Update')
+const {
+  SqlFormatter,
+  SqlSelectFormatter,
+  SqlInsertFormatter,
+  SqlUpdateFormatter,
+  SqlDeleteFormatter
+} = require('djorm-db-sql')
 
 /** @typedef BigQueryDatabaseConfig
  * @property {string} driver      Driver to use, 'djorm-db-gcp-bigquery'
@@ -27,9 +37,67 @@ const { BigQuery } = require('@google-cloud/bigquery')
  * ```
  */
 
+const escapeString = value => {
+  // eslint-disable-next-line no-control-regex
+  return value.replace(/[\0\x08\x09\x1a\n\r"'\\%]/g, function (char) {
+    switch (char) {
+      case '\x08':
+        return '\\b'
+      case '\x09':
+        return '\\t'
+      case '\n':
+        return '\\n'
+      case '\r':
+        return '\\r'
+      case '"':
+      case "'":
+      case '\\':
+        return '\\' + char
+      default:
+        return char
+    }
+  })
+}
+
 class BigQueryFormatter extends SqlFormatter {
+  formatQuery (qs) {
+    if (qs instanceof Select) {
+      return new BigQuerySelectFormatter().formatQuery(qs)
+    }
+    if (qs instanceof Insert) {
+      return new BigQueryInsertFormatter().formatQuery(qs)
+    }
+    if (qs instanceof Update) {
+      return new BigQueryUpdateFormatter().formatQuery(qs)
+    }
+    if (qs instanceof Delete) {
+      return new BigQueryDeleteFormatter().formatQuery(qs)
+    }
+    return super.formatQuery(qs)
+  }
+}
+
+class BigQuerySelectFormatter extends SqlSelectFormatter {
   formatString (value) {
-    return `r'${value}'`
+    return `'${escapeString(value)}'`
+  }
+}
+
+class BigQueryInsertFormatter extends SqlInsertFormatter {
+  formatString (value) {
+    return `'${escapeString(value)}'`
+  }
+}
+
+class BigQueryUpdateFormatter extends SqlUpdateFormatter {
+  formatString (value) {
+    return `'${escapeString(value)}'`
+  }
+}
+
+class BigQueryDeleteFormatter extends SqlDeleteFormatter {
+  formatString (value) {
+    return `'${escapeString(value)}'`
   }
 }
 
