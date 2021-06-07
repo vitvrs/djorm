@@ -27,11 +27,17 @@ const { BigQuery } = require('@google-cloud/bigquery')
  * ```
  */
 
+class BigQueryFormatter extends SqlFormatter {
+  formatString (value) {
+    return `r'${value}'`
+  }
+}
+
 /** BigQueryDatabase BigQueryDatabaseConfig
  * @implements Database
  */
 class BigQueryDatabase extends Database {
-  formatter = new SqlFormatter()
+  formatter = new BigQueryFormatter()
   db = null
 
   get config () {

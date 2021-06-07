@@ -41,6 +41,10 @@ class QueryFormatter {
     return `'${moment(value).format('YYYY-MM-DDTHH:mm:ss.SSS')}'`
   }
 
+  formatString (value) {
+    return `'${this.escapeString(value)}'`
+  }
+
   formatValue (value) {
     if (value instanceof Date) {
       return this.formatDate(value)
@@ -49,7 +53,7 @@ class QueryFormatter {
       return String(value)
     }
     if (typeof value === 'string') {
-      return `'${this.escapeString(value)}'`
+      return this.formatString(value)
     }
     if (typeof value === 'boolean') {
       return value ? '1' : '0'
