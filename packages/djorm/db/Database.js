@@ -25,10 +25,10 @@ class Database extends PropModel {
 
   planDisconnect () {
     this.cancelDisconnectPlan()
-    this.disconnectTimeout = setTimeout(
-      () => this.disconnect(),
-      this.getProp('inactiveTimeout', 300)
-    )
+    const maxAge = this.getProp('connectionMaxAge', 0)
+    if (maxAge !== null) {
+      this.disconnectTimeout = setTimeout(() => this.disconnect(), maxAge)
+    }
   }
 
   cancelDisconnectPlan () {
