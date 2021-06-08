@@ -33,6 +33,7 @@
     "camelcase": "^6.2.0",
     "jsonpath": "^1.1.1",
     "moment-timezone": "^0.5.33",
-    "pino": "^6.11.3"
+    "pino": "^6.11.3",
+    "pino-pretty": "^5.0.2"
   }
 }
