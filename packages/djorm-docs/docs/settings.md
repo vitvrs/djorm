@@ -66,8 +66,18 @@ Default: `null`
 The username to use when connecting to the database.
 
 
-## logger.level
+## logger
+
+Djorm uses [Pino.js](https://github.com/pinojs/pino) internally as a logger. This configuration is passed directly to the logger.
+
+### level
 
 Default: `'info'`
 
 [Pino.js level](https://github.com/pinojs/pino/blob/master/docs/api.md#logger-level), the logger will display messages with severity same or higher to this setting.
+
+### transport
+
+Default: `null`
+
+You can customize the transport that delivers your logs by specifying a require path.
