@@ -12,6 +12,7 @@ class Database extends PropModel {
   constructor (...args) {
     super(...args)
     this.queue = []
+    this.disconnect = this.disconnect.bind(this)
   }
 
   static resolveDriver (dbConfig) {
@@ -27,7 +28,7 @@ class Database extends PropModel {
     this.cancelDisconnectPlan()
     const maxAge = this.getProp('connectionMaxAge', 0)
     if (maxAge !== null) {
-      this.disconnectTimeout = setTimeout(() => this.disconnect(), maxAge)
+      this.disconnectTimeout = setTimeout(this.disconnect, maxAge)
     }
   }
 
@@ -64,8 +65,8 @@ class Database extends PropModel {
   async disconnect () {
     this.cancelDisconnectPlan()
     if (this.connected) {
-      await this.disconnectDb()
       this.connected = false
+      await this.disconnectDb()
       debug(`Disconnected from ${this.props.driver} database`)
     }
   }
