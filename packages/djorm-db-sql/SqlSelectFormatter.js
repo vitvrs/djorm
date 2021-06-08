@@ -103,7 +103,8 @@ class SqlSelectFormatter extends SqlFormatterBase {
       )
     }
     return `${join.side} JOIN ${this.formatIdentifier(
-      join
+      join,
+      true
     )} ON (${this.formatQueryCondition(qs, join.props.conditions)})`
   }
 

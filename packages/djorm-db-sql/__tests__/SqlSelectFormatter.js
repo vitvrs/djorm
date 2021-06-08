@@ -63,6 +63,32 @@ describe('SqlSelectFormatter', () => {
       )
     })
 
+    it('formats query with join table path expression', () => {
+      const qs = new Select()
+        .from({ name: 'project_id.dataset_id.user', alias: 'user' })
+        .select('id', 'name')
+        .join({
+          name: 'project_id.dataset_id.usergroup',
+          alias: 'usergroup',
+          conditions: {
+            id: new QueryColumn({
+              source: 'group',
+              name: 'userId'
+            })
+          }
+        })
+      expect(driver.formatQuery(qs)).toBe(
+        [
+          'SELECT `id`, `name`',
+          'FROM `project_id`.`dataset_id`.`user`',
+          'AS `user`',
+          'INNER JOIN `project_id`.`dataset_id`.`usergroup`',
+          'AS `usergroup`',
+          'ON (`user`.`id` = `group`.`userId`)'
+        ].join(' ')
+      )
+    })
+
     it('strips schema from columns', () => {
       const qs = new Select().from('my_dataset.users').select(
         new QueryColumnGroup({
