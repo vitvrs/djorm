@@ -7,7 +7,7 @@ class TextField extends TrivialField {
   algorithm = 'aes256'
 
   getSecretKey () {
-    return require('../config').getSettings().secretKey
+    return require('../config').getSettings('secretKey')
   }
 
   getSecretKeyDigest () {
