@@ -81,3 +81,15 @@ Default: `'info'`
 Default: `null`
 
 You can customize the transport that delivers your logs by specifying a require path.
+
+## secretKey
+
+Default: `''` (Empty string)
+
+A secret key for particular Djorm installation. This is used to provide cryptographic signing, and should be set to a unique unpredictable value.
+
+> **Warning**
+>
+> **Keep this value secret.**
+>
+> Running Djorm with a known [secretKey](#secretKey) defeats many of Djorm's security protections, and can lead to privilege escalation and remote code execution vulnerabilities.
