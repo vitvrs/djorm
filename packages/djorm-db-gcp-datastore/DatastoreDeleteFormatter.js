@@ -5,6 +5,7 @@ const { DatastoreFormatterBase } = require('./DatastoreFormatterBase')
 class DatastoreDeleteFormatter extends DatastoreFormatterBase {
   formatQuery (qs) {
     return async () => {
+      await this.driver.waitForConnection()
       await this.db.delete(this.mapFilter(qs, { qs }))
     }
   }

@@ -3,6 +3,7 @@ const { DatastoreFormatterBase } = require('./DatastoreFormatterBase')
 class DatastoreInsertFormatter extends DatastoreFormatterBase {
   formatQuery (qs) {
     return async () => {
+      await this.driver.waitForConnection()
       const values = await this.prepareKeys(qs, this.formatValues(qs))
       await this.db.upsert(values)
       const last = values[values.length - 1]
