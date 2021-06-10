@@ -1,4 +1,4 @@
-const app = require('../__samples__/trivial-app')
+const app = require('__samples__/trivial-app')
 
 const { ModelError } = require('../errors')
 const { Or } = require('../db')

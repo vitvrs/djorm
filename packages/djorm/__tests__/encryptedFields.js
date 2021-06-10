@@ -1,4 +1,4 @@
-const app = require('../__samples__/encrypted-fields-app')
+const app = require('__samples__/encrypted-fields-app')
 
 describe('env config with sqlite', () => {
   beforeEach(app.initialize)

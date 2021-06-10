@@ -1,16 +1,15 @@
 /* istanbul ignore file */
 
-const DatastoreDatabase = require('../djorm-db-gcp-datastore')
 const fetch = require('node-fetch')
 const findCacheDir = require('find-cache-dir')
 const fs = require('fs')
 const getPort = require('get-port')
 const path = require('path')
-const hub = require('../djorm/db/DatabaseHub')
 const tar = require('tar')
 
-const { Datastore } = require('@google-cloud/datastore')
 const { spawn } = require('child_process')
+const { configure } = require('djorm/config')
+const { Datastore } = require('@google-cloud/datastore')
 
 const sdkUrl =
   'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-336.0.0-linux-x86_64.tar.gz'
@@ -134,6 +133,7 @@ const startDatastore = async port => {
       'emulators',
       'datastore',
       'start',
+      '--consistency=1',
       `--host-port=localhost:${port}`,
       '--no-store-on-disk'
     ])
@@ -170,16 +170,19 @@ const setupDb = dbPath => {
 
   beforeEach(async () => {
     const models = require(dbPath)
-    const dsSettings = {
+    const dbSettings = {
+      driver: 'djorm-db-gcp-datastore',
       apiEndpoint: `http://localhost:${port}`,
       namespace: jest.requireActual('uuid').v4(),
       projectId: 'test-project'
     }
-    const ds = new Datastore(dsSettings)
-    const db = new DatastoreDatabase(dsSettings)
-    const h = new hub.DatabaseHub()
-    await h.connectDb(db)
-    hub.instance = h
+    configure({
+      databases: {
+        default: dbSettings
+      }
+    })
+    const ds = new Datastore(dbSettings)
+
     for (const [Model, items] of Object.entries(models)) {
       for (const data of items) {
         const { id, ...fields } = data
@@ -189,10 +192,6 @@ const setupDb = dbPath => {
       }
     }
     await new Promise(resolve => setTimeout(resolve, 50))
-  })
-
-  afterEach(async () => {
-    await hub.instance.disconnect()
   })
 }
 

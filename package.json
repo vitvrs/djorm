@@ -29,6 +29,7 @@
     "djorm-storage-jest": "file:packages/djorm-storage-jest"
   },
   "devDependencies": {
+    "express": "^4.17.1",
     "find-cache-dir": "^3.3.1",
     "jest-date-mock": "^1.0.8",
     "jsdoc": "^3.6.6",

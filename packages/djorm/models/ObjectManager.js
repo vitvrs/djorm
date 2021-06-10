@@ -18,6 +18,10 @@ class ObjectManager {
     return Select.fromDb(this.db).from(this.model)
   }
 
+  createWriteStream () {
+    return this.db().createWriteStream()
+  }
+
   async all () {
     return await this.query.all()
   }

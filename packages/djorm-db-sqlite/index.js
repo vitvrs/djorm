@@ -4,6 +4,9 @@ const { Readable } = require('stream')
 
 const sqlite = require('better-sqlite3')
 
+/** SQLite Read Stream that initiates the database connection once the stream
+ *  is used by piping or reading.
+ */
 class SqliteReadStream extends Readable {
   constructor (driver, query) {
     super({ objectMode: true })
