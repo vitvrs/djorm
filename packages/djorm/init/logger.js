@@ -10,7 +10,7 @@ const init = async settings => {
     level: settings.logger.level || 'info'
   }
   if (!createTransport) {
-    options.prettyPrint = { colorize: true }
+    options.prettyPrint = {}
   }
   logger.init(
     pino(options, createTransport && createTransport(settings.logger.options))
