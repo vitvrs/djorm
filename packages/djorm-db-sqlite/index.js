@@ -5,12 +5,21 @@ const { Readable } = require('stream')
 const sqlite = require('better-sqlite3')
 
 class SqliteReadStream extends Readable {
-  constructor (stmt) {
+  constructor (driver, query) {
     super({ objectMode: true })
-    this.iterator = stmt.iterate()
+    this.driver = driver
+    this.query = query
   }
 
-  _read () {
+  async prepare () {
+    if (!this.iterator) {
+      await this.driver.waitForConnection()
+      this.iterator = this.driver.db.prepare(this.query).iterate()
+    }
+  }
+
+  async _read () {
+    await this.prepare()
     const result = this.iterator.next()
     this.push(result.done ? null : result.value)
   }
@@ -49,7 +58,7 @@ class SqliteDatabase extends Database {
   }
 
   streamDb (qs) {
-    return new SqliteReadStream(this.db.prepare(this.formatQuery(qs)))
+    return new SqliteReadStream(this, this.formatQuery(qs))
   }
 }
 
