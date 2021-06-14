@@ -71,6 +71,11 @@ class Database extends PropModel {
     }
   }
 
+  async reconnect () {
+    await this.disconnect()
+    await this.connect()
+  }
+
   async disconnectDb () {
     throw new NotImplemented()
   }

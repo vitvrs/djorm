@@ -84,7 +84,14 @@ class MysqlDatabase extends Database {
   }
 
   async queryDb (str) {
-    return await promise(this.db.query, this.db, str)
+    try {
+      return await promise(this.db.query, this.db, str)
+    } catch (e) {
+      if (e.fatal) {
+        this.reconnect()
+      }
+      throw e
+    }
   }
 
   formatQuery (qs) {
