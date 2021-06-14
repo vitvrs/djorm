@@ -80,6 +80,26 @@ class Database extends PropModel {
     throw new NotImplemented()
   }
 
+  async runDatabaseOperation (op) {
+    try {
+      return await op()
+    } catch (e) {
+      const ErrorType = this.resolveErrorType(e)
+      if (ErrorType) {
+        throw this.retypeError(e, ErrorType)
+      }
+      throw e
+    }
+  }
+
+  resolveErrorType () {
+    return null
+  }
+
+  retypeError () {
+    throw new NotImplemented()
+  }
+
   async waitForConnection () {
     if (!this.connected) {
       if (this.connecting) {

@@ -2,6 +2,7 @@ const { Database } = require('djorm/db/Database')
 const { SqlFormatter } = require('djorm-db-sql')
 const { Readable } = require('stream')
 
+const errors = require('djorm/db/errors')
 const sqlite = require('better-sqlite3')
 
 /** SQLite Read Stream that initiates the database connection once the stream
@@ -32,6 +33,10 @@ class SqliteDatabase extends Database {
   formatter = new SqlFormatter()
   db = null
 
+  errorCodeMap = {
+    SQLITE_CONSTRAINT_FOREIGNKEY: errors.RecordIsReferenced
+  }
+
   get path () {
     return this.props.path
   }
@@ -45,15 +50,27 @@ class SqliteDatabase extends Database {
   }
 
   async execDb (str) {
-    const result = this.db.prepare(str).run()
-    return {
-      ...result,
-      insertId: result.lastInsertRowid
-    }
+    return await this.runDatabaseOperation(() => {
+      const result = this.db.prepare(str).run()
+      return {
+        ...result,
+        insertId: result.lastInsertRowid
+      }
+    })
   }
 
   async queryDb (str) {
-    return this.db.prepare(str).all()
+    return await this.runDatabaseOperation(() => this.db.prepare(str).all())
+  }
+
+  resolveErrorType (e) {
+    return e && this.errorCodeMap[e.code]
+  }
+
+  retypeError (e, ErrorType) {
+    const typed = new ErrorType(e.message)
+    typed.stack = e.stack
+    return typed
   }
 
   formatQuery (qs) {
