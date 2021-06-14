@@ -1,5 +1,6 @@
 const { Database } = require('djorm/db/Database')
 const { Duplex } = require('stream')
+const { getSettings } = require('djorm/config')
 const { SqlFormatter } = require('djorm-db-sql')
 
 const mysql = require('mysql')
@@ -60,6 +61,7 @@ class MysqlDatabase extends Database {
   async connectDb () {
     this.db = mysql.createConnection({
       database: this.props.database,
+      debug: getSettings('debug', false),
       host: this.props.hostname,
       password: this.props.password,
       socketPath: this.props.socketPath,
