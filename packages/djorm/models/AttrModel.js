@@ -33,14 +33,19 @@ class AttrModel {
     if (value instanceof Model) {
       return value
     }
-    return new Model(value)
+    const fields = Model.fields
+    const values = Object.entries(value)
+      .map(([fieldName, value]) => ({
+        [fieldName]: fields[fieldName].fromDb(value)
+      }))
+      .reduce((aggr, chunk) => Object.assign(aggr, chunk), {})
+    return new Model(values)
   }
 
   static get fields () {
-    return this.fieldObjects.reduce(
-      (aggr, [key, value]) => ({ ...aggr, [key]: value }),
-      {}
-    )
+    return this.fieldObjects
+      .map(([key, value]) => ({ [key]: value }))
+      .reduce((aggr, chunk) => Object.assign(aggr, chunk), {})
   }
 
   static get fieldObjects () {
