@@ -53,7 +53,7 @@ class File extends AttrModel {
   }
 
   async read () {
-    return await this.stoarge.read(this.filePath)
+    return await this.storage.read(this.filePath)
   }
 
   async readMeta () {
