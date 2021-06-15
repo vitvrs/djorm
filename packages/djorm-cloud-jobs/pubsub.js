@@ -41,9 +41,14 @@ function resolveTopic (jobType) {
   return (topicMap && topicMap[jobType]) || undefined
 }
 
+function getPubSub () {
+  return pubsub
+}
+
 module.exports = {
   init,
   formatMessage,
+  getPubSub,
   resolveTopic,
   parseMessage,
   publishMessage,

@@ -1,0 +1,7 @@
+CREATE TABLE `job` (
+  `id`  INTEGER NOT NULL AUTO_INCREMENT,
+  `checksum`  TEXT NOT NULL,
+  `live` TINYINT NOT NULL DEFAULT 0,
+  `props` TEXT NULL,
+  PRIMARY KEY(`id`)
+);

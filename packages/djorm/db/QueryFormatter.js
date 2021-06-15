@@ -24,7 +24,6 @@ class QueryFormatter {
           return '\\n'
         case '\r':
           return '\\r'
-        case '"':
         case "'":
         case '\\':
         case '%':

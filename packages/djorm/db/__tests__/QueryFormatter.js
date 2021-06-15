@@ -22,16 +22,10 @@ describe('QueryFormatter', () => {
     expect(new QueryFormatter().formatValue("I'm happy")).toBe("'I\\'m happy'")
   })
 
-  it('formatValue escapes quote', () => {
-    expect(new QueryFormatter().formatValue('This is very "interesting"')).toBe(
-      '\'This is very \\"interesting\\"\''
-    )
-  })
-
   it('formatValue escapes backslash', () => {
-    expect(new QueryFormatter().formatValue('This is very "interesting"')).toBe(
-      '\'This is very \\"interesting\\"\''
-    )
+    expect(
+      new QueryFormatter().formatValue('This is very \\"interesting\\"')
+    ).toBe('\'This is very \\\\"interesting\\\\"\'')
   })
 
   it('formatValue escapes percent', () => {
