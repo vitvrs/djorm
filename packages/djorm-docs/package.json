@@ -1,6 +1,6 @@
 {
   "name": "djorm-docs",
-  "version": "0.1.9-alpha.3",
+  "version": "0.1.9-alpha.5",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
