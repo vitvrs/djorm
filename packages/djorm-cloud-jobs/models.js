@@ -356,14 +356,14 @@ class JobBase extends DatabaseModel {
    * @throws {RetryError} In case the job reaches retry limit
    * @returns {JobBase} The same instance
    */
-  async retry () {
+  async retry (e) {
     if (this.get('retried') < this.get('maxRetries')) {
       this.retried = (this.retried || 0) + 1
       this.status = JobStatus.trigger
       await this.update()
       return await this.spawn()
     }
-    throw new RetryError(`Job#${this.pk} has reached it's retry limit`)
+    throw new RetryError(`Job#${this.pk} has reached it's retry limit`, [e])
   }
 }
 

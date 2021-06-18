@@ -6,7 +6,12 @@ class JobError extends Error {}
 /** Failures when retrying job execution
  * @augments {JobError}
  */
-class RetryError extends JobError {}
+class RetryError extends JobError {
+  constructor (message, errors) {
+    super(message)
+    this.errors = errors
+  }
+}
 
 /** failures when spawning job
  * @augments {joberror}
