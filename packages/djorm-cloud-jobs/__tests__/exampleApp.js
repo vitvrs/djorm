@@ -23,7 +23,8 @@ describe('createSubscription', () => {
     })
     await app.runJob(formatMessageObject(job))
     await init()
-    expect(await Job.objects.all()).toEqual([
+    const state = await Job.objects.all()
+    expect(state).toEqual([
       expect.objectContaining({
         id: 1,
         type: 'grandparent-job-type',

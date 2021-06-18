@@ -33,6 +33,10 @@ const JobStatus = {
   trigger: 'trigger',
   /** @type {string} Job has been requested and is currently being processed */
   request: 'request',
+  /** @type {string} Job is waiting for it's children or external children
+   *   to finish, so it is still considered live.
+   */
+  waiting: 'waiting',
   /** @type {string} Job has been stopped. Some processes might still be
    *   finishing up, but nothing new will be started
    */
@@ -49,7 +53,7 @@ const JobStatus = {
  * @type {string[]}
  */
 const JobRunning = {
-  filter: [JobStatus.trigger, JobStatus.request],
+  filter: [JobStatus.trigger, JobStatus.request, JobStatus.waiting],
   status: 'running'
 }
 
@@ -334,6 +338,7 @@ class JobBase extends DatabaseModel {
     })
     await childJob.save()
     this.childrenIds.push(childJob.id)
+    this.status = JobStatus.waiting
     return childJob
   }
 
@@ -363,7 +368,12 @@ class JobBase extends DatabaseModel {
       await this.update()
       return await this.spawn()
     }
-    throw new RetryError(`Job#${this.pk} has reached it's retry limit`, [e])
+    const err = new RetryError(
+      `Job#${this.pk} has reached it's retry limit because it failed on: ${e.message}`,
+      [e]
+    )
+    err.stack = e.stack
+    throw err
   }
 }
 
