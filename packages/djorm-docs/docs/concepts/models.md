@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 # Models
 
-A model represents a database entity. It is a class with fields that describe data you're storing in your database. You use models to abstract away the database specific code.
+A model is the single, definitive source of information about your data. It contains the essential fields and behaviours of the data you're storing. Generally each models maps to a single database table. It is a class with fields that describe data you're storing in your database. You use models to abstract away the database specific code.
 
 ## Define a model
 
