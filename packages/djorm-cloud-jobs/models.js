@@ -226,6 +226,14 @@ class JobBase extends DatabaseModel {
     )
   }
 
+  get output () {
+    return (this.props && this.props.output) || null
+  }
+
+  set output (output) {
+    this.props = { ...this.props, output }
+  }
+
   /** Fetch child and descendant stats for this job. The data are stored in
    *  {childStats} and {descendantStats}.
    * @async
@@ -336,9 +344,12 @@ class JobBase extends DatabaseModel {
       rootId: this.rootId || this.parentId || this.id,
       parentId: this.id
     })
+    if (this.status !== JobStatus.waiting) {
+      this.status = JobStatus.waiting
+      await this.save()
+    }
     await childJob.save()
     this.childrenIds.push(childJob.id)
-    this.status = JobStatus.waiting
     return childJob
   }
 

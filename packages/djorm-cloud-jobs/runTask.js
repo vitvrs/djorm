@@ -45,12 +45,29 @@ async function runStage (handlers, job, stage, ...args) {
   const handler = resolveHandler(handlers, job, stage)
   job.status = stage
   await job.save()
+  let outputs = null
   if (handler) {
-    await handler(job, ...args)
+    outputs = await handler(job, ...args)
   }
   if (stage === JobStatus.success || stage === JobStatus.failure) {
     await closeupParent(job, stage)
   }
+  return outputs
+}
+
+function parseJobOutput (job, outputs) {
+  let result = null
+  let status = null
+  if (outputs instanceof Array) {
+    result = outputs[0]
+    status = outputs[1]
+  } else {
+    result = outputs
+  }
+  if (!status && job.childrenIds.length === 0) {
+    status = JobStatus.success
+  }
+  return [result, status]
 }
 
 /** Run task through usual async process stages
@@ -69,10 +86,11 @@ async function runTask (handlers, job) {
     await runStage(handlers, job, job.status)
   } else {
     try {
-      await runStage(handlers, job, JobStatus.request)
-      if (job.childrenIds.length === 0) {
-        // Do not trigger onSuccess given there were children launched
-        await runStage(handlers, job, JobStatus.success)
+      const outputs = await runStage(handlers, job, JobStatus.request)
+      const [result, status] = parseJobOutput(job, outputs)
+      job.output = result
+      if (status) {
+        await runStage(handlers, job, status)
       }
     } catch (e) {
       info(`Caught error: ${formatError(e)}`)
