@@ -119,6 +119,7 @@ class MysqlDatabase extends Database {
 
   retypeError (err, ErrorType) {
     const typed = new ErrorType(err.message)
+    typed.fatal = err.fatal
     typed.code = err.code
     typed.errno = err.errno
     typed.sqlMessage = err.sqlMessage
