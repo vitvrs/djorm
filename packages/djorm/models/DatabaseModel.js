@@ -147,11 +147,11 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   async reload () {
-    const obj = await this.constructor.objects.get({
+    const values = await this.constructor.objects.query.mapModel(null).get({
       [this.constructor.pkName]: this.pk
     })
-    const values = obj.serializeDbValues()
-    return this.setValues(values)
+    this.constructor.db.Mapper.updateInstanceValues(this, values)
+    return this
   }
 
   async delete () {

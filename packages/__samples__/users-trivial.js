@@ -250,6 +250,22 @@ const setupTests = () => {
     )
   })
 
+  it('reloads user values', async () => {
+    const User = getModel('User')
+    const user = new User({ id: 1 })
+    await user.reload()
+    expect(user).toEqual(
+      new User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        id: 1,
+        name: 'Harmony Vasquez',
+        email: 'harmony.vasquez@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    )
+  })
+
   it('counts users', async () => {
     expect(await getModel('User').objects.count()).toBe(4)
   })
