@@ -1,4 +1,4 @@
-const { DatabaseModel, Field } = require('djorm/models')
+const { DatabaseModel, Field, getModelName } = require('djorm/models')
 const { publishMessage, resolveTopic } = require('./pubsub')
 const { getSettings } = require('djorm/config')
 const { RetryError, SpawnError } = require('./errors')
@@ -380,7 +380,9 @@ class JobBase extends DatabaseModel {
       return await this.spawn()
     }
     const err = new RetryError(
-      `Job#${this.pk} has reached it's retry limit because it failed on: ${e.message}`,
+      `${getModelName(this.constructor)}#${
+        this.pk
+      } has reached it's retry limit because it failed on: ${e.message}`,
       [e]
     )
     err.stack = e.stack
