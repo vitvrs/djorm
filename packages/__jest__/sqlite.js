@@ -4,24 +4,26 @@ const { promises } = require('fs')
 const tmp = require('tmp-promise')
 
 const setupDb = dbPath => {
-  let tmpFile
+  const config = {}
 
   beforeEach(async () => {
-    tmpFile = await tmp.file()
-    await promises.copyFile(dbPath, tmpFile.path)
+    config.tmpFile = await tmp.file()
+    await promises.copyFile(dbPath, config.tmpFile.path)
     configure({
       databases: {
         default: {
           driver: 'djorm-db-sqlite',
-          path: tmpFile.path
+          path: config.tmpFile.path
         }
       }
     })
   })
 
   afterEach(async () => {
-    await tmpFile.cleanup()
+    await config.tmpFile.cleanup()
   })
+
+  return config
 }
 
 module.exports = { setupDb }
