@@ -92,14 +92,20 @@ class MysqlDatabase extends Database {
     return this.queryDb(str)
   }
 
+  async runMysqlOperation (str) {
+    return await this.runDatabaseOperation(
+      async () => await promise(this.db.query, this.db, str)
+    )
+  }
+
   async queryDb (str) {
     try {
-      return await this.runDatabaseOperation(
-        async () => await promise(this.db.query, this.db, str)
-      )
+      return await this.runMysqlOperation(str)
     } catch (e) {
       if (e.fatal) {
-        this.reconnect()
+        // Assume that this could be a connection issue and try the query again
+        await this.reconnect()
+        return await this.runMysqlOperation(str)
       }
       throw e
     }
