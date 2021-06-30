@@ -7,14 +7,14 @@ let FieldModel = null
 function parseFieldObjects (constructor) {
   return Object.entries(constructor)
     .filter(([key, value]) => value && value instanceof FieldModel)
-    .reduce(
-      (aggr, fieldTuple) => [
-        ...aggr,
-        fieldTuple,
-        ...Object.entries(fieldTuple[1].expand())
-      ],
-      []
-    )
+    .reduce((aggr, fieldTuple) => {
+      const expanded = fieldTuple[1].expand()
+      aggr.push(fieldTuple)
+      if (expanded) {
+        return aggr.concat(Object.entries(expanded))
+      }
+      return aggr
+    }, [])
 }
 
 class AttrModel {
@@ -163,7 +163,7 @@ class GenericField extends AttrModel {
    *  and the database foreign key value field.
    */
   expand () {
-    return {}
+    return null
   }
 }
 
