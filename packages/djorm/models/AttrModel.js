@@ -200,10 +200,6 @@ class Field extends GenericField {
     return value
   }
 
-  hasDefault () {
-    return this.default !== undefined
-  }
-
   /** Get default value for this field based on the current instance
    * @param {AttrModel} inst
    * @returns {any}
