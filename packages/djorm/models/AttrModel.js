@@ -33,10 +33,9 @@ class AttrModel {
     if (value instanceof Model) {
       return value
     }
-    const fields = Model.fields
     const values = Object.entries(value)
       .map(([fieldName, value]) => ({
-        [fieldName]: fields[fieldName].fromDb(value)
+        [fieldName]: Model.getField(fieldName).fromDb(value)
       }))
       .reduce((aggr, chunk) => Object.assign(aggr, chunk), {})
     return new Model(values)

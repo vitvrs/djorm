@@ -1,9 +1,34 @@
 const { Database } = require('djorm/db/Database')
 const { SqlFormatter } = require('djorm-db-sql')
-const { Readable } = require('stream')
+const { Readable, Writable } = require('stream')
 
 const errors = require('djorm/db/errors')
 const sqlite = require('better-sqlite3')
+
+class SqliteWriter extends Writable {
+  constructor (base, model) {
+    super({ objectMode: true })
+    this.base = base
+    this.model = model
+    this.saveChunkItem = this.saveChunkItem.bind(this)
+  }
+
+  async saveChunkItem (item) {
+    const inst = item instanceof this.model ? item : this.model.from(item)
+    return await inst.save()
+  }
+
+  async _write (chunk, enc, next) {
+    try {
+      await (chunk instanceof Array
+        ? Promise.all(chunk.map(this.saveChunkItem))
+        : this.saveChunkItem(chunk))
+      next()
+    } catch (e) {
+      next(e)
+    }
+  }
+}
 
 /** SQLite Read Stream that initiates the database connection once the stream
  *  is used by piping or reading.
@@ -39,6 +64,10 @@ class SqliteDatabase extends Database {
 
   get path () {
     return this.props.path
+  }
+
+  createWriteStream (model) {
+    return new SqliteWriter(this, model)
   }
 
   async connectDb () {

@@ -4,6 +4,7 @@ const { Delete } = require('djorm/db/Delete')
 const { Insert } = require('djorm/db/Insert')
 const { Select } = require('djorm/db/Select')
 const { Update } = require('djorm/db/Update')
+const { Writable } = require('stream')
 const {
   SqlFormatter,
   SqlSelectFormatter,
@@ -101,6 +102,33 @@ class BigQueryDeleteFormatter extends SqlDeleteFormatter {
   }
 }
 
+class BigQueryWriter extends Writable {
+  constructor (base, model) {
+    super({ objectMode: true })
+    this.base = base
+    this.model = model
+  }
+
+  formatChunk (chunk) {
+    return chunk.serializeDbValues ? chunk.serializeDbValues() : chunk
+  }
+
+  async _write (chunk, enc, next) {
+    try {
+      await this.base.waitForConnection()
+      const table = this.base.db.table(this.model.tableName)
+      const data =
+        chunk instanceof Array
+          ? chunk.map(this.formatChunk)
+          : this.formatChunk(chunk)
+      await table.insert(data)
+      next()
+    } catch (e) {
+      next(e)
+    }
+  }
+}
+
 /** BigQueryDatabase BigQueryDatabaseConfig
  * @implements Database
  */
@@ -117,6 +145,10 @@ class BigQueryDatabase extends Database {
         private_key: this.props.password
       }
     }
+  }
+
+  createWriteStream (model) {
+    return new BigQueryWriter(this, model)
   }
 
   async connectDb () {

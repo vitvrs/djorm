@@ -19,7 +19,7 @@ class ObjectManager {
   }
 
   createWriteStream () {
-    return this.db().createWriteStream()
+    return this.db.createWriteStream(this.model)
   }
 
   async all () {

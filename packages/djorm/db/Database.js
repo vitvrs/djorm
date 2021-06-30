@@ -38,6 +38,10 @@ class Database extends PropModel {
     }
   }
 
+  createWriteStream () {
+    throw new NotImplemented()
+  }
+
   async connectDb () {
     throw new NotImplemented()
   }
