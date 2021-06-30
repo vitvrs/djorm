@@ -158,6 +158,10 @@ class AttrModel {
 
 /** Generic Field */
 class GenericField extends AttrModel {
+  /** Break down complex field into additional field instances. This enables
+   *  complex fields, like ForeignKey - as it is composed of the non-db field
+   *  and the database foreign key value field.
+   */
   expand () {
     return {}
   }
@@ -171,18 +175,27 @@ class Field extends GenericField {
   static secret = new Field()
   static validator = new Field()
 
+  /** Based on Robustness principle, fields will accept various representations
+   *  of the actual value and try to parse it into a strict model value
+   *  representation or fail
+   */
   parse (value) {
     return value
   }
 
+  /** Convert database representation of the value into the instance
+   *  representation of the value
+   */
   fromDb (value) {
     return this.parse(value)
   }
 
+  /** Serialize value in a way that would be represented in the database */
   toDb (value) {
     return this.serialize(value)
   }
 
+  /** Serialize model value representation into JSON */
   serialize (value) {
     return value
   }
@@ -191,6 +204,10 @@ class Field extends GenericField {
     return this.default !== undefined
   }
 
+  /** Get default value for this field based on the current instance
+   * @param {AttrModel} inst
+   * @returns {any}
+   */
   getDefault (inst) {
     if (this.default instanceof Function) {
       return this.default(inst)
@@ -198,6 +215,10 @@ class Field extends GenericField {
     return this.default
   }
 
+  /** Given this field has a validator, try to run it as a callback. Callback
+   *  will receive field value, the model instance, and field name as
+   *  arguments.
+   */
   async validateValue (inst, fieldName) {
     return this.validator
       ? await this.validator(inst.get(fieldName), inst, fieldName)
