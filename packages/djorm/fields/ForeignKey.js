@@ -6,7 +6,9 @@ const { PositiveIntegerField } = require('./PositiveIntegerField')
 const { Relation } = require('./Relation')
 const { ValueError } = require('../errors')
 
-/** Field used for foreign key objects */
+/** Field used for foreign key objects
+ *  @augments {Relation}
+ */
 class ForeignKey extends Relation {
   static keyField = new Field()
   static keyFieldType = new Field()
