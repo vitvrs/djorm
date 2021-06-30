@@ -1,33 +1,28 @@
 const path = require('path')
-const tmp = require('tmp-promise')
 
-const { configure } = require('djorm/config')
+const { configure, shutdown } = require('djorm/config')
 const { createSubscription } = require('..')
 const { formatMessage } = require('../pubsub')
-const { promises } = require('fs')
-const { RetryError, RuntimeError } = require('../errors')
 const { Job } = require('../models')
+const { RetryError, RuntimeError } = require('../errors')
+const { setupDb } = require('__jest__/sqlite')
 
 const formatMessageObject = message => ({
   data: formatMessage(message)
 })
 
 describe('createSubscription', () => {
-  let tmpFile
-  const setupDb = async dbFile => {
-    const dbPath = path.resolve(__dirname, '..', '__samples__', dbFile)
-    tmpFile = await tmp.file()
-    await promises.copyFile(dbPath, tmpFile.path)
-  }
+  const test = setupDb(
+    path.resolve(__dirname, '..', '__samples__', 'jobs.sqlite')
+  )
 
-  beforeEach(async () => {
-    await setupDb('jobs.sqlite')
+  beforeEach(() => {
     configure({
       apps: ['djorm-cloud-jobs/pubsub'],
       databases: {
         default: {
           driver: 'djorm-db-sqlite',
-          path: tmpFile.path
+          path: test.tmpFile.path
         }
       },
       cloudJobs: {
@@ -42,9 +37,7 @@ describe('createSubscription', () => {
     })
   })
 
-  afterEach(async () => {
-    await tmpFile.cleanup()
-  })
+  afterEach(shutdown)
 
   it('returns object with entrypoint function', () => {
     const tasks = {}

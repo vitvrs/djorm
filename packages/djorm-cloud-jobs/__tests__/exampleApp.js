@@ -2,22 +2,35 @@ const path = require('path')
 
 const { formatMessage } = require('../pubsub')
 const { Job } = require('../models')
-const { promises } = require('fs')
-const { init, shutdown } = require('djorm/config')
+const { configure, init, shutdown } = require('djorm/config')
+const { setupDb } = require('__jest__/sqlite')
 
 const formatMessageObject = message => ({
   data: formatMessage(message)
 })
 
 describe('createSubscription', () => {
+  let app
+
+  const test = setupDb(
+    path.resolve(__dirname, '..', '__samples__', 'jobs.sqlite')
+  )
+
+  beforeEach(() => {
+    app = require('../__samples__/exampleApp')
+    configure({
+      databases: {
+        default: {
+          driver: 'djorm-db-sqlite',
+          path: test.tmpFile.path
+        }
+      }
+    })
+  })
+
   afterEach(shutdown)
 
   it('bubbles to the root job handler', async () => {
-    const dbPath = path.resolve(__dirname, '..', '__samples__', 'jobs.sqlite')
-    const tmpFile = { name: '/tmp/djorm-cloud-jobs-example-app.sqlite' }
-
-    await promises.copyFile(dbPath, tmpFile.name)
-    const app = require('../__samples__/exampleApp')
     const job = new Job({
       type: 'grandparent-job-type'
     })

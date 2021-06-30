@@ -1,7 +1,7 @@
 const path = require('path')
 
 const { formatMessage } = require('../pubsub')
-const { Job } = require('../models')
+const { getModel } = require('djorm/models')
 const { configure, init, shutdown } = require('djorm/config')
 const { setupDb } = require('__jest__/sqlite')
 
@@ -9,15 +9,15 @@ const formatMessageObject = message => ({
   data: formatMessage(message)
 })
 
-describe('createSubscription', () => {
+describe('customJobModel app', () => {
   let app
 
   const test = setupDb(
-    path.resolve(__dirname, '..', '__samples__', 'jobs.sqlite')
+    path.resolve(__dirname, '..', '__samples__', 'jobs-custom-model.sqlite')
   )
 
   beforeEach(() => {
-    app = require('../__samples__/resultPassing')
+    app = require('../__samples__/customJobModel')
     configure({
       databases: {
         default: {
@@ -31,42 +31,25 @@ describe('createSubscription', () => {
   afterEach(shutdown)
 
   it('bubbles to the root job handler', async () => {
-    const job = new Job({
-      type: 'parent-job-type'
+    const Model = getModel('CloudJob')
+    const job = new Model({
+      type: 'grandparent-job-type'
     })
     await app.runJob(formatMessageObject(job))
     await init()
-    const state = await Job.objects.all()
+    const state = await Model.objects.all()
     expect(state).toEqual([
       expect.objectContaining({
         id: 1,
-        type: 'parent-job-type',
+        type: 'grandparent-job-type',
         status: 'success'
       }),
       expect.objectContaining({
-        type: 'job-type',
-        status: 'success',
-        props: {
-          index: 0,
-          output: 'foo'
-        }
+        id: 2,
+        type: 'parent-job-type',
+        status: 'success'
       }),
-      expect.objectContaining({
-        type: 'job-type',
-        status: 'success',
-        props: {
-          index: 1,
-          output: 'bar'
-        }
-      }),
-      expect.objectContaining({
-        type: 'job-type',
-        status: 'success',
-        props: {
-          index: 2,
-          output: 'baz'
-        }
-      })
+      expect.objectContaining({ id: 3, type: 'job-type', status: 'success' })
     ])
   })
 })

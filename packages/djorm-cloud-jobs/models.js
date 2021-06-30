@@ -1,4 +1,4 @@
-const { DatabaseModel, Field, getModelName } = require('djorm/models')
+const { DatabaseModel, Field, getModelName, SELF } = require('djorm/models')
 const { publishMessage, resolveTopic } = require('./pubsub')
 const { getSettings } = require('djorm/config')
 const { RetryError, SpawnError } = require('./errors')
@@ -85,8 +85,7 @@ class JobBase extends DatabaseModel {
 
   /** @type {JobBase} parent Parent job foreign key */
   static parent = new ForeignKey({
-    model: getSettings('cloudJobs.model', 'Job'),
-    parentModel: getSettings('cloudJobs.model', 'Job'),
+    model: SELF,
     keyField: 'parentId',
     keyFieldType: CharField,
     relatedName: 'children'
@@ -94,8 +93,7 @@ class JobBase extends DatabaseModel {
 
   /** @type {JobBase} parent Root job foreign key */
   static root = new ForeignKey({
-    model: getSettings('cloudJobs.model', 'Job'),
-    parentModel: getSettings('cloudJobs.model', 'Job'),
+    model: SELF,
     keyField: 'rootId',
     keyFieldType: CharField,
     relatedName: 'descendants'
@@ -398,7 +396,10 @@ class Job extends JobBase {}
 Job.register()
 JobBase.register()
 
+const getJobModel = getSettings('cloudJobs.model', 'Job')
+
 module.exports = {
+  getJobModel,
   Job,
   JobBase,
   JobRunning,
