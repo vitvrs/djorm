@@ -1,15 +1,26 @@
 const { ModelError } = require('../errors')
 
+const SELF = Symbol('models.Self')
 const models = {}
-const relationships = {}
+const refs = {}
 
 const getModelName = model =>
   model.meta && model.meta.modelName ? model.meta.modelName : model.name
 
 const getModels = () => models
-const getRelationships = () => relationships
+const getRelationships = () => refs
 const getRelationRefName = (modelName, relatedName) =>
   `${modelName}__${relatedName}`
+
+const getMeta = model => {
+  const desc = Object.getOwnPropertyDescriptor(model, 'meta')
+  return desc && desc.value
+}
+
+const isAbstract = model => {
+  const meta = getMeta(model)
+  return Boolean(meta && meta.abstract)
+}
 
 function getModel (name) {
   const m = models[name]
@@ -21,20 +32,22 @@ function getModel (name) {
 
 function registerModelRelations (modelName, model) {
   const modelRelations = model.relationFields
-  if (modelRelations) {
-    for (const [, field] of modelRelations) {
-      if (!field.parentModel) {
-        field.parentModel = modelName
-      }
-      relationships[getRelationRefName(field.model, field.relatedName)] = field
+  if (!isAbstract(model) && modelRelations) {
+    for (const [fieldName, field] of modelRelations) {
+      const parentModel =
+        field.get('parentModel') === SELF ? modelName : field.parentModel
+      const targetModel =
+        field.get('model') === SELF ? modelName : field.get('model')
+      const refName = getRelationRefName(targetModel, field.get('relatedName'))
+      refs[refName] = [parentModel, fieldName]
     }
   }
 }
 
 function unregisterModelRelations (modelName) {
-  for (const key of Object.keys(relationships)) {
+  for (const key of Object.keys(refs)) {
     if (key.startsWith(`${modelName}__`)) {
-      delete relationships[key]
+      delete refs[key]
     }
   }
 }
@@ -53,7 +66,7 @@ function unregisterModel (model) {
 }
 
 function getRelationship (model, relatedName) {
-  return relationships[getRelationRefName(getModelName(model), relatedName)]
+  return refs[getRelationRefName(getModelName(model), relatedName)]
 }
 
 const clearObj = obj =>
@@ -63,12 +76,7 @@ const clearObj = obj =>
 
 const clearModels = () => {
   clearObj(models)
-  clearObj(relationships)
-}
-
-const isAbstract = model => {
-  const meta = Object.getOwnPropertyDescriptor(model, 'meta')
-  return Boolean(meta && meta.value && meta.value.abstract)
+  clearObj(refs)
 }
 
 module.exports = {
@@ -80,5 +88,6 @@ module.exports = {
   getRelationships,
   isAbstract,
   registerModel,
-  unregisterModel
+  unregisterModel,
+  SELF
 }

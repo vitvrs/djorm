@@ -1,7 +1,7 @@
 const camelCase = require('camelcase')
 
 const { Field } = require('../models/AttrModel')
-const { getModel, getModelName } = require('../models/ModelRegistry')
+const { getModel, getModelName, SELF } = require('../models/ModelRegistry')
 const { PositiveIntegerField } = require('./PositiveIntegerField')
 const { Relation } = require('./Relation')
 const { ValueError } = require('../errors')
@@ -20,7 +20,13 @@ class ForeignKey extends Relation {
     super(params)
     const KeyFieldType = this.get('keyFieldType') || PositiveIntegerField
     if (!this.keyField) {
-      this.keyField = `${camelCase(this.get('model'))}Id`
+      this.keyField = this.getKeyFieldName()
+    }
+    if (!this.relatedName) {
+      this.relatedName = this.getTargetModelName()
+    }
+    if (!this.parentModel) {
+      this.parentModel = SELF
     }
     this.foreignKeyField = new KeyFieldType()
     this.expandedField = {
@@ -28,33 +34,46 @@ class ForeignKey extends Relation {
     }
   }
 
+  getKeyFieldName () {
+    return `${camelCase(this.getTargetModelName())}Id`
+  }
+
+  getTargetModelName () {
+    return this.get('model')
+  }
+
   expand () {
     return this.expandedField
   }
 
-  parse (value) {
+  parse (value, inst) {
+    let parsed = value
     const Model = getModel(this.model)
-    if (value && !(value instanceof Model)) {
-      if (typeof value === 'object') {
-        return new Model(value)
+    if (parsed && !(parsed instanceof Model)) {
+      if (typeof parsed === 'object') {
+        parsed = Model.from(parsed)
       }
       throw new ValueError(
         `Value must be instance of "${getModelName(
           Model
-        )}" or null, but "${value}" was given`
+        )}" or null, but "${parsed}" was given`
       )
     }
-    return value
+    inst[this.keyField] = parsed.pk
+    return parsed
   }
 
-  queryParentModel (primaryInstance) {
-    return getModel(this.parentModel).objects.filter({
+  queryParentModel (modelName, primaryInstance) {
+    return getModel(modelName).objects.filter({
       [this.keyField]: primaryInstance.pk
     })
   }
 
   queryTargetModel (fkInstance) {
-    const Model = getModel(this.model)
+    const modelName = this.getTargetModelName()
+    const Model = getModel(
+      modelName === SELF ? getModelName(fkInstance.constructor) : modelName
+    )
     return Model.objects.filter({
       [Model.pkName]: fkInstance.get(this.keyField)
     })

@@ -178,15 +178,21 @@ class Field extends GenericField {
   /** Based on Robustness principle, fields will accept various representations
    *  of the actual value and try to parse it into a strict model value
    *  representation or fail
+   *  @param {any} value Field value
+   *  @param {DatabaseModel} inst Model instance
+   *  @returns {any} Model value representation
    */
-  parse (value) {
+  parse (value, inst) {
     return value
   }
 
   /** Convert database representation of the value into the instance
    *  representation of the value
+   *  @param {any} value
+   *  @param {DatabaseModel} inst Model instance
+   *  @return {any} Model value representation
    */
-  fromDb (value) {
+  fromDb (value, inst) {
     return this.parse(value)
   }
 

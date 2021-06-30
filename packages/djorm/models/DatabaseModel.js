@@ -8,7 +8,12 @@ const { FieldError, ObjectNotFound, UnknownField } = require('../errors')
 const { parseFieldObjects } = require('./AttrModel')
 const { Relation } = require('../fields/Relation')
 const { Update } = require('../db/Update')
-const { isAbstract, getModelName, getRelationship } = require('./ModelRegistry')
+const {
+  isAbstract,
+  getModel,
+  getModelName,
+  getRelationship
+} = require('./ModelRegistry')
 
 const nonEmpty = item => Boolean(item)
 
@@ -61,12 +66,17 @@ class DatabaseModel extends DatabaseModelBase {
 
   rel (relatedName) {
     try {
-      return this.constructor.getField(relatedName).queryTargetModel(this)
+      const field = this.constructor.getField(relatedName)
+      return field.queryTargetModel(this)
     } catch (e) {
       if (e instanceof UnknownField) {
-        return getRelationship(this.constructor, relatedName).queryParentModel(
-          this
+        const [parentModelName, parentFieldName] = getRelationship(
+          this.constructor,
+          relatedName
         )
+        return getModel(parentModelName)
+          .getField(parentFieldName)
+          .queryParentModel(parentModelName, this)
       }
       throw e
     }
