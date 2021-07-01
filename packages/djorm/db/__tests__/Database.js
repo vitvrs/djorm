@@ -3,6 +3,7 @@ const { Database } = require('../Database')
 describe('Database', () => {
   class DbMock extends Database {
     connectDb = jest.fn()
+    disconnectDb = jest.fn()
     queryDb = jest.fn()
     execDb = jest.fn()
   }
