@@ -22,7 +22,7 @@
     ],
     "parser": "babel-eslint"
   },
-  "peerDependencies": {
+  "dependencies": {
     "djorm": "file:../djorm"
   }
 }
