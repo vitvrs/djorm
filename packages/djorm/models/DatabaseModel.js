@@ -269,7 +269,7 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   toString () {
-    return `${this.constructor}#${this.pk || JSON.stringify(this.toJson())}`
+    return `${this.constructor}#${this.pk || '(new)'}`
   }
 }
 
