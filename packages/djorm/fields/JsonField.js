@@ -18,8 +18,8 @@ class JsonField extends TextField {
     }
   }
 
-  fromDb (value) {
-    return this.parse(super.fromDb(value))
+  fromDb (value, inst) {
+    return this.parse(super.fromDb(value, inst), inst)
   }
 }
 

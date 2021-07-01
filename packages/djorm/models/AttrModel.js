@@ -192,7 +192,7 @@ class Field extends GenericField {
    *  @return {any} Model value representation
    */
   fromDb (value, inst) {
-    return this.parse(value)
+    return this.parse(value, inst)
   }
 
   /** Serialize value in a way that would be represented in the database */

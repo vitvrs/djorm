@@ -4,7 +4,7 @@ const { ValueError } = require('../errors')
 class ObjectField extends Field {
   static objectClass = new Field()
 
-  parse (value) {
+  parse (value, inst) {
     if (value !== null || !(value instanceof this.objectClass)) {
       if (value instanceof Object) {
         this.objectClass.from(value)
@@ -13,7 +13,7 @@ class ObjectField extends Field {
         `Value must be instance of "${getModelName(this.objectClass)}"`
       )
     }
-    return super.parse(value)
+    return super.parse(value, inst)
   }
 }
 

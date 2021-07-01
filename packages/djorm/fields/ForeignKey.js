@@ -60,7 +60,7 @@ class ForeignKey extends Relation {
         )
       }
     }
-    if (parsed) {
+    if (inst && parsed) {
       inst.set(this.keyField, parsed.pk)
     }
     return parsed
