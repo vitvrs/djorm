@@ -52,14 +52,17 @@ class ForeignKey extends Relation {
     if (parsed && !(parsed instanceof Model)) {
       if (typeof parsed === 'object') {
         parsed = Model.from(parsed)
+      } else {
+        throw new ValueError(
+          `Value must be instance of "${getModelName(
+            Model
+          )}" or null, but "${parsed}" was given`
+        )
       }
-      throw new ValueError(
-        `Value must be instance of "${getModelName(
-          Model
-        )}" or null, but "${parsed}" was given`
-      )
     }
-    inst[this.keyField] = parsed.pk
+    if (parsed) {
+      inst.set(this.keyField, parsed.pk)
+    }
     return parsed
   }
 
