@@ -19,11 +19,10 @@
     "type": "git",
     "url": "git+https://github.com/just-paja/djorm.git"
   },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
   "dependencies": {
-    "@google-cloud/storage": "^5.8.1",
+    "@google-cloud/storage": "^5.8.1"
+  },
+  "peerDependencies": {
     "djorm": "file:../djorm"
   }
 }
