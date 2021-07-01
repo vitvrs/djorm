@@ -33,7 +33,7 @@
     "find-cache-dir": "^3.3.1",
     "jest-date-mock": "^1.0.8",
     "jsdoc": "^3.6.6",
-    "lerna": "^3.20.2",
+    "lerna": "^4.0.0",
     "lerna-ministack": "^0.5.4",
     "node-fetch": "^2.6.1",
     "tar": "^6.1.0",
