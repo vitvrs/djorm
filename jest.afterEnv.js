@@ -9,3 +9,5 @@ configure({
     level: 'error'
   }
 })
+
+process.on('unhandledRejection', console.warn)
