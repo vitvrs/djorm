@@ -207,6 +207,14 @@ class DatabaseModel extends DatabaseModelBase {
     } while (obj && obj !== DatabaseModel)
     return fields
   }
+
+  static toString () {
+    return getModelName(this)
+  }
+
+  toString () {
+    return `${this.constructor}#${this.pk || '(new)'}`
+  }
 }
 
 module.exports = {

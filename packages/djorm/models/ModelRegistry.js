@@ -4,8 +4,19 @@ const SELF = Symbol('models.Self')
 const models = {}
 const refs = {}
 
-const getModelName = model =>
-  model.meta && model.meta.modelName ? model.meta.modelName : model.name
+const getModelName = model => {
+  const modelName =
+    (model.meta && model.meta.modelName) ||
+    (typeof model.name === 'string' && model.name)
+  if (!modelName) {
+    throw new ModelError(
+      `Following model has class name overriden: ${Object.getOwnPropertyNames(
+        model
+      )}. Perhaps you will need to define a Meta class with \`modelName\` in it.`
+    )
+  }
+  return modelName
+}
 
 const getModels = () => models
 const getRelationships = () => refs
