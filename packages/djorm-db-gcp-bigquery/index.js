@@ -1,4 +1,5 @@
 const { BigQuery } = require('@google-cloud/bigquery')
+const { DatabaseError } = require('djorm/db/errors')
 const { Database } = require('djorm/db/Database')
 const { Delete } = require('djorm/db/Delete')
 const { Insert } = require('djorm/db/Insert')
@@ -107,6 +108,8 @@ class BigQueryWriter extends Writable {
     super({ objectMode: true })
     this.base = base
     this.model = model
+    this.tableName = this.model.tableName
+    this.schemaName = this.base.props.schema
   }
 
   formatChunk (chunk) {
@@ -116,7 +119,8 @@ class BigQueryWriter extends Writable {
   async _write (chunk, enc, next) {
     try {
       await this.base.waitForConnection()
-      const table = this.base.db.table(this.model.tableName)
+      const dataset = this.base.getDataset(this.schemaName)
+      const table = dataset.table(this.tableName)
       const data =
         chunk instanceof Array
           ? chunk.map(this.formatChunk)
@@ -170,6 +174,19 @@ class BigQueryDatabase extends Database {
 
   formatQuery (qs) {
     return this.formatter.formatQuery(qs)
+  }
+
+  getDataset (datasetName) {
+    return this.db.dataset(datasetName)
+  }
+
+  getTable (tableName) {
+    if (this.props.schema) {
+      return this.getDataset(this.props.schema).table(tableName)
+    }
+    throw new DatabaseError(
+      `Cannot resolve table ${tableName} without database schema defined.`
+    )
   }
 
   streamDb (qs) {
