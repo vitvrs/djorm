@@ -145,7 +145,7 @@ class DatabaseModel extends DatabaseModelBase {
         .values(row.values)
         .filter({ [row.model.pkName]: this.pk })
         .exec()
-      if (!result.changes) {
+      if (result && !result.changes) {
         await new Insert()
           .target(row.model)
           .values(row.values)
