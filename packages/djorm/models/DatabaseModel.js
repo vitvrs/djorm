@@ -140,11 +140,17 @@ class DatabaseModel extends DatabaseModelBase {
     await this.saveForeignKeys()
     const cascade = this.serializeDbValues()
     for (const row of cascade) {
-      await new Update()
+      const result = await new Update()
         .target(row.model)
         .values(row.values)
         .filter({ [row.model.pkName]: this.pk })
         .exec()
+      if (!result.changes) {
+        await new Insert()
+          .target(row.model)
+          .values(row.values)
+          .exec()
+      }
     }
     return this
   }

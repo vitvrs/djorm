@@ -269,6 +269,52 @@ const setupTests = () => {
   it('counts users', async () => {
     expect(await getModel('User').objects.count()).toBe(4)
   })
+
+  it('creates user with predefined primary key', async () => {
+    const User = getModel('User')
+    const user = new User({
+      createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+      id: 42,
+      name: 'Elzar Jetpack',
+      email: 'elzar@gmail.com',
+      superuser: false,
+      inactive: false
+    })
+    await user.save()
+    expect(await User.objects.all()).toContainEqual(
+      new User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        id: 42,
+        name: 'Elzar Jetpack',
+        email: 'elzar@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    )
+  })
+
+  it('updates existing user with predefined primary key', async () => {
+    const User = getModel('User')
+    const user = new User({
+      createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+      id: 1,
+      name: 'Elzar Jetpack',
+      email: 'elzar@gmail.com',
+      superuser: false,
+      inactive: false
+    })
+    await user.save()
+    expect(await User.objects.all()).toContainEqual(
+      new User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        id: 1,
+        name: 'Elzar Jetpack',
+        email: 'elzar@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    )
+  })
 }
 
 const setupSuite = () => {

@@ -89,7 +89,12 @@ class MysqlDatabase extends Database {
   }
 
   async execDb (str) {
-    return this.queryDb(str)
+    const result = await this.queryDb(str)
+    return {
+      ...result,
+      insertId: result.insertId,
+      changes: result.affectedRows
+    }
   }
 
   async runMysqlOperation (str) {

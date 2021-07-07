@@ -83,6 +83,7 @@ class SqliteDatabase extends Database {
       const result = this.db.prepare(str).run()
       return {
         ...result,
+        changes: result.changes,
         insertId: result.lastInsertRowid
       }
     })
