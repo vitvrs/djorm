@@ -4,7 +4,7 @@ const serialize = (obj, ...args) => {
   if (obj instanceof Array) {
     return obj.map(item => serialize(item, ...args))
   }
-  return obj && obj.toJson ? obj.toJson(...args) : obj
+  return (obj && obj.toJson ? obj.toJson(...args) : obj) || null
 }
 
 const filterUnique = (item, index, src) => src.indexOf(item) === index

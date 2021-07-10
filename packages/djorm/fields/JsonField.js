@@ -4,8 +4,18 @@ const { ValueError } = require('../errors')
 class JsonField extends TextField {
   indexable = false
 
+  toJson (value) {
+    return typeof value === 'string' || value === null
+      ? value
+      : JSON.stringify(value)
+  }
+
   toDb (value) {
-    return typeof value === 'string' ? value : JSON.stringify(value)
+    return super.toDb(this.toJson(value))
+  }
+
+  serialize (value) {
+    return super.serialize(this.toJson(value))
   }
 
   parse (value) {
