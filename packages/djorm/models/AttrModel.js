@@ -173,6 +173,7 @@ class Field extends GenericField {
   static private = new Field({ default: false })
   static secret = new Field()
   static validator = new Field()
+  static null = new Field({ default: false })
 
   /** Based on Robustness principle, fields will accept various representations
    *  of the actual value and try to parse it into a strict model value
