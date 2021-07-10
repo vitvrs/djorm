@@ -7,7 +7,7 @@ const { ValueError } = require('../errors')
 class DateTimeField extends TrivialField {
   parse (value) {
     if (!value) {
-      return value
+      return null
     }
     if (value instanceof Date) {
       return value
@@ -24,7 +24,10 @@ class DateTimeField extends TrivialField {
   }
 
   serialize (value) {
-    return moment(value).toISOString()
+    if (value) {
+      return moment(value).toISOString()
+    }
+    return null
   }
 }
 

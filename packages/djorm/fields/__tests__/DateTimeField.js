@@ -44,6 +44,16 @@ describe('DateTimeField', () => {
     expect(instance.testField).toEqual(new Date(Date.UTC(2021, 4, 24, 0, 0, 0)))
   })
 
+  it('serializes value as an ISO-8601 date time string', () => {
+    expect(
+      TestModel.testField.serialize(new Date(Date.UTC(2021, 4, 24, 12, 13, 43)))
+    ).toEqual('2021-05-24T12:13:43.000Z')
+  })
+
+  it('serializes `undefined` as a `null`', () => {
+    expect(TestModel.testField.serialize(undefined)).toEqual(null)
+  })
+
   it('throws value error on invalid date', () => {
     expect(
       () =>
