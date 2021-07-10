@@ -13,7 +13,7 @@ describe('ObjectField', () => {
 
   class TestModel extends DatabaseModel {
     static testField = new ObjectField({
-      objectClass: PassedModel
+      model: PassedModel
     })
   }
 
@@ -24,7 +24,7 @@ describe('ObjectField', () => {
     expect(instance.testField).toEqual(null)
   })
 
-  it('throws given objectClass is null', () => {
+  it('throws given model is null', () => {
     expect(() => {
       // eslint-disable-next-line no-unused-vars
       class Foo {

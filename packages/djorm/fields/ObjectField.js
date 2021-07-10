@@ -1,29 +1,36 @@
 const { Field } = require('../models/AttrModel')
-const { getModelName } = require('../models/ModelRegistry')
+const { getModel, getModelName } = require('../models/ModelRegistry')
 const { JsonField } = require('./JsonField')
 const { ModelError, ValueError } = require('../errors')
 const { serialize } = require('../filters')
 
 class ObjectField extends JsonField {
-  static objectClass = new Field()
+  static model = new Field()
 
   constructor (params) {
     super(params)
-    if (!this.objectClass) {
+    if (!this.model) {
       throw new ModelError(
-        'Missing `objectClass` while constructing `ObjectField`'
+        'You must provide `model` to construct `ObjectField`'
       )
     }
   }
 
+  resolveObjectClass () {
+    if (typeof this.model === 'string') {
+      this.model = getModel(this.model)
+    }
+  }
+
   parse (value, inst) {
-    if (value !== null && !(value instanceof this.objectClass)) {
+    this.resolveObjectClass()
+    if (value !== null && !(value instanceof this.model)) {
       if (value instanceof Object && value.constructor === Object) {
-        return this.objectClass.from(value)
+        return this.model.from(value)
       }
       throw new ValueError(
         `Value must be instance of "${getModelName(
-          this.objectClass
+          this.model
         )}" but "${value}" was given`
       )
     }

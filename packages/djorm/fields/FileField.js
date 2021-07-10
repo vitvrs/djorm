@@ -32,7 +32,7 @@ class FileStorage extends AttrModel {
 }
 
 class File extends AttrModel {
-  static storage = new ObjectField({ objectClass: FileStorage })
+  static storage = new ObjectField({ model: FileStorage })
   static basePath = new CharField()
   static name = new CharField()
 
@@ -67,11 +67,11 @@ class File extends AttrModel {
 
 class FileField extends Field {
   static basePath = new CharField()
-  static objectClass = new ObjectField({ default: File, objectClass: File })
-  static storage = new ObjectField({ objectClass: FileStorage })
+  static model = new ObjectField({ default: File, model: File })
+  static storage = new ObjectField({ model: FileStorage })
   static defaultStorage = new ObjectField({
     default: getSystemDefaultStorage,
-    objectClass: FileStorage
+    model: FileStorage
   })
 
   resolveStorage () {
@@ -85,8 +85,7 @@ class NamedFileField extends FileField {
   static storageField = new Field()
 
   parse (value, inst) {
-    const Model = this.objectClass
-    return new Model({
+    return this.model.from({
       storage: this.resolveStorage(inst),
       basePath: getFieldValue(inst, this.basePathField) || this.get('basePath'),
       name: getFieldValue(inst, this.nameField)
