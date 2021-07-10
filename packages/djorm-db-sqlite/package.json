@@ -1,6 +1,6 @@
 {
   "name": "djorm-db-sqlite",
-  "version": "0.1.11-alpha.1",
+  "version": "0.1.12-alpha.0",
   "description": "Sqlite bindings for djorm",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
