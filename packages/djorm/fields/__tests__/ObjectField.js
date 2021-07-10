@@ -72,7 +72,7 @@ describe('ObjectField', () => {
     expect(TestModel.testField.toDb(undefined)).toBe(null)
   })
 
-  it('serializes as JSON given value is truthy', () => {
+  it('serializes as plain object given value is truthy', () => {
     expect(
       TestModel.testField.serialize(
         new PassedModel({
@@ -80,7 +80,11 @@ describe('ObjectField', () => {
           lastName: 'bar'
         })
       )
-    ).toBe('{"firstName":"Foo","lastName":"bar","birth":null}')
+    ).toEqual({
+      firstName: 'Foo',
+      lastName: 'bar',
+      birth: null
+    })
   })
 
   it('serializes as null given value is falsy', () => {

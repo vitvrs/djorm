@@ -14,10 +14,6 @@ class JsonField extends TextField {
     return super.toDb(this.toJson(value))
   }
 
-  serialize (value) {
-    return super.serialize(this.toJson(value))
-  }
-
   parse (value) {
     try {
       return typeof value === 'string' ? JSON.parse(value) : value
