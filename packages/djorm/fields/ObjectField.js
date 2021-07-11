@@ -24,17 +24,18 @@ class ObjectField extends JsonField {
 
   parse (value, inst) {
     this.resolveObjectClass()
-    if (value !== null && !(value instanceof this.model)) {
-      if (value instanceof Object && value.constructor === Object) {
-        return this.model.from(value)
+    const preparsed = super.parse(value, inst)
+    if (preparsed !== null && !(preparsed instanceof this.model)) {
+      if (preparsed instanceof Object && preparsed.constructor === Object) {
+        return this.model.from(preparsed)
       }
       throw new ValueError(
         `Value must be instance of "${getModelName(
           this.model
-        )}" but "${value}" was given`
+        )}" but "${preparsed}" was given`
       )
     }
-    return super.parse(value, inst)
+    return preparsed
   }
 
   serialize (value) {
