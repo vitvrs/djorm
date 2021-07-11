@@ -6,7 +6,7 @@ moment.suppressDeprecationWarnings = true
 configure({
   secretKey: 'djorm-secret-key-test-123',
   logger: {
-    level: 'error'
+    level: 'warn'
   }
 })
 
