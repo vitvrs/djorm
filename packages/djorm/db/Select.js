@@ -117,8 +117,8 @@ class Select extends Query {
     return new this.db.Mapper(this)
   }
 
-  async stream () {
-    return (await super.stream()).pipe(this.getMapper())
+  stream () {
+    return super.stream().pipe(this.getMapper())
   }
 }
 

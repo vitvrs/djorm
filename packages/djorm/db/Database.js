@@ -140,8 +140,7 @@ class Database extends PropModel {
     throw new NotImplemented()
   }
 
-  async stream (qs) {
-    await this.waitForConnection()
+  stream (qs) {
     return this.streamDb(qs)
   }
 

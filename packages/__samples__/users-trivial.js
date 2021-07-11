@@ -4,7 +4,6 @@ const { advanceTo, clear } = require('jest-date-mock')
 const { DatabaseModel, clearModels, getModel } = require('djorm/models')
 const { init, shutdown } = require('djorm/config')
 const { serialize } = require('djorm/filters')
-const { TargetStream } = require('__mocks__/TargetStream')
 
 const setupModels = () => {
   beforeEach(() => {
@@ -35,53 +34,6 @@ const setupTests = () => {
     const result = await getModel('User').objects.all()
     const User = getModel('User')
     expect(result).toEqual([
-      new User({
-        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
-        id: 1,
-        name: 'Harmony Vasquez',
-        email: 'harmony.vasquez@gmail.com',
-        superuser: false,
-        inactive: false
-      }),
-      new User({
-        createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
-        id: 2,
-        name: 'Jasper Fraley',
-        email: 'jasper.fraley@seznam.cz',
-        superuser: true,
-        inactive: false
-      }),
-      new User({
-        createdAt: new Date(Date.UTC(2020, 0, 1, 22, 22, 22)),
-        id: 3,
-        name: 'Neil Henry',
-        email: 'neil.henry@iol.com',
-        superuser: false,
-        inactive: true
-      }),
-      new User({
-        createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
-        id: 4,
-        name: 'Merver Chin',
-        email: 'merver.chin@gmail.com',
-        superuser: true,
-        inactive: false
-      })
-    ])
-  })
-
-  it('streams all users', async () => {
-    const User = getModel('User')
-    const dest = new TargetStream()
-    const src = await User.objects.stream()
-    await new Promise((resolve, reject) => {
-      src
-        .pipe(dest)
-        .on('error', reject)
-        .on('finish', resolve)
-    })
-
-    expect(dest.data).toEqual([
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
         id: 1,
@@ -208,6 +160,38 @@ const setupTests = () => {
       inactive: false
     })
   })
+
+  const evilNames = [
+    // Backtick terminates query and double dash comments out the rest of the query
+    'This` or 1=1;--',
+    // Single quote can terminate value mantinels
+    "admin' --",
+    // Some common bypasses
+    "admin'/*",
+    "' or 1=1--",
+    "' or 1=1#",
+    "' or 1=1/*",
+    "') or '1'='1--",
+    "') or ('1'='1--",
+    // Backslashes are always a problem
+    '\\\\\\',
+    // Number sign can comment out query in MySQL
+    '`; DROP user; #'
+  ]
+
+  for (const evilName of evilNames) {
+    it(`inserts user named "${evilName}"`, async () => {
+      const User = getModel('User')
+      const user = new User({
+        name: evilName,
+        email: 'test@gmail.com'
+      })
+      await user.save()
+      expect(
+        serialize(await User.objects.get({ name: evilName }))
+      ).toHaveProperty('name', evilName)
+    })
+  }
 
   it('updates new user object primary key', async () => {
     const User = getModel('User')

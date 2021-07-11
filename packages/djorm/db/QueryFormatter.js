@@ -8,32 +8,34 @@ class QueryFormatter {
     `__(${Object.keys(ComparisonOperator).join('|')})$`
   )
 
+  escapeChar (char) {
+    switch (char) {
+      case '\0':
+        return '\\0'
+      case '\x08':
+        return '\\b'
+      case '\x09':
+        return '\\t'
+      case '\x1a':
+        return '\\z'
+      case '\n':
+        return '\\n'
+      case '\r':
+        return '\\r'
+      case "'":
+      case '\\':
+      case '%':
+        // prepends a backslash to backslash, percent,
+        // and double/single quotes
+        return '\\' + char
+      default:
+        return char
+    }
+  }
+
   escapeString (value) {
     // eslint-disable-next-line no-control-regex
-    return value.replace(/[\0\x08\x09\x1a\n\r"'\\%]/g, function (char) {
-      switch (char) {
-        case '\0':
-          return '\\0'
-        case '\x08':
-          return '\\b'
-        case '\x09':
-          return '\\t'
-        case '\x1a':
-          return '\\z'
-        case '\n':
-          return '\\n'
-        case '\r':
-          return '\\r'
-        case "'":
-        case '\\':
-        case '%':
-          // prepends a backslash to backslash, percent,
-          // and double/single quotes
-          return '\\' + char
-        default:
-          return char
-      }
-    })
+    return value.replace(/[\0\x08\x09\x1a\n\r"'\\%]/g, this.escapeChar)
   }
 
   formatDate (value) {

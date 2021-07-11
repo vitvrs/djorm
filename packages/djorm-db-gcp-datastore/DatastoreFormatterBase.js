@@ -18,10 +18,6 @@ class DatastoreFormatterBase extends QueryFormatter {
     return item && item.key && (item.key.id || item.key.name)
   }
 
-  getPrimaryKey (qs) {
-    return qs.model && qs.model.pkName
-  }
-
   formatKey (model, pk) {
     return this.db.key([model.table, pk])
   }

@@ -5,7 +5,7 @@ const { DatabaseModel, clearModels, getModel } = require('djorm/models')
 const { init, shutdown } = require('djorm/config')
 
 const setupModels = () => {
-  let models = {}
+  const models = {}
   beforeEach(() => {
     class UserKey extends DatabaseModel {
       static privateToken = new fields.CharField()
@@ -19,6 +19,7 @@ const setupModels = () => {
     class User extends DatabaseModel {
       static id = new fields.PositiveIntegerField()
       static name = new fields.CharField()
+      static frontendConfig = new fields.JsonField()
       static personalKey = new fields.ObjectField({
         model: UserKey
       })
@@ -52,6 +53,59 @@ const setupTests = models => {
         privateToken: 'foo',
         publicToken: 'bar'
       })
+    )
+  })
+
+  it('stores json field value', async () => {
+    const User = getModel('User')
+    const user = new User({
+      name: 'Elzar Jetpack',
+      frontendConfig: {
+        displayIntro: false
+      }
+    })
+    await user.save()
+    expect(await User.objects.get({ name: 'Elzar Jetpack' })).toHaveProperty(
+      'frontendConfig',
+      {
+        displayIntro: false
+      }
+    )
+  })
+
+  it('stores json field stringified value', async () => {
+    const User = getModel('User')
+    const user = new User({
+      name: 'Elzar Jetpack',
+      frontendConfig: JSON.stringify({
+        displayIntro: false
+      })
+    })
+    await user.save()
+    expect(await User.objects.get({ name: 'Elzar Jetpack' })).toHaveProperty(
+      'frontendConfig',
+      {
+        displayIntro: false
+      }
+    )
+  })
+
+  it('stores json field value with evil values', async () => {
+    const User = getModel('User')
+    const user = new User({
+      name: 'Elzar Jetpack',
+      frontendConfig: {
+        customGreeting: 'This is Tom\'s "dashboard"',
+        customFooter: '\\\\\\\\'
+      }
+    })
+    await user.save()
+    expect(await User.objects.get({ name: 'Elzar Jetpack' })).toHaveProperty(
+      'frontendConfig',
+      {
+        customGreeting: 'This is Tom\'s "dashboard"',
+        customFooter: '\\\\\\\\'
+      }
     )
   })
 }

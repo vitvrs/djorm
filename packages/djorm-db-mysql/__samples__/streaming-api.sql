@@ -1,0 +1,9 @@
+CREATE TABLE `user` (
+  `id`  INT(11) NOT NULL AUTO_INCREMENT,
+  `name`  VARCHAR(255) NOT NULL,
+  `email`  VARCHAR(255) NOT NULL,
+  `superuser`  INT(11) NOT NULL DEFAULT 0,
+  `inactive`  INT(11) NOT NULL DEFAULT 0,
+  `createdAt` DATETIME NOT NULL,
+  PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8;
