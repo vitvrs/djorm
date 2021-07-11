@@ -1,5 +1,6 @@
 const { getModelName } = require('../models/ModelRegistry')
 const { Transform } = require('stream')
+const { warn } = require('../logger')
 
 class DatabaseMapper extends Transform {
   static parseFieldName (fieldName, prefix) {
@@ -21,7 +22,7 @@ class DatabaseMapper extends Transform {
         } catch (e) {
           // Avoid killing mapper by parsing errors
           inst.set(fieldNameStripped, null)
-          // @TODO: Warn about this error!
+          warn(e)
         }
       }
     }
