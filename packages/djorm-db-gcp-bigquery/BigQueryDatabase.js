@@ -1,8 +1,9 @@
+const { BigQueryFormatter } = require('./BigQueryFormatter')
+const { BigQueryReader } = require('./BigQueryReader')
 const { BigQuery } = require('@google-cloud/bigquery')
 const { BigQueryWriter } = require('./BigQueryWriter')
 const { DatabaseError } = require('djorm/db/errors')
 const { Database } = require('djorm/db/Database')
-const { BigQueryFormatter } = require('./BigQueryFormatter')
 
 /** @typedef BigQueryDatabaseConfig
  * @property {string} driver      Driver to use, 'djorm-db-gcp-bigquery'
@@ -86,7 +87,7 @@ class BigQueryDatabase extends Database {
   }
 
   streamDb (qs) {
-    return this.db.createQueryStream(this.formatQuery(qs))
+    return new BigQueryReader(this, qs)
   }
 }
 
