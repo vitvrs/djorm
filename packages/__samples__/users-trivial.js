@@ -299,6 +299,23 @@ const setupTests = () => {
       })
     )
   })
+
+  it('stores double apostrophe value', async () => {
+    const User = getModel('User')
+    const user = await User.objects.get({ id: 1 })
+    user.name = "Elzar '' Jetpack"
+    await user.save()
+    expect(await User.objects.all()).toContainEqual(
+      new User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        id: 1,
+        name: "Elzar '' Jetpack",
+        email: 'harmony.vasquez@gmail.com',
+        superuser: false,
+        inactive: false
+      })
+    )
+  })
 }
 
 const setupSuite = () => {
