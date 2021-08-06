@@ -7,6 +7,16 @@ const { init, shutdown } = require('djorm/config')
 const setupModels = () => {
   const models = {}
   beforeEach(() => {
+    class LookupTable extends DatabaseModel {
+      static id = new fields.PositiveIntegerField()
+      static inputVariable = new fields.CharField()
+      static weight = new fields.PositiveIntegerField()
+    }
+
+    class UserLookupTable extends LookupTable {
+      static user = new fields.ForeignKey({ model: 'User' })
+    }
+
     class UserKey extends DatabaseModel {
       static privateToken = new fields.CharField()
       static publicToken = new fields.CharField()
@@ -30,8 +40,12 @@ const setupModels = () => {
     }
 
     User.register()
-    models.User = User
+    UserLookupTable.register()
+    LookupTable.register()
+    models.LookupTable = LookupTable
     models.UserKey = UserKey
+    models.UserLookupTable = UserLookupTable
+    models.User = User
   })
   return models
 }
@@ -106,6 +120,27 @@ const setupTests = models => {
         customGreeting: 'This is Tom\'s "dashboard"',
         customFooter: '\\\\\\\\'
       }
+    )
+  })
+
+  it('stores nested class instance IDs', async () => {
+    const User = getModel('User')
+    const UserLookupTable = getModel('UserLookupTable')
+    await User.from({
+      id: 101,
+      name: 'Elzar Jetpack'
+    }).save()
+    await UserLookupTable.from({
+      inputVariable: 'name',
+      userId: 101,
+      weight: 1
+    }).save()
+    expect(await UserLookupTable.objects.all()).toContainEqual(
+      expect.objectContaining({
+        inputVariable: 'name',
+        userId: 101,
+        weight: 1
+      })
     )
   })
 }
