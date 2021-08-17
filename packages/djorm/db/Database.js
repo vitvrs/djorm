@@ -8,6 +8,7 @@ class Database extends PropModel {
   connecting = false
   disconnectTimeout = null
   Mapper = DatabaseMapper
+  mergeNestedModels = false
 
   constructor (...args) {
     super(...args)

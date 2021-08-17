@@ -205,7 +205,10 @@ class DatabaseModel extends DatabaseModelBase {
         }),
         {}
       )
-      if (isAbstract(obj)) {
+      if (
+        fields[0] &&
+        (isAbstract(obj) || this.constructor.db.mergeNestedModels)
+      ) {
         fields[0].values = { ...fields[0].values, ...values }
       } else {
         fields.unshift({

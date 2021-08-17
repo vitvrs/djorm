@@ -7,8 +7,9 @@ const { DatastoreWriter } = require('./DatastoreWriter')
 
 class DatastoreDatabase extends Database {
   db = null
-  Mapper = DatastoreMapper
   Formatter = DatastoreFormatter
+  Mapper = DatastoreMapper
+  mergeNestedModels = true
 
   get config () {
     return {

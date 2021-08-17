@@ -44,6 +44,7 @@ class DatastoreFormatter extends DatastoreFormatterBase {
     return async () => {
       await this.driver.waitForConnection()
       const values = await this.prepareKeys(qs, this.formatValues(qs))
+      await this.driver.waitForConnection()
       await this.db.upsert(values)
       const last = values[values.length - 1]
       return {
