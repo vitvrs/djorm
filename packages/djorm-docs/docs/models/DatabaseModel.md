@@ -28,7 +28,7 @@ async function getAllJohns() {
 }
 ```
 
-## Model methods
+## Model instance methods
 
 This is the public model API intended for use. Feel free to extend these methods
 
@@ -83,4 +83,18 @@ Query the database for current entity state and store it in the instance.
 ```javascript
 const person = await Person.objects.get({ id: 1 })
 await person.refresh()
+```
+
+## Model static methods
+
+### `create(values)`
+
+Creates an instance of model and immediately storese it in the database.
+
+```javascript
+await Person.create({
+  firstName: 'Matthew',
+  lastName: 'Barnes',
+  birth: '1964-12-24'
+})
 ```

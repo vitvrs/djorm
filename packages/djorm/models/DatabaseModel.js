@@ -60,6 +60,10 @@ class DatabaseModel extends DatabaseModelBase {
     )
   }
 
+  static async create (values) {
+    return await this.from(values).save()
+  }
+
   get pk () {
     return this[this.constructor.pkName]
   }
