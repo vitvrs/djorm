@@ -24,6 +24,9 @@ class SqliteDatabase extends Database {
 
   async connectDb () {
     this.db = sqlite(this.path)
+    if (this.props.unsafeMode) {
+      this.db.unsafeMode()
+    }
   }
 
   async disconnectDb () {
