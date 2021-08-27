@@ -33,8 +33,33 @@ function parseMessage (message) {
     : null
 }
 
+async function retryOnFailure ({
+  fn,
+  maxRetries = 2,
+  attempt = 0,
+  timeout = 100
+}) {
+  try {
+    return await fn()
+  } catch (e) {
+    if (attempt < maxRetries) {
+      await new Promise(resolve => setTimeout(resolve, timeout))
+      return await retryOnFailure({
+        fn,
+        maxRetries,
+        attempt: attempt + 1,
+        timeout
+      })
+    }
+    throw e
+  }
+}
+
 async function publishMessage (topicName, message) {
-  await pubsub.topic(topicName).publish(formatMessage(message))
+  const topic = pubsub.topic(topicName)
+  await retryOnFailure({
+    fn: async () => topic.publish(formatMessage(message))
+  })
 }
 
 function resolveTopic (jobType) {
