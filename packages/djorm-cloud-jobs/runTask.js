@@ -19,7 +19,12 @@ const closeupParent = async (job, stage) => {
     if (parent.live) {
       await parent.fetchStats()
       const stats = parent.childStats
-      if (stats.trigger === 0 && stats.request === 0 && stats.stopped === 0) {
+      if (
+        stats.trigger === 0 &&
+        stats.request === 0 &&
+        stats.stopped === 0 &&
+        stats.waiting === 0
+      ) {
         info(`Calling ${parent.id} a ${stage}`)
         parent.status = stage
         await parent.save()
