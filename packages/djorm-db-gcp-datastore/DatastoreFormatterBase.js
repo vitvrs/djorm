@@ -2,7 +2,7 @@ const { ComparisonOperator } = require('djorm/db/ComparisonOperator')
 const { Q } = require('djorm/db/QueryCondition')
 const { QueryFormatter } = require('djorm/db/QueryFormatter')
 
-const filterNonEmpty = item => Boolean(item)
+const filterNonEmpty = item => typeof item !== 'undefined'
 
 class DatastoreFormatterBase extends QueryFormatter {
   constructor (driver) {
