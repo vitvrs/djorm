@@ -5,6 +5,14 @@ class JsonField extends TextField {
   indexable = false
 
   toJson (value) {
+    if (typeof value === 'string') {
+      try {
+        JSON.parse(value)
+        return value
+      } catch (e) {
+        return JSON.stringify(value)
+      }
+    }
     return typeof value === 'string' || value === null
       ? value
       : JSON.stringify(value)
