@@ -149,7 +149,7 @@ class JobBase extends DatabaseModel {
 
   /** @type {object} output Job outputs as JSON object. This field is stored
    *  in the jobs database. */
-  static output = new JsonField()
+  static output = new JsonField({ null: true })
 
   /**
    * @type {Date} createdAt When was this job created?

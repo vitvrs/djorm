@@ -47,25 +47,25 @@ describe('createSubscription', () => {
         type: 'job-type',
         status: 'success',
         props: {
-          index: 0,
-          output: 'foo'
-        }
+          index: 0
+        },
+        output: 'foo'
       }),
       expect.objectContaining({
         type: 'job-type',
         status: 'success',
         props: {
-          index: 1,
-          output: 'bar'
-        }
+          index: 1
+        },
+        output: 'bar'
       }),
       expect.objectContaining({
         type: 'job-type',
         status: 'success',
         props: {
-          index: 2,
-          output: 'baz'
-        }
+          index: 2
+        },
+        output: 'baz'
       })
     ])
   })
