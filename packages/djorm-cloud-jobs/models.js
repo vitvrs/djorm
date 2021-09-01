@@ -144,6 +144,10 @@ class JobBase extends DatabaseModel {
    *   in the jobs database. */
   static props = new JsonField()
 
+  /** @type {object} output Job outputs as JSON object. This field is stored
+   *  in the jobs database. */
+  static output = new JsonField()
+
   /**
    * @type {Date} createdAt When was this job created?
    * @default 'now' */
@@ -222,14 +226,6 @@ class JobBase extends DatabaseModel {
         }
       })
     )
-  }
-
-  get output () {
-    return (this.props && this.props.output) || null
-  }
-
-  set output (output) {
-    this.props = { ...this.props, output }
   }
 
   /** Fetch child and descendant stats for this job. The data are stored in
