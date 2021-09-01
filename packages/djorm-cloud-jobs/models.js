@@ -137,6 +137,9 @@ class JobBase extends DatabaseModel {
   /** @type {int} retried How many times was this job retried */
   static retried = new PositiveIntegerField({ default: 0 })
 
+  /** @type {int} maxAge Maximum job age in minuts. It should be terminated after. */
+  static maxAge = new PositiveIntegerField({ default: 240 })
+
   /** @type {int} maxRetries Maximum number of retry attempts */
   static maxRetries = new PositiveIntegerField({ default: 3 })
 
