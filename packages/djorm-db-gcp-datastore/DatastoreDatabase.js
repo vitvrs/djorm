@@ -1,3 +1,4 @@
+const { ComplexQuery } = require('./ComplexQuery')
 const { Database } = require('djorm/db/Database')
 const { DatastoreFormatter } = require('./DatastoreFormatter')
 const { DatastoreMapper } = require('./DatastoreMapper')
@@ -41,6 +42,9 @@ class DatastoreDatabase extends Database {
 
   async queryDb (configureQuery) {
     const query = configureQuery()
+    if (query instanceof ComplexQuery) {
+      return await query.run()
+    }
     const [result] = await this.db.runQuery(query)
     return query.postprocess ? query.postprocess(result) : result
   }

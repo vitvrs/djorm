@@ -1,4 +1,5 @@
 const { ComparisonOperator } = require('djorm/db/ComparisonOperator')
+const { ComplexQuery } = require('./ComplexQuery')
 const { Count } = require('djorm/db/Count')
 const { DatastoreFormatterBase } = require('./DatastoreFormatterBase')
 const { Delete } = require('djorm/db/Delete')
@@ -7,6 +8,7 @@ const { NotImplemented } = require('djorm/errors')
 const { QueryFormatterError } = require('djorm/db/errors')
 const { Select } = require('djorm/db/Select')
 const { Update } = require('djorm/db/Update')
+const { Writable } = require('stream')
 
 class DatastoreFormatter extends DatastoreFormatterBase {
   constructor (driver) {
@@ -63,16 +65,28 @@ class DatastoreFormatter extends DatastoreFormatterBase {
       const count = qs.props.selection.find(item => item instanceof Count)
       // @HACK: Assume this is count query and add dummy postprocessor
       if (count) {
-        const dsq = dsQuery
-          .select('__key__')
-          .limit(-1)
-          .offset(0)
-
-        dsq.postprocess = results => [
-          {
-            __djorm_cnt: results.length
-          }
-        ]
+        const dsq = new ComplexQuery(
+          async () =>
+            await new Promise((resolve, reject) => {
+              let total = 0
+              dsQuery
+                .select('__key__')
+                .limit(-1)
+                .offset(0)
+                .runStream()
+                .pipe(
+                  new Writable({
+                    objectMode: true,
+                    write (chunk, enc, next) {
+                      total += 1
+                      next()
+                    }
+                  })
+                )
+                .on('finish', () => resolve([{ __djorm_cnt: total }]))
+                .on('error', reject)
+            })
+        )
         return dsq
       }
       return dsQuery
