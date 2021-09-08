@@ -160,6 +160,7 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   async save () {
+    await this.validate()
     if (this.pk) {
       return await this.update()
     }
