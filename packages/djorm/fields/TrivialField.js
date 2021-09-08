@@ -1,4 +1,4 @@
-const { ValueError } = require('../errors')
+const { FieldValidationError } = require('../errors')
 const { Field } = require('../models/AttrModel')
 
 class TrivialField extends Field {
@@ -13,7 +13,11 @@ class TrivialField extends Field {
       this.choices &&
       !this.choices.includes(value)
     ) {
-      throw new ValueError(`Invalid choice "${value}"`)
+      throw new FieldValidationError(
+        inst,
+        fieldName,
+        `Invalid choice "${value}"`
+      )
     }
     return super.validateValue(inst, fieldName)
   }
