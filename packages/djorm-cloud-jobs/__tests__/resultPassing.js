@@ -32,41 +32,44 @@ describe('createSubscription', () => {
 
   it('bubbles to the root job handler', async () => {
     const job = new Job({
+      id: 1,
       type: 'parent-job-type'
     })
     await app.runJob(formatMessageObject(job))
     await init()
     const state = await Job.objects.all()
-    expect(state).toEqual([
-      expect.objectContaining({
-        id: 1,
-        type: 'parent-job-type',
-        status: 'success'
-      }),
-      expect.objectContaining({
-        type: 'job-type',
-        status: 'success',
-        props: {
-          index: 0
-        },
-        output: 'foo'
-      }),
-      expect.objectContaining({
-        type: 'job-type',
-        status: 'success',
-        props: {
-          index: 1
-        },
-        output: 'bar'
-      }),
-      expect.objectContaining({
-        type: 'job-type',
-        status: 'success',
-        props: {
-          index: 2
-        },
-        output: 'baz'
-      })
-    ])
+    expect(state).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 1,
+          type: 'parent-job-type',
+          status: 'success'
+        }),
+        expect.objectContaining({
+          type: 'job-type',
+          status: 'success',
+          props: {
+            index: 0
+          },
+          output: 'foo'
+        }),
+        expect.objectContaining({
+          type: 'job-type',
+          status: 'success',
+          props: {
+            index: 1
+          },
+          output: 'bar'
+        }),
+        expect.objectContaining({
+          type: 'job-type',
+          status: 'success',
+          props: {
+            index: 2
+          },
+          output: 'baz'
+        })
+      ])
+    )
   })
 })

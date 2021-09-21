@@ -29,19 +29,25 @@ const jobType = 'job-type'
 
 const parentJobHandlers = {
   onRequest: async job => {
-    for (let index = 0; index < 3; index++) {
-      await job.spawnChild({
-        type: jobType,
-        props: {
-          index
-        }
-      })
-    }
+    await Promise.all(
+      [0, 1, 2].map(
+        async index =>
+          await job.spawnChild({
+            type: jobType,
+            props: {
+              index
+            }
+          })
+      )
+    )
   }
 }
 
 const jobHandlers = {
-  onRequest: job => {
+  onRequest: async job => {
+    await new Promise(resolve =>
+      setTimeout(resolve, 66 / (job.props.index + 1))
+    )
     switch (job.props.index) {
       case 2:
         return 'baz'

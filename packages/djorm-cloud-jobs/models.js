@@ -87,7 +87,7 @@ class JobBase extends DatabaseModel {
   static parent = new ForeignKey({
     model: SELF,
     keyField: 'parentId',
-    keyFieldType: CharField,
+    null: true,
     relatedName: 'children'
   })
 
@@ -95,7 +95,7 @@ class JobBase extends DatabaseModel {
   static root = new ForeignKey({
     model: SELF,
     keyField: 'rootId',
-    keyFieldType: CharField,
+    null: true,
     relatedName: 'descendants'
   })
 
@@ -145,7 +145,7 @@ class JobBase extends DatabaseModel {
 
   /** @type {object} props Job props as a JSON object. This field is stored
    *   in the jobs database. */
-  static props = new JsonField()
+  static props = new JsonField({ null: true })
 
   /** @type {object} output Job outputs as JSON object. This field is stored
    *  in the jobs database. */
@@ -261,8 +261,13 @@ class JobBase extends DatabaseModel {
    * @returns {JobBase} The same job instance
    */
   async create (preventSpawn = false) {
+    const shouldSpawn = !this.id
     await super.create()
-    if (this.get('status') === JobStatus.trigger && !preventSpawn) {
+    if (
+      shouldSpawn &&
+      this.get('status') === JobStatus.trigger &&
+      !preventSpawn
+    ) {
       await this.spawn()
     }
     return this

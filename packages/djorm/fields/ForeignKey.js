@@ -28,7 +28,9 @@ class ForeignKey extends Relation {
     if (!this.parentModel) {
       this.parentModel = SELF
     }
-    this.foreignKeyField = new KeyFieldType()
+    this.foreignKeyField = new KeyFieldType({
+      null: this.null
+    })
     this.expandedField = {
       [this.keyField]: this.foreignKeyField
     }

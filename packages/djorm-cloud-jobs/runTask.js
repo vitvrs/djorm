@@ -60,7 +60,7 @@ async function runStage (handlers, job, stage, ...args) {
   return outputs
 }
 
-function parseJobOutput (job, outputs) {
+async function resolveJobOutput (job, outputs) {
   let result = null
   let status = null
   if (outputs instanceof Array) {
@@ -69,8 +69,21 @@ function parseJobOutput (job, outputs) {
   } else {
     result = outputs
   }
-  if (!status && job.childrenIds.length === 0) {
-    status = JobStatus.success
+  if (!status) {
+    if (job.childrenIds.length === 0) {
+      status = JobStatus.success
+    } else {
+      if (
+        await job
+          .rel('children')
+          .filter({ live: true })
+          .first()
+      ) {
+        status = JobStatus.waiting
+      } else {
+        status = JobStatus.success
+      }
+    }
   }
   return [result, status]
 }
@@ -92,7 +105,7 @@ async function runTask (handlers, job) {
   } else {
     try {
       const outputs = await runStage(handlers, job, JobStatus.request)
-      const [result, status] = parseJobOutput(job, outputs)
+      const [result, status] = await resolveJobOutput(job, outputs)
       job.output = result
       if (status) {
         await runStage(handlers, job, status)

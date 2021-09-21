@@ -1,5 +1,5 @@
-const { FieldError, ValueError, UnknownField } = require('../errors')
 const { concatValidators, filterUnique } = require('../filters')
+const { FieldError, FieldValidationError, UnknownField } = require('../errors')
 const { getModelName, registerModel } = require('./ModelRegistry')
 
 let FieldModel = null
@@ -168,12 +168,8 @@ class GenericField extends AttrModel {
 
 FieldModel = GenericField
 
-class Field extends GenericField {
-  static default = new Field()
-  static private = new Field({ default: false })
-  static secret = new Field()
-  static validator = new Field()
-  static null = new Field({ default: false })
+class FieldBase extends GenericField {
+  static default = new FieldBase()
 
   /** Based on Robustness principle, fields will accept various representations
    *  of the actual value and try to parse it into a strict model value
@@ -183,11 +179,6 @@ class Field extends GenericField {
    *  @returns {any} Model value representation
    */
   parse (value, inst) {
-    if (!this.null && value === null) {
-      throw new ValueError(
-        `Passed null to non-null field ${getModelName(this.constructor)}`
-      )
-    }
     return value
   }
 
@@ -221,15 +212,30 @@ class Field extends GenericField {
     }
     return this.default
   }
+}
+
+class Field extends FieldBase {
+  static null = new FieldBase({ default: false })
+  static private = new FieldBase({ default: false })
+  static secret = new FieldBase()
+  static validator = new FieldBase()
 
   /** Given this field has a validator, try to run it as a callback. Callback
    *  will receive field value, the model instance, and field name as
    *  arguments.
    */
   async validateValue (inst, fieldName) {
-    return this.validator
-      ? await this.validator(inst.get(fieldName), inst, fieldName)
-      : null
+    const value = inst.get(fieldName)
+    if (!this.null && value === null) {
+      throw new FieldValidationError(
+        inst,
+        fieldName,
+        `Passed \`null\` to non-null field ${getModelName(
+          inst.constructor
+        )}.${fieldName}`
+      )
+    }
+    return this.validator ? await this.validator(value, inst, fieldName) : null
   }
 }
 

@@ -11,9 +11,9 @@ const { DatabaseModel } = require('djorm/models')
 class User extends DatabaseModel {
   static id = new fields.PositiveIntegerField()
   static name = new fields.CharField()
-  static email = new fields.CharField()
-  static superuser = new fields.BooleanField()
-  static inactive = new fields.BooleanField()
+  static email = new fields.CharField({ null: true })
+  static superuser = new fields.BooleanField({ default: false })
+  static inactive = new fields.BooleanField({ default: false })
 
   static meta = class {
     static modelName = 'User'
@@ -50,9 +50,9 @@ class AuditLog extends DatabaseModel {
 class Job extends DatabaseModel {
   static id = new fields.PositiveIntegerField()
   static type = new fields.CharField()
-  static props = new fields.JsonField()
+  static props = new fields.JsonField({ null: true })
   static createdAt = new fields.DateTimeField()
-  static updatedAt = new fields.DateTimeField()
+  static updatedAt = new fields.DateTimeField({ null: true })
 }
 
 class UserJob extends Job {
