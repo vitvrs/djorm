@@ -1,4 +1,4 @@
-const { FieldError, UnknownField } = require('../errors')
+const { FieldError, ValueError, UnknownField } = require('../errors')
 const { concatValidators, filterUnique } = require('../filters')
 const { getModelName, registerModel } = require('./ModelRegistry')
 
@@ -183,6 +183,11 @@ class Field extends GenericField {
    *  @returns {any} Model value representation
    */
   parse (value, inst) {
+    if (!this.null && value === null) {
+      throw new ValueError(
+        `Passed null to non-null field ${getModelName(this.constructor)}`
+      )
+    }
     return value
   }
 
