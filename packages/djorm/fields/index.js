@@ -1,6 +1,7 @@
 const { Field } = require('../models/AttrModel')
 
 module.exports = {
+  ...require('./ArrayField'),
   ...require('./BooleanField'),
   ...require('./CharField'),
   ...require('./DateField'),
