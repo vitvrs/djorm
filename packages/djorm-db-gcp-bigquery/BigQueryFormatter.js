@@ -1,3 +1,4 @@
+const { QueryArray } = require('djorm/db/QueryArray')
 const { SqlFormatter } = require('djorm-db-sql')
 
 class BigQueryFormatter extends SqlFormatter {
@@ -10,6 +11,10 @@ class BigQueryFormatter extends SqlFormatter {
       default:
         return super.escapeChar(char)
     }
+  }
+
+  formatValue (value) {
+    return super.formatValue(value instanceof QueryArray ? value.value : value)
   }
 }
 
