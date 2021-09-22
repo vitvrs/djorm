@@ -4,6 +4,7 @@ const { advanceTo, clear } = require('jest-date-mock')
 const { DatabaseModel, clearModels, getModel } = require('djorm/models')
 const { init, shutdown } = require('djorm/config')
 const { FieldValidationError } = require('djorm/errors')
+const { QueryArray } = require('djorm/db/QueryArray')
 
 const setupModels = () => {
   const models = {}
@@ -165,6 +166,19 @@ const setupTests = models => {
       'arrayField',
       null
     )
+  })
+
+  it('finds instance based on array', async () => {
+    const NullStringArrayModel = getModel('NullStringArrayModel')
+    await NullStringArrayModel.create({
+      id: 1,
+      arrayField: ['1', 2, 3]
+    })
+    await expect(
+      NullStringArrayModel.objects.get({
+        arrayField: new QueryArray(['1', '2', '3'])
+      })
+    ).resolves.toBeInstanceOf(NullStringArrayModel)
   })
 }
 

@@ -1,6 +1,7 @@
 const { Database } = require('djorm/db/Database')
 const { getSettings } = require('djorm/config')
-const { SqlFormatter } = require('djorm-db-sql')
+const { MysqlFormatter } = require('./MysqlFormatter')
+const { MysqlParser } = require('./MysqlParser')
 const { MysqlReader } = require('./MysqlReader')
 const { MysqlWriter } = require('./MysqlWriter')
 
@@ -26,7 +27,8 @@ const promise = async (fn, context, ...args) =>
   })
 
 class MysqlDatabase extends Database {
-  formatter = new SqlFormatter()
+  formatter = new MysqlFormatter()
+  parser = new MysqlParser()
   db = null
 
   errorNumberMap = {
