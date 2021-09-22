@@ -5,6 +5,7 @@ const { DatastoreFormatterBase } = require('./DatastoreFormatterBase')
 const { Delete } = require('djorm/db/Delete')
 const { Insert } = require('djorm/db/Insert')
 const { NotImplemented } = require('djorm/errors')
+const { QueryArray } = require('djorm/db/QueryArray')
 const { QueryFormatterError } = require('djorm/db/errors')
 const { Select } = require('djorm/db/Select')
 const { Update } = require('djorm/db/Update')
@@ -155,6 +156,11 @@ class DatastoreFormatter extends DatastoreFormatterBase {
   }
 
   mapSelectCondition (qs, query, fieldName, operator, value) {
+    if (value instanceof QueryArray) {
+      return value.value.reduce((aggr, item) => {
+        return aggr.filter(fieldName, operator, item)
+      }, query)
+    }
     if (qs.model && qs.model.pkName === fieldName) {
       return query.filter('__key__', operator, this.formatKey(qs.model, value))
     }

@@ -10,10 +10,13 @@ class DatastoreMapper extends DatabaseMapper {
     }
     return item => {
       const { [Datastore.KEY]: key, ...data } = item
-      return new Model({
-        ...data,
+      const inst = new Model({
         [Model.pkName]: getKeyValue(key)
       })
+      for (const [fieldName, value] of Object.entries(data)) {
+        inst.setFromDb(fieldName, value)
+      }
+      return inst
     }
   }
 }

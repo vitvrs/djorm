@@ -1,5 +1,6 @@
 const { ComparisonOperator } = require('djorm/db/ComparisonOperator')
 const { Q } = require('djorm/db/QueryCondition')
+const { QueryArray } = require('djorm/db/QueryArray')
 const { QueryFormatter } = require('djorm/db/QueryFormatter')
 
 const filterNonEmpty = item => typeof item !== 'undefined'
@@ -22,13 +23,30 @@ class DatastoreFormatterBase extends QueryFormatter {
     return this.db.key([model.table, pk])
   }
 
-  formatValue (qs, data) {
+  formatValue (value) {
+    if (value instanceof QueryArray) {
+      return value.value
+    }
+    return value
+  }
+
+  formatEntityProps (data) {
+    return Object.entries(data).reduce(
+      (aggr, [fieldName, value]) =>
+        Object.assign(aggr, { [fieldName]: this.formatValue(value) }),
+      data
+    )
+  }
+
+  formatEntity (qs, entityData) {
     const excludeFromIndexes = qs.props.model
       .getDatabaseFields()
       .filter(([key, field]) => !field.indexable)
       .map(([key]) => key)
+    const data = this.formatEntityProps(entityData)
+    const key = this.formatKey(qs.props.model, data[qs.props.model.pkName])
     return {
-      key: this.formatKey(qs.props.model, data[qs.props.model.pkName]),
+      key,
       data,
       excludeLargeProperties: true,
       excludeFromIndexes
@@ -37,8 +55,8 @@ class DatastoreFormatterBase extends QueryFormatter {
 
   formatValues (qs) {
     return qs.props.values instanceof Array
-      ? qs.props.values.map(data => this.formatValue(qs, data))
-      : [this.formatValue(qs, qs.props.values)]
+      ? qs.props.values.map(data => this.formatEntity(qs, data))
+      : [this.formatEntity(qs, qs.props.values)]
   }
 
   mapConditionExpression = (qs, query, condition, fieldSpec, value) => {
