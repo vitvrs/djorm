@@ -1,6 +1,6 @@
 const { ArrayField, CharField, IntegerField } = require('..')
 const { AttrModel } = require('../../models')
-const { ValueError } = require('../../errors')
+const { FieldValidationError, ValueError } = require('../../errors')
 
 describe('ArrayField', () => {
   it('accepts null value given field is nullable', () => {
@@ -14,14 +14,15 @@ describe('ArrayField', () => {
     expect(inst.testField).toBe(null)
   })
 
-  it('rejects null value given field is not nullable', () => {
+  it('rejects null value given field is not nullable', async () => {
     class TestClass extends AttrModel {
       static testField = new ArrayField({
         baseField: new IntegerField(),
         null: false
       })
     }
-    expect(() => new TestClass({ testField: null })).toThrow(ValueError)
+    const inst = new TestClass({ testField: null })
+    await expect(inst.validate()).rejects.toBeInstanceOf(FieldValidationError)
   })
 
   describe('with IntegerField base field', () => {

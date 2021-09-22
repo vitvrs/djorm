@@ -1,6 +1,7 @@
 const { Field } = require('../models/AttrModel')
 const { getModelName } = require('../models/ModelRegistry')
 const { ValueError } = require('../errors')
+const { QueryArray } = require('../db/QueryArray')
 
 class ArrayField extends Field {
   static baseField = new Field()
@@ -17,7 +18,9 @@ class ArrayField extends Field {
       return super.parse(value, inst)
     }
     throw new ValueError(
-      `Value passed to ${getModelName(this.constructor)} must be an Array.`
+      `Value passed to ${getModelName(
+        this.constructor
+      )} must be an Array, but ${typeof value} "${value}" was given`
     )
   }
 
@@ -25,8 +28,17 @@ class ArrayField extends Field {
     return this.parse(value, inst)
   }
 
-  async validateValue (inst, fieldName) {
-    await super.validateValue(inst, fieldName)
+  toDb (value) {
+    return value ? new QueryArray(value) : null
+  }
+
+  async validateValue (value, inst, fieldName) {
+    if (value) {
+      for (const item of value) {
+        await this.baseField.validateValue(item, inst, fieldName)
+      }
+    }
+    await super.validateValue(value, inst, fieldName)
   }
 }
 

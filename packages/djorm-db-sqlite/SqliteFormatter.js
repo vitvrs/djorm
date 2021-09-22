@@ -1,4 +1,5 @@
 const { SqlFormatter } = require('djorm-db-sql')
+const { QueryArray } = require('djorm/db/QueryArray')
 
 class SqliteFormatter extends SqlFormatter {
   escapeChar (char) {
@@ -9,6 +10,12 @@ class SqliteFormatter extends SqlFormatter {
       return '\\'
     }
     return super.escapeChar(char)
+  }
+
+  formatValue (value) {
+    return super.formatValue(
+      value instanceof QueryArray ? JSON.stringify(value.value) : value
+    )
   }
 }
 

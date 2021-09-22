@@ -89,7 +89,10 @@ class DatabaseModel extends DatabaseModelBase {
   setFromDb (fieldName, value) {
     const field = this.constructor.getField(fieldName)
     try {
-      this[fieldName] = field.fromDb(value, this)
+      this[fieldName] = field.fromDb(
+        this.constructor.db.parseValue(field, value),
+        this
+      )
     } catch (e) {
       if (e instanceof FieldError) {
         e.message = `${e.message} when processing value for ${getModelName(

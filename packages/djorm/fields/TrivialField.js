@@ -6,8 +6,7 @@ class TrivialField extends Field {
   db = true
   indexable = true
 
-  validateValue (inst, fieldName) {
-    const value = inst.get(fieldName)
+  validateValue (value, inst, fieldName) {
     if (
       typeof value !== 'undefined' &&
       this.choices &&
@@ -19,7 +18,7 @@ class TrivialField extends Field {
         `Invalid choice "${value}"`
       )
     }
-    return super.validateValue(inst, fieldName)
+    return super.validateValue(value, inst, fieldName)
   }
 }
 

@@ -1,6 +1,7 @@
 const { Database } = require('djorm/db/Database')
 const { SqliteFormatter } = require('./SqliteFormatter')
 const { SqliteReader } = require('./SqliteReader')
+const { SqliteParser } = require('./SqliteParser')
 const { SqliteWriter } = require('./SqliteWriter')
 
 const errors = require('djorm/db/errors')
@@ -8,6 +9,7 @@ const sqlite = require('better-sqlite3')
 
 class SqliteDatabase extends Database {
   formatter = new SqliteFormatter()
+  parser = new SqliteParser()
   db = null
 
   errorCodeMap = {

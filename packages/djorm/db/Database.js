@@ -148,6 +148,13 @@ class Database extends PropModel {
   streamDb (qs) {
     throw new NotImplemented()
   }
+
+  parseValue (field, value) {
+    if (this.parser) {
+      return this.parser.parseValue(field, value)
+    }
+    return value
+  }
 }
 
 module.exports = { Database }

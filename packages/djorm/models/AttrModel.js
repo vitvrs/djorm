@@ -145,10 +145,8 @@ class AttrModel {
 
   async validate () {
     const validator = concatValidators(
-      ...this.constructor.fieldObjects.map(
-        ([fieldName, field]) => async inst => {
-          return await field.validateValue(inst, fieldName)
-        }
+      ...this.constructor.fieldObjects.map(([fieldName, field]) => async inst =>
+        await field.validateValue(inst.get(fieldName), inst, fieldName)
       )
     )
     await validator(this)
@@ -224,8 +222,7 @@ class Field extends FieldBase {
    *  will receive field value, the model instance, and field name as
    *  arguments.
    */
-  async validateValue (inst, fieldName) {
-    const value = inst.get(fieldName)
+  async validateValue (value, inst, fieldName) {
     if (!this.null && value === null) {
       throw new FieldValidationError(
         inst,
