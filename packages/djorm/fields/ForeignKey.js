@@ -44,6 +44,17 @@ class ForeignKey extends Relation {
     return this.get('model')
   }
 
+  resolveValueInstance (parentInstance, fieldName) {
+    const value = parentInstance.get(fieldName)
+    if (value) {
+      return value
+    }
+    const Model = getModel(this.model)
+    const newInstance = new Model()
+    parentInstance[fieldName] = newInstance
+    return newInstance
+  }
+
   expand () {
     return this.expandedField
   }

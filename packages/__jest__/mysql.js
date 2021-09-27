@@ -52,10 +52,12 @@ const setupDbServer = () => {
 
   const startServer = async () => {
     return await new Promise((resolve, reject) => {
-      config.serverProcess = spawn('mysqld', [
+      const serverProcess = spawn('mysqld', [
         `--defaults-file=${config.configFile.path}`
       ])
-      config.serverProcess.stderr.on('data', data => {
+      config.serverProcess = serverProcess
+      serverProcess.on('error', reject)
+      serverProcess.stderr.on('data', data => {
         const str = String(data)
         if (str.includes('ready for connections')) {
           resolve()

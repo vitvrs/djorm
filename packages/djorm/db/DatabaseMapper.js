@@ -3,27 +3,15 @@ const { Transform } = require('stream')
 const { warn } = require('../logger')
 
 class DatabaseMapper extends Transform {
-  static parseFieldName (fieldName, prefix) {
-    if (fieldName.startsWith(prefix)) {
-      return fieldName.substr(prefix.length)
-    } else if (!fieldName.includes('__')) {
-      return fieldName
-    }
-    return null
-  }
-
-  static updateInstanceValues (inst, values, prefix) {
+  static updateInstanceValues (inst, values) {
     const entries = Object.entries(values)
-    for (const [fieldName, fieldValue] of entries) {
-      const fieldNameStripped = this.parseFieldName(fieldName, prefix)
-      if (fieldNameStripped) {
-        try {
-          inst.setFromDb(fieldNameStripped, fieldValue)
-        } catch (e) {
-          // Avoid killing mapper by parsing errors
-          inst.set(fieldNameStripped, null)
-          warn(e)
-        }
+    for (const [fieldPath, fieldValue] of entries) {
+      try {
+        inst.consumeDbValue(fieldPath, fieldValue)
+      } catch (e) {
+        // Avoid killing mapper by parsing errors
+        inst.consumeDbValue(fieldPath, null)
+        warn(e)
       }
     }
   }

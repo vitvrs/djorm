@@ -14,7 +14,7 @@ class DatastoreMapper extends DatabaseMapper {
         [Model.pkName]: getKeyValue(key)
       })
       for (const [fieldName, value] of Object.entries(data)) {
-        inst.setFromDb(fieldName, value)
+        inst.consumeDbValue(fieldName, value)
       }
       return inst
     }

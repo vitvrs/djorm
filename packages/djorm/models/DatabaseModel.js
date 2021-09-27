@@ -17,6 +17,8 @@ const {
 
 const nonEmpty = item => Boolean(item)
 
+const FIELD_SEPARATOR = '__'
+
 class DatabaseModel extends DatabaseModelBase {
   static NotFound = ObjectNotFound
   static pkName = 'id'
@@ -86,22 +88,53 @@ class DatabaseModel extends DatabaseModelBase {
     }
   }
 
-  setFromDb (fieldName, value) {
-    const field = this.constructor.getField(fieldName)
-    try {
-      this[fieldName] = field.fromDb(
-        this.constructor.db.parseValue(field, value),
+  /**
+   *  Used by DatabaseMapper to compose data into nested instances. Returns
+   *  field target as an array of [
+   *   target DatabaseModel instance,
+   *   target Field instance,
+   *   target field name
+   *  ]. The value should be written into the returned instance.
+   *
+   * @param {string} fieldPath Field path separated by double underscore
+   * @returns {[DatabaseModel, Field, string]}
+   */
+  getFieldTarget (fieldPath) {
+    const separatorIndex = fieldPath.indexOf(FIELD_SEPARATOR)
+    if (separatorIndex === -1) {
+      return [this, this.constructor.getField(fieldPath), fieldPath]
+    }
+    const localFieldName = fieldPath.substr(0, separatorIndex)
+    const field = this.constructor.getField(localFieldName)
+    if (field.resolveValueInstance instanceof Function) {
+      return field
+        .resolveValueInstance(this, localFieldName)
+        .getFieldTarget(
+          fieldPath.substr(separatorIndex + FIELD_SEPARATOR.length)
+        )
+    }
+    throw new FieldError(
+      `Field ${getModelName(
         this
+      )}.${fieldPath} does not accept nested properties`
+    )
+  }
+
+  consumeDbValue (fieldPath, value) {
+    try {
+      const [inst, field, fieldName] = this.getFieldTarget(fieldPath)
+      inst[fieldName] = field.fromDb(
+        this.constructor.db.parseValue(field, value),
+        inst
       )
     } catch (e) {
       if (e instanceof FieldError) {
         e.message = `${e.message} when processing value for ${getModelName(
           this.constructor
-        )}.${fieldName}`
+        )}.${fieldPath}`
+        throw e
       }
-      throw e
     }
-    return this
   }
 
   async fetchRelationship (fieldName) {
