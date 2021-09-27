@@ -1,8 +1,10 @@
-const { setupDb } = require('../__samples__/setup')
+const path = require('path')
+
+const { setupDb } = require('__jest__/mysql')
 const { setupSuite } = require('__samples__/users-trivial')
 
 describe('mysql select with users-trivial', () => {
-  setupDb('users-trivial.sql')
+  setupDb(path.resolve(__dirname, '..', '__samples__', 'users-trivial.sql'))
 
   setupSuite()
 })
