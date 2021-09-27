@@ -375,8 +375,9 @@ class JobBase extends DatabaseModel {
    * @returns {JobBase} The same instance
    */
   async retry (e) {
-    if (this.get('retried') < this.get('maxRetries')) {
-      this.retried = (this.retried || 0) + 1
+    const retried = this.get('retried')
+    if (retried < this.get('maxRetries')) {
+      this.set('retried', retried + 1)
       this.status = JobStatus.trigger
       await this.update()
       return await this.spawn()
