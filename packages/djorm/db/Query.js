@@ -65,7 +65,7 @@ class Query extends ImmutablePropModel {
     throw new QueryError(`Unknown target type: "${target}"`)
   }
 
-  getModelFields (model) {
+  getModelFields (model, prefix) {
     const selection = []
     const joins = []
     let obj = model
@@ -75,7 +75,7 @@ class Query extends ImmutablePropModel {
       const last = selection[selection.length - 1]
       if (obj.meta && obj.meta.abstract && last) {
         for (const f of fieldNames) {
-          last.columns.push(f)
+          last.columns.push(prefix ? `${prefix}__${f}` : f)
         }
       } else {
         if (obj !== model) {
@@ -94,8 +94,9 @@ class Query extends ImmutablePropModel {
         }
         selection.push(
           new QueryColumnGroup({
-            source: obj.table,
-            columns: fieldNames
+            columns: fieldNames,
+            prefix,
+            source: obj.table
           })
         )
       }

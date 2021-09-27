@@ -1,6 +1,6 @@
 const { And } = require('./And')
 const { Count } = require('./Count')
-const { getModelName } = require('../models/ModelRegistry')
+const { getModel, getModelName } = require('../models/ModelRegistry')
 const { ObjectNotFound } = require('../errors')
 const { Q } = require('./QueryCondition')
 const { QueryAllRecords } = require('./QueryAllRecords')
@@ -34,6 +34,28 @@ class Select extends Query {
     )
   }
 
+  selectRelated (...values) {
+    return values.reduce((aggr, relationName) => {
+      const field = this.model.getField(relationName)
+      const TargetModel = getModel(field.model)
+      const [selection, joins] = this.getModelFields(TargetModel, relationName)
+      return aggr
+        .join({
+          alias: relationName,
+          conditions: {
+            [field.keyField]: new QueryColumn({
+              source: relationName,
+              name: TargetModel.pkName
+            })
+          },
+          name: TargetModel.table,
+          side: field.null ? QueryJoin.left : QueryJoin.inner
+        })
+        .join(...joins)
+        .appendProp('selection', ...selection)
+    }, this)
+  }
+
   from (value) {
     return this.target(value)
   }
@@ -47,10 +69,16 @@ class Select extends Query {
     return this.filter(value.negate(true))
   }
 
-  join (joinSpec) {
-    return this.initProp('joins', defaultJoins).appendProp(
-      'joins',
-      joinSpec instanceof QueryJoin ? joinSpec : new QueryJoin(joinSpec)
+  join (...joinSpecs) {
+    return joinSpecs.reduce(
+      (aggr, joinSpec) =>
+        aggr
+          .initProp('joins', defaultJoins)
+          .appendProp(
+            'joins',
+            joinSpec instanceof QueryJoin ? joinSpec : new QueryJoin(joinSpec)
+          ),
+      this
     )
   }
 

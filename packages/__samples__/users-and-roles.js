@@ -89,6 +89,65 @@ const setupTests = ({ testForeignKeys }) => {
     ])
   })
 
+  it('fetches UserRole model with user and role', async () => {
+    const UserRole = getModel('UserRole')
+    const Role = getModel('Role')
+    const User = getModel('User')
+    const items = await UserRole.objects.query
+      .selectRelated('user', 'role')
+      .all()
+    expect(items).toEqual([
+      new UserRole({
+        id: 1,
+        roleId: 1,
+        userId: 1,
+        role: new Role({
+          id: 1,
+          name: 'Staff'
+        }),
+        user: new User({
+          id: 1,
+          name: 'Harmony Vasquez',
+          email: 'harmony.vasquez@gmail.com',
+          superuser: false,
+          inactive: false
+        })
+      }),
+      new UserRole({
+        id: 2,
+        roleId: 2,
+        userId: 1,
+        role: new Role({
+          id: 2,
+          name: 'Contractor'
+        }),
+        user: new User({
+          id: 1,
+          name: 'Harmony Vasquez',
+          email: 'harmony.vasquez@gmail.com',
+          superuser: false,
+          inactive: false
+        })
+      }),
+      new UserRole({
+        id: 3,
+        roleId: 3,
+        userId: 2,
+        role: new Role({
+          id: 3,
+          name: 'Admin'
+        }),
+        user: new User({
+          id: 2,
+          name: 'Jasper Fraley',
+          email: 'jasper.fraley@seznam.cz',
+          superuser: true,
+          inactive: false
+        })
+      })
+    ])
+  })
+
   if (testForeignKeys) {
     it('throws RecordIsReferenced when trying to delete referenced role', async () => {
       const role = await getModel('Role').objects.get({ id: 1 })
