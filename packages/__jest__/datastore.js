@@ -155,24 +155,28 @@ const stopDatastore = async p => {
   })
 }
 
-const setupDb = dbPath => {
-  let dsProcess
-  let port
+const setupDbServer = () => {
+  const config = {}
+  global.djormDatastore = config
 
   beforeAll(async () => {
-    port = await getPort()
-    dsProcess = await startDatastore(port)
+    config.port = await getPort()
+    config.dsProcess = await startDatastore(config.port)
   })
 
   afterAll(async () => {
-    await stopDatastore(dsProcess)
+    await stopDatastore(config.dsProcess)
   })
+}
+
+const setupDb = dbPath => {
+  const config = global.djormDatastore
 
   beforeEach(async () => {
     const models = require(dbPath)
     const dbSettings = {
       driver: 'djorm-db-gcp-datastore',
-      apiEndpoint: `http://localhost:${port}`,
+      apiEndpoint: `http://localhost:${config.port}`,
       namespace: jest.requireActual('uuid').v4(),
       projectId: 'test-project'
     }
@@ -201,5 +205,6 @@ module.exports = {
   installDatastore,
   startDatastore,
   stopDatastore,
-  setupDb
+  setupDb,
+  setupDbServer
 }
