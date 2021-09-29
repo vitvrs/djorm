@@ -56,7 +56,7 @@ await Promise.objects.count()
 
 ### `stream`
 
-Stream read model instances with Node.js streams
+Stream read model instances with Node.js streams. Returns instance of [Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable).
 
 ```javascript
 const src = Promise.objects.stream()

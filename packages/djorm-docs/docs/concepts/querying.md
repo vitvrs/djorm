@@ -7,7 +7,7 @@ Djorm has a Query API simillar to the Django's, but it has quite a few differenc
 
 ## Quick example
 
-```
+```javascript
 const { Person } = require('./models')
 
 const myMethod = async () => {
@@ -18,8 +18,6 @@ const myMethod = async () => {
   })
 
   const personById = await Person.objects.get({ id: 1 })
+  console.log(allPeople, activePeople, personById)
 }
-
-
-module.exports = { myMethod }
 ```
