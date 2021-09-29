@@ -38,7 +38,11 @@ class Select extends Query {
     return values.reduce((aggr, relationName) => {
       const field = this.model.getField(relationName)
       const TargetModel = getModel(field.model)
-      const [selection, joins] = this.getModelFields(TargetModel, relationName)
+      const [selection, joins] = this.getModelFields(
+        TargetModel,
+        relationName,
+        relationName
+      )
       return aggr
         .join({
           alias: relationName,

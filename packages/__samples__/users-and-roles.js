@@ -175,4 +175,4 @@ const setupSuite = ({ testForeignKeys = true } = {}) => {
   setupTests({ testForeignKeys })
 }
 
-module.exports = { setupSuite }
+module.exports = { setupSuite, setupTests }
