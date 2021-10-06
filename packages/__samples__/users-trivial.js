@@ -272,7 +272,6 @@ const setupTests = () => {
     const User = getModel('User')
     const user = new User({
       createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
-      updatedAt: null,
       id: 42,
       name: 'Elzar Jetpack',
       email: 'elzar@gmail.com',
@@ -297,7 +296,6 @@ const setupTests = () => {
     const User = getModel('User')
     const user = new User({
       createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
-      updatedAt: null,
       id: 1,
       name: 'Elzar Jetpack',
       email: 'elzar@gmail.com',

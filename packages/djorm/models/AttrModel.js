@@ -33,12 +33,11 @@ class AttrModel {
     if (value instanceof Model) {
       return value
     }
-    const values = Object.entries(value)
-      .map(([fieldName, value]) => ({
-        [fieldName]: Model.getField(fieldName).fromDb(value)
-      }))
-      .reduce((aggr, chunk) => Object.assign(aggr, chunk), {})
-    return new Model(values)
+    const inst = new Model()
+    for (const [fieldName, fieldValue] of Object.entries(value)) {
+      inst[fieldName] = Model.getField(fieldName).fromDb(fieldValue, inst)
+    }
+    return inst
   }
 
   static get fields () {
@@ -208,7 +207,9 @@ class FieldBase extends GenericField {
     if (this.default instanceof Function) {
       return this.default(inst)
     }
-    return this.default
+    return typeof this.default === 'undefined' && this.null
+      ? null
+      : this.default
   }
 }
 

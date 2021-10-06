@@ -61,7 +61,7 @@ class ForeignKey extends Relation {
 
   parse (value, inst) {
     let parsed = value
-    const Model = getModel(this.model)
+    const Model = getModel(this.model === SELF ? inst.constructor : this.model)
     if (parsed && !(parsed instanceof Model)) {
       if (typeof parsed === 'object') {
         parsed = Model.from(parsed)
