@@ -68,9 +68,11 @@ const setupDbServer = () => {
 
   const stopServer = async () => {
     return await new Promise((resolve, reject) => {
-      config.serverProcess.on('close', resolve)
-      config.serverProcess.on('error', reject)
-      config.serverProcess.kill()
+      if (config.serverProcess) {
+        config.serverProcess.on('close', resolve)
+        config.serverProcess.on('error', reject)
+        config.serverProcess.kill()
+      }
     })
   }
 

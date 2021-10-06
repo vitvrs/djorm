@@ -63,6 +63,15 @@ class DatastoreFormatterBase extends QueryFormatter {
     const operatorName = this.resolveOperatorName(condition, fieldSpec)
     const operator = ComparisonOperator[operatorName]
     const fieldName = fieldSpec.replace(this.operatorMatch, '')
+    if (operator === ComparisonOperator.isnull) {
+      return this.mapCondition(
+        qs,
+        query,
+        fieldName,
+        ComparisonOperator.eq,
+        null
+      )
+    }
     return this.mapCondition(qs, query, fieldName, operator, value)
   }
 

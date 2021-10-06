@@ -14,6 +14,7 @@ const setupModels = () => {
       static superuser = new fields.BooleanField()
       static inactive = new fields.BooleanField()
       static createdAt = new fields.DateTimeField()
+      static updatedAt = new fields.DateTimeField({ null: true })
 
       static meta = class {
         static modelName = 'User'
@@ -36,6 +37,7 @@ const setupTests = () => {
     expect(result).toEqual([
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        updatedAt: null,
         id: 1,
         name: 'Harmony Vasquez',
         email: 'harmony.vasquez@gmail.com',
@@ -44,6 +46,7 @@ const setupTests = () => {
       }),
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
+        updatedAt: null,
         id: 2,
         name: 'Jasper Fraley',
         email: 'jasper.fraley@seznam.cz',
@@ -52,6 +55,7 @@ const setupTests = () => {
       }),
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 22, 22, 22)),
+        updatedAt: null,
         id: 3,
         name: 'Neil Henry',
         email: 'neil.henry@iol.com',
@@ -60,6 +64,7 @@ const setupTests = () => {
       }),
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
+        updatedAt: null,
         id: 4,
         name: 'Merver Chin',
         email: 'merver.chin@gmail.com',
@@ -77,6 +82,7 @@ const setupTests = () => {
     expect(result).toEqual([
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 22, 22, 22)),
+        updatedAt: null,
         id: 3,
         name: 'Neil Henry',
         email: 'neil.henry@iol.com',
@@ -85,6 +91,7 @@ const setupTests = () => {
       }),
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
+        updatedAt: null,
         id: 4,
         name: 'Merver Chin',
         email: 'merver.chin@gmail.com',
@@ -93,6 +100,7 @@ const setupTests = () => {
       }),
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
+        updatedAt: null,
         id: 2,
         name: 'Jasper Fraley',
         email: 'jasper.fraley@seznam.cz',
@@ -101,6 +109,7 @@ const setupTests = () => {
       }),
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        updatedAt: null,
         id: 1,
         name: 'Harmony Vasquez',
         email: 'harmony.vasquez@gmail.com',
@@ -116,6 +125,7 @@ const setupTests = () => {
     expect(result).toEqual(
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
+        updatedAt: null,
         id: 2,
         name: 'Jasper Fraley',
         email: 'jasper.fraley@seznam.cz',
@@ -131,6 +141,7 @@ const setupTests = () => {
     expect(result).toEqual(
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
+        updatedAt: null,
         id: 4,
         name: 'Merver Chin',
         email: 'merver.chin@gmail.com',
@@ -153,6 +164,7 @@ const setupTests = () => {
       serialize(await User.objects.filter({ name: 'Test Runner' }).first())
     ).toEqual({
       createdAt: '2021-05-25T00:00:00.000Z',
+      updatedAt: null,
       id: expect.anything(),
       name: 'Test Runner',
       email: 'test.runner@gmail.com',
@@ -225,6 +237,7 @@ const setupTests = () => {
     expect(await User.objects.filter({ id: 1 }).first()).toEqual(
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        updatedAt: null,
         id: 1,
         name: 'Test Runner 2',
         email: 'harmony.vasquez@gmail.com',
@@ -241,6 +254,7 @@ const setupTests = () => {
     expect(user).toEqual(
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        updatedAt: null,
         id: 1,
         name: 'Harmony Vasquez',
         email: 'harmony.vasquez@gmail.com',
@@ -258,6 +272,7 @@ const setupTests = () => {
     const User = getModel('User')
     const user = new User({
       createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+      updatedAt: null,
       id: 42,
       name: 'Elzar Jetpack',
       email: 'elzar@gmail.com',
@@ -268,6 +283,7 @@ const setupTests = () => {
     expect(await User.objects.all()).toContainEqual(
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        updatedAt: null,
         id: 42,
         name: 'Elzar Jetpack',
         email: 'elzar@gmail.com',
@@ -281,6 +297,7 @@ const setupTests = () => {
     const User = getModel('User')
     const user = new User({
       createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+      updatedAt: null,
       id: 1,
       name: 'Elzar Jetpack',
       email: 'elzar@gmail.com',
@@ -291,6 +308,7 @@ const setupTests = () => {
     expect(await User.objects.all()).toContainEqual(
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        updatedAt: null,
         id: 1,
         name: 'Elzar Jetpack',
         email: 'elzar@gmail.com',
@@ -308,6 +326,7 @@ const setupTests = () => {
     expect(await User.objects.all()).toContainEqual(
       new User({
         createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        updatedAt: null,
         id: 1,
         name: "Elzar '' Jetpack",
         email: 'harmony.vasquez@gmail.com',
@@ -315,6 +334,50 @@ const setupTests = () => {
         inactive: false
       })
     )
+  })
+
+  it('filters by null', async () => {
+    const User = getModel('User')
+    expect(
+      await User.objects.filter({ updatedAt__isnull: true }).all()
+    ).toEqual([
+      new User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 20, 20, 20)),
+        updatedAt: null,
+        id: 1,
+        name: 'Harmony Vasquez',
+        email: 'harmony.vasquez@gmail.com',
+        superuser: false,
+        inactive: false
+      }),
+      new User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 21, 21, 21)),
+        updatedAt: null,
+        id: 2,
+        name: 'Jasper Fraley',
+        email: 'jasper.fraley@seznam.cz',
+        superuser: true,
+        inactive: false
+      }),
+      new User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 22, 22, 22)),
+        updatedAt: null,
+        id: 3,
+        name: 'Neil Henry',
+        email: 'neil.henry@iol.com',
+        superuser: false,
+        inactive: true
+      }),
+      new User({
+        createdAt: new Date(Date.UTC(2020, 0, 1, 23, 23, 23)),
+        updatedAt: null,
+        id: 4,
+        name: 'Merver Chin',
+        email: 'merver.chin@gmail.com',
+        superuser: true,
+        inactive: false
+      })
+    ])
   })
 }
 
