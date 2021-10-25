@@ -159,6 +159,18 @@ class JobBase extends DatabaseModel {
   /** @type {Date} updatedAt When was this job last updated? */
   static updatedAt = new DateTimeField({ default: () => new Date() })
 
+  /**
+   * @type {Date} expiresAt
+   * @default 'Creation date plus maxAge'
+   */
+  static expiresAt = new DateTimeField({
+    null: true,
+    default: inst =>
+      require('moment-timezone')(inst.get('createdAt'))
+        .add(inst.get('maxAge'), 'minutes')
+        .toDate()
+  })
+
   static childStats = new Field()
   static descendantStats = new Field()
 
