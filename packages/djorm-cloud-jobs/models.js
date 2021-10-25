@@ -1,8 +1,14 @@
-const { DatabaseModel, Field, getModelName, SELF } = require('djorm/models')
 const { publishMessage, resolveTopic } = require('./pubsub')
 const { getSettings } = require('djorm/config')
 const { RetryError, SpawnError } = require('./errors')
 const { serialize } = require('djorm/filters')
+const {
+  DatabaseModel,
+  Field,
+  ObjectManager,
+  getModelName,
+  SELF
+} = require('djorm/models')
 const {
   BooleanField,
   CharField,
@@ -69,11 +75,21 @@ const JobStatusHandler = {
 
 const sum = numbers => numbers.reduce((aggr, num) => aggr + num)
 
+class JobManager extends ObjectManager {
+  get expired () {
+    return this.query.filter({
+      expiresAt_lte: new Date(),
+      live: true
+    })
+  }
+}
+
 /** Base class for jobs
  * @abstract
  * @augments {DatabaseModel}
  */
 class JobBase extends DatabaseModel {
+  static manager = JobManager
   /** @type {int} id Primary unique identifier of the job */
   static id = new PositiveIntegerField()
 
