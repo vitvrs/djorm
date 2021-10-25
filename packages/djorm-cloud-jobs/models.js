@@ -78,7 +78,7 @@ const sum = numbers => numbers.reduce((aggr, num) => aggr + num)
 class JobManager extends ObjectManager {
   get expired () {
     return this.query.filter({
-      expiresAt_lte: new Date(),
+      expiresAt__lte: new Date(),
       live: true
     })
   }
