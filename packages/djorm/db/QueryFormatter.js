@@ -24,7 +24,6 @@ class QueryFormatter {
         return '\\r'
       case "'":
       case '\\':
-      case '%':
         // prepends a backslash to backslash, percent,
         // and double/single quotes
         return '\\' + char

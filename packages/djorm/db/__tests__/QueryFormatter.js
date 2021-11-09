@@ -29,7 +29,7 @@ describe('QueryFormatter', () => {
   })
 
   it('formatValue escapes percent', () => {
-    expect(new QueryFormatter().formatValue('100%')).toBe("'100\\%'")
+    expect(new QueryFormatter().formatValue('100%')).toBe("'100%'")
   })
 
   it('formatValue escapes backspace char', () => {
