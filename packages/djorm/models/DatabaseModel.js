@@ -213,7 +213,7 @@ class DatabaseModel extends DatabaseModelBase {
 
   async delete () {
     let obj = this.constructor
-    while (obj && obj !== DatabaseModel && (!obj.meta || !obj.meta.abstract)) {
+    while (obj && obj !== DatabaseModel && !isAbstract(obj)) {
       await new Delete()
         .target(obj)
         .filter({ [obj.pkName]: this.pk })
