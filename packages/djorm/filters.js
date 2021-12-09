@@ -9,8 +9,6 @@ const serialize = (obj, ...args) => {
 
 const filterUnique = (item, index, src) => src.indexOf(item) === index
 
-const filterTruthy = item => Boolean(item)
-
 const throwFirstUnknownError = errors => {
   const unknownErrors = errors.filter(
     err => !(err instanceof NestedValidationError)
@@ -35,7 +33,7 @@ const throwValidationError = errors => {
 
 const createValidatorRunner = validators => async args => {
   return await Promise.all(
-    validators.filter(filterTruthy).map(async fn => {
+    validators.filter(Boolean).map(async fn => {
       try {
         return await fn(...args)
       } catch (e) {
@@ -51,10 +49,10 @@ const concatValidators = (...validators) => {
   const runValidators = createValidatorRunner(validators)
   return async (...args) => {
     const results = await runValidators(args)
-    const errors = results.filter(filterTruthy)
+    const errors = results.filter(Boolean)
     throwFirstUnknownError(errors)
     throwValidationError(errors)
   }
 }
 
-module.exports = { concatValidators, filterTruthy, filterUnique, serialize }
+module.exports = { concatValidators, filterUnique, serialize }
