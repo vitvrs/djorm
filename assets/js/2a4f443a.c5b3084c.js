@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdjorm_docs=self.webpackChunkdjorm_docs||[]).push([[4071],{370:function(o){o.exports=JSON.parse('{"allTagsPath":"/djorm/blog/tags","slug":"facebook","name":"facebook","count":1,"permalink":"/djorm/blog/tags/facebook"}')}}]);

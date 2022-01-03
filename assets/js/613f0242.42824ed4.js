@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdjorm_docs=self.webpackChunkdjorm_docs||[]).push([[3973],{5641:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Welcome","permalink":"/djorm/blog/welcome"},{"title":"Hello","permalink":"/djorm/blog/hello-world"},{"title":"Hola","permalink":"/djorm/blog/hola"}]}')}}]);

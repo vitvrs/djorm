@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdjorm_docs=self.webpackChunkdjorm_docs||[]).push([[130],{1749:function(e){e.exports=JSON.parse('{"permalink":"/djorm/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":3,"previousPage":null,"nextPage":null,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);
