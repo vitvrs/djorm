@@ -1,6 +1,6 @@
 {
   "name": "djorm-db-gcp-datastore",
-  "version": "0.1.15-alpha.0",
+  "version": "0.1.16-alpha.0",
   "description": "Datastore bindings for djorm",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
