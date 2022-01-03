@@ -11,15 +11,15 @@ class SqliteReader extends Readable {
   }
 
   async prepare () {
-    if (!this.iterator) {
+    if (!this.stmtIterator) {
       await this.driver.waitForConnection()
-      this.iterator = this.driver.db.prepare(this.query).iterate()
+      this.stmtIterator = this.driver.db.prepare(this.query).iterate()
     }
   }
 
   async _read () {
     await this.prepare()
-    const result = this.iterator.next()
+    const result = this.stmtIterator.next()
     this.push(result.done ? null : result.value)
   }
 }
