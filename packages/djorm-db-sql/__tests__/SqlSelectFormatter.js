@@ -26,8 +26,8 @@ describe('SqlSelectFormatter', () => {
   })
 
   class User extends DatabaseModel {
-    static id = new PositiveIntegerField()
     static name = new CharField()
+    static id = new PositiveIntegerField()
     static role = new CharField()
     static table = 'users'
     static meta = class {
@@ -636,8 +636,8 @@ describe('SqlSelectFormatter', () => {
       expect(driver.formatQuery(qs)).toBe(
         [
           'SELECT',
-          '`users`.`id`,',
           '`users`.`name`,',
+          '`users`.`id`,',
           '`users`.`role`',
           "FROM `users` WHERE `users`.`role` = 'admin'"
         ].join(' ')
@@ -699,8 +699,8 @@ describe('SqlSelectFormatter', () => {
           'SELECT',
           '`profiles`.`nick`,',
           '`profiles`.`public`,',
-          '`users`.`id`,',
           '`users`.`name`,',
+          '`users`.`id`,',
           '`users`.`role`',
           'FROM `profiles`',
           'INNER JOIN `users` AS `users` ON',
@@ -714,8 +714,8 @@ describe('SqlSelectFormatter', () => {
       expect(driver.formatQuery(qs)).toBe(
         [
           'SELECT',
-          '`users`.`id`,',
           '`users`.`name`,',
+          '`users`.`id`,',
           '`users`.`role`',
           'FROM `users`',
           'WHERE `users`.`name` IS NULL'
@@ -728,8 +728,8 @@ describe('SqlSelectFormatter', () => {
       expect(driver.formatQuery(qs)).toBe(
         [
           'SELECT',
-          '`users`.`id`,',
           '`users`.`name`,',
+          '`users`.`id`,',
           '`users`.`role`',
           'FROM `users`',
           'WHERE `users`.`name` NOT NULL'
@@ -742,8 +742,8 @@ describe('SqlSelectFormatter', () => {
       expect(driver.formatQuery(qs)).toBe(
         [
           'SELECT',
-          '`users`.`id`,',
           '`users`.`name`,',
+          '`users`.`id`,',
           '`users`.`role`',
           'FROM `users`',
           'WHERE `users`.`name` NOT NULL'
@@ -756,8 +756,8 @@ describe('SqlSelectFormatter', () => {
       expect(driver.formatQuery(qs)).toBe(
         [
           'SELECT',
-          '`users`.`id`,',
           '`users`.`name`,',
+          '`users`.`id`,',
           '`users`.`role`',
           'FROM `users`',
           'WHERE `users`.`name` IS NULL'
@@ -774,8 +774,8 @@ describe('SqlSelectFormatter', () => {
         [
           'SELECT',
           'DISTINCT',
-          '`users`.`id`,',
           '`users`.`name`,',
+          '`users`.`id`,',
           '`users`.`role`',
           'FROM `users`',
           'WHERE `users`.`name` IS NULL'
@@ -797,8 +797,8 @@ describe('SqlSelectFormatter', () => {
         [
           'SELECT',
           'DISTINCT(`users`.`name`, `users`.`role`)',
-          '`users`.`id`,',
           '`users`.`name`,',
+          '`users`.`id`,',
           '`users`.`role`',
           'FROM `users`',
           'WHERE `users`.`name` IS NULL'

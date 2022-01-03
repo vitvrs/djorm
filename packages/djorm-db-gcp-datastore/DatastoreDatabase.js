@@ -37,16 +37,18 @@ class DatastoreDatabase extends Database {
   }
 
   async execDb (query) {
-    return await query()
+    return await this.runDatabaseOperation(query)
   }
 
   async queryDb (configureQuery) {
-    const query = configureQuery()
-    if (query instanceof ComplexQuery) {
-      return await query.run()
-    }
-    const [result] = await this.db.runQuery(query)
-    return query.postprocess ? query.postprocess(result) : result
+    return await this.runDatabaseOperation(async () => {
+      const query = configureQuery()
+      if (query instanceof ComplexQuery) {
+        return await query.run()
+      }
+      const [result] = await this.db.runQuery(query)
+      return query.postprocess ? query.postprocess(result) : result
+    })
   }
 
   formatQuery (qs) {

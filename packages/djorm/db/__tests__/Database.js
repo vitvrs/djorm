@@ -4,7 +4,10 @@ describe('Database', () => {
   class DbMock extends Database {
     connectDb = jest.fn()
     disconnectDb = jest.fn()
-    queryDb = jest.fn()
+    queryDb = jest.fn().mockImplementation(async function (query) {
+      return await this.runDatabaseOperation(() => {})
+    })
+
     execDb = jest.fn()
   }
 
@@ -21,7 +24,6 @@ describe('Database', () => {
     db.connectDb.mockImplementation(
       async () => await new Promise(resolve => setTimeout(resolve, 500))
     )
-    db.queryDb.mockResolvedValue()
     const promise = db.query('SELECT FUN FROM TESTS')
     expect(db.connectDb).toHaveBeenCalled()
     jest.advanceTimersByTime(505)
@@ -33,7 +35,6 @@ describe('Database', () => {
     db.connectDb.mockImplementation(
       async () => await new Promise(resolve => setTimeout(resolve, 500))
     )
-    db.queryDb.mockResolvedValue()
     const connectPromise = db.connect()
     db.query('SELECT FUN FROM TESTS')
     expect(db.connectDb).toHaveBeenCalledTimes(1)
@@ -46,7 +47,6 @@ describe('Database', () => {
     db.connectDb.mockImplementation(async () => {
       await new Promise(resolve => setTimeout(resolve, 500))
     })
-    db.queryDb.mockResolvedValue()
     const connectPromise = db.connect()
     const queryPromise = db.query('SELECT FUN FROM TESTS')
     expect(db.connectDb).toHaveBeenCalledTimes(1)

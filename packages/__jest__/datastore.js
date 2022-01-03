@@ -12,7 +12,7 @@ const { configure } = require('djorm/config')
 const { Datastore } = require('@google-cloud/datastore')
 
 const sdkUrl =
-  'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-336.0.0-linux-x86_64.tar.gz'
+  'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-367.0.0-linux-x86_64.tar.gz'
 const getCacheDir = () => findCacheDir({ name: 'djorm' })
 const getSdkDownloadPath = url => path.join(getCacheDir(), path.basename(url))
 const getSdkExtractPath = downloadPath =>

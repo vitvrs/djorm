@@ -87,7 +87,10 @@ class Database extends PropModel {
 
   async runDatabaseOperation (op) {
     try {
-      return await op()
+      await this.waitForConnection()
+      const result = await op()
+      this.planDisconnect()
+      return result
     } catch (e) {
       const ErrorType = this.resolveErrorType(e)
       if (ErrorType) {
@@ -106,6 +109,7 @@ class Database extends PropModel {
   }
 
   async waitForConnection () {
+    this.cancelDisconnectPlan()
     if (!this.connected) {
       if (this.connecting) {
         await new Promise(resolve => {
@@ -118,19 +122,13 @@ class Database extends PropModel {
   }
 
   async query (str) {
-    await this.waitForConnection()
     debug(str)
-    const res = await this.queryDb(str)
-    this.planDisconnect()
-    return res
+    return await this.queryDb(str)
   }
 
   async exec (str) {
-    await this.waitForConnection()
     debug(str)
-    const res = await this.execDb(str)
-    this.planDisconnect()
-    return res
+    return await this.execDb(str)
   }
 
   async execDb () {
