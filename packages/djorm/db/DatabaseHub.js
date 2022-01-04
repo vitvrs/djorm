@@ -6,9 +6,11 @@ class DatabaseHub {
 
   configDb (db, dbName = 'default') {
     if (db instanceof Database) {
-      if (!this.databases[dbName]) {
-        this.databases[dbName] = db
+      const existing = this.databases[dbName]
+      if (existing) {
+        existing.disconnect()
       }
+      this.databases[dbName] = db
     } else {
       throw new DatabaseError(
         `Database "${dbName}" must be instance of Database`
