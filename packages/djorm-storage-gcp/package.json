@@ -1,6 +1,6 @@
 {
   "name": "djorm-storage-gcp",
-  "version": "0.1.16-alpha.1",
+  "version": "0.1.16-alpha.2",
   "description": "Google Cloud Storage support for Djorm",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
