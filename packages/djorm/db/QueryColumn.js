@@ -7,9 +7,15 @@ class QueryColumn extends QueryIdentifier {
     if (colSpec instanceof this) {
       return colSpec
     } else if (typeof colSpec === 'string') {
-      const [name, source] = colSpec.split(this.IdentifierSeparator).reverse()
-      const alias = source ? colSpec : null
-      return { alias, source, name }
+      const [name, ...source] = colSpec
+        .split(this.IdentifierSeparator)
+        .reverse()
+      const alias = source.length ? colSpec : null
+      return {
+        alias,
+        source: source.reverse().join(this.IdentifierSeparator),
+        name
+      }
     }
     return new this(colSpec)
   }
