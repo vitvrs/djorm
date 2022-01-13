@@ -34,11 +34,25 @@ class Select extends Query {
     )
   }
 
-  selectRelated (...values) {
+  getRelationModel (relationName) {
+    const relationPath = relationName.split('__')
+    return relationPath.reduce(
+      ([model, field], fieldName) => {
+        const modelField = model.getField(fieldName)
+        return [getModel(modelField.model), modelField]
+      },
+      [this.model, null]
+    )
+  }
+
+  getRelationWithField (relationName, field) {
+    return [...relationName.split('__').slice(0, -1), field.keyField].join('__')
+  }
+
+  joinRelated (...values) {
     return values.reduce((aggr, relationName) => {
-      const field = this.model.getField(relationName)
-      const TargetModel = getModel(field.model)
-      const [selection, joins] = this.getModelFields(
+      const [TargetModel, field] = this.getRelationModel(relationName)
+      const [, joins] = this.getModelFields(
         TargetModel,
         relationName,
         relationName
@@ -47,7 +61,7 @@ class Select extends Query {
         .join({
           alias: relationName,
           conditions: {
-            [field.keyField]: new QueryColumn({
+            [this.getRelationWithField(relationName, field)]: new QueryColumn({
               source: relationName,
               name: TargetModel.pkName
             })
@@ -56,6 +70,19 @@ class Select extends Query {
           side: field.null ? QueryJoin.left : QueryJoin.inner
         })
         .join(...joins)
+    }, this)
+  }
+
+  selectRelated (...values) {
+    return values.reduce((aggr, relationName) => {
+      const [TargetModel] = this.getRelationModel(relationName)
+      const [selection] = this.getModelFields(
+        TargetModel,
+        relationName,
+        relationName
+      )
+      return aggr
+        .joinRelated(relationName)
         .appendProp('selection', ...selection)
     }, this)
   }
