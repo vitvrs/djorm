@@ -99,10 +99,13 @@ class DatabaseModel extends DatabaseModelBase {
    * @param {string} fieldPath Field path separated by double underscore
    * @returns {[DatabaseModel, Field, string]}
    */
-  getFieldTarget (fieldPath) {
+  getFieldTarget (fieldPath, value) {
     const separatorIndex = fieldPath.indexOf(FIELD_SEPARATOR)
     if (separatorIndex === -1) {
       return [this, this.constructor.getField(fieldPath), fieldPath]
+    }
+    if (value === null) {
+      return null
     }
     const localFieldName = fieldPath.substr(0, separatorIndex)
     const field = this.constructor.getField(localFieldName)
@@ -122,11 +125,14 @@ class DatabaseModel extends DatabaseModelBase {
 
   consumeDbValue (fieldPath, value) {
     try {
-      const [inst, field, fieldName] = this.getFieldTarget(fieldPath)
-      inst[fieldName] = field.fromDb(
-        this.constructor.db.parseValue(field, value),
-        inst
-      )
+      const target = this.getFieldTarget(fieldPath, value)
+      if (target) {
+        const [inst, field, fieldName] = target
+        inst[fieldName] = field.fromDb(
+          this.constructor.db.parseValue(field, value),
+          inst
+        )
+      }
     } catch (e) {
       if (e instanceof FieldError) {
         e.message = `${e.message} when processing value for ${getModelName(
