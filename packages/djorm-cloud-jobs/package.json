@@ -5,7 +5,7 @@
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
   "license": "ISC",
-  "main": "lib/index.js",
+  "main": "index.js",
   "files": [
     "*.js"
   ],
