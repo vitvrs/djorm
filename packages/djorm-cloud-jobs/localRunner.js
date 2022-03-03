@@ -27,6 +27,14 @@ const runPoolJob = async (topic, message) => {
   jobPool.terminate()
 }
 
+const getMod = async modPath => {
+  try {
+    return require(modPath)
+  } catch (e) {
+    return await import(modPath)
+  }
+}
+
 /** Run the job in local environment
  *
  * @async
@@ -39,7 +47,8 @@ const runLocalJob = async (topic, message) => {
   if (getSettings('cloudJobs.pool', process.env.NODE_ENV !== 'test')) {
     return await runPoolJob(topic, message)
   }
-  return await require(getEntrypoint(topic)).runJob({
+  const { runJob } = await getMod(getEntrypoint(topic))
+  return await runJob({
     data: formatMessage(message)
   })
 }
