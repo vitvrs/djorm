@@ -16,7 +16,8 @@ const getSettings = (configPath, defaultValue = null) => {
   if (!configPath) {
     return currentConfig
   }
-  return require('jsonpath').value(currentConfig, configPath) || defaultValue
+  const result = require('jsonpath').value(currentConfig, configPath)
+  return result === undefined ? defaultValue : result
 }
 
 const init = async () => {
