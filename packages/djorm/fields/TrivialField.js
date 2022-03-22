@@ -8,7 +8,7 @@ class TrivialField extends Field {
 
   validateValue (value, inst, fieldName) {
     if (
-      typeof value !== 'undefined' &&
+      (typeof value !== 'undefined' || (!this.null && value === null)) &&
       this.choices &&
       !this.choices.includes(value)
     ) {
