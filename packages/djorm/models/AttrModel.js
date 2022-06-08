@@ -17,6 +17,8 @@ function parseFieldObjects (constructor) {
     }, [])
 }
 
+const isNullish = value => [undefined, null, ''].includes(value)
+
 class AttrModel {
   /**
    * @param {object} params
@@ -224,7 +226,7 @@ class Field extends FieldBase {
    *  arguments.
    */
   async validateValue (value, inst, fieldName) {
-    if (!this.null && value === null) {
+    if (!this.null && isNullish(value)) {
       throw new FieldValidationError(
         inst,
         fieldName,
