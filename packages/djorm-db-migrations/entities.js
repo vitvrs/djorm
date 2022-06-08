@@ -9,7 +9,7 @@ class PropertyOperation extends AttrModel {
 }
 
 class PropertyStructuralOperation extends PropertyOperation {
-  static field = new ObjectField({ objectClass: Field })
+  static field = new ObjectField({ model: Field })
 }
 
 class EntityOperation extends AttrModel {
@@ -22,7 +22,7 @@ class LinkStructuralOperation extends LinkOperation {
 }
 
 class EntityStructuralOperation extends EntityOperation {
-  static operations = new ObjectArrayField({ objectClass: PropertyOperation })
+  static operations = new ObjectArrayField({ model: PropertyOperation })
 }
 
 class CreateProperty extends PropertyStructuralOperation {}
