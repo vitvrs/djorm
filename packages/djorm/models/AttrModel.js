@@ -123,6 +123,18 @@ class AttrModel {
     return this
   }
 
+  getValues () {
+    return this.constructor.fieldObjects
+      .filter(([key, field]) => !field.private)
+      .reduce((aggr, [key, field]) => {
+        const value = this.get(key)
+        if (typeof value !== 'undefined') {
+          aggr[key] = value
+        }
+        return aggr
+      }, {})
+  }
+
   setValues (params = {}) {
     const entries = Object.entries(params)
     for (const [key, value] of entries) {
