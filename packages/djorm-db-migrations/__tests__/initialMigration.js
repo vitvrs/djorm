@@ -2,6 +2,7 @@ const path = require('path')
 const tmp = require('tmp-promise')
 const dateMock = require('jest-date-mock')
 
+const { SELF } = require('djorm/models')
 const {
   CreateEntity,
   CreateLink,
@@ -31,7 +32,7 @@ describe('migration util', () => {
 
   beforeEach(async () => {
     require(appPath)
-    dateMock.advanceTo(new Date(2020, 4, 19, 15, 23, 31))
+    dateMock.advanceTo(new Date(Date.UTC(2020, 4, 19, 15, 23, 31)))
     dbFile = await tmp.file()
     require('djorm/config').configure({
       databases: {
@@ -55,11 +56,11 @@ describe('migration util', () => {
           new CreateEntity({
             model: 'Group',
             operations: [
-              new CreateProperty({ property: 'id', field: new AutoField() }),
               new CreateProperty({
                 property: 'name',
                 field: new CharField()
-              })
+              }),
+              new CreateProperty({ property: 'id', field: new AutoField() })
             ]
           }),
           new CreateEntity({
@@ -112,7 +113,7 @@ describe('migration util', () => {
                 property: 'user',
                 field: new ForeignKey({
                   model: 'User',
-                  parentModel: 'UserGroup',
+                  parentModel: SELF,
                   relatedName: 'userGroups'
                 })
               }),
@@ -124,7 +125,7 @@ describe('migration util', () => {
                 property: 'group',
                 field: new ForeignKey({
                   model: 'Group',
-                  parentModel: 'UserGroup',
+                  parentModel: SELF,
                   relatedName: 'userGroups'
                 })
               }),
