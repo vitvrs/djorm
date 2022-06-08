@@ -5,7 +5,7 @@ const { ObjectArrayField } = require('djorm/fields/ObjectArrayField')
 
 class DatabaseMigration extends DatabaseModel {
   static identifier = new CharField({ unique: true })
-  static operations = new ObjectArrayField({ objectClass: EntityOperation })
+  static operations = new ObjectArrayField({ model: EntityOperation })
 
   serialize () {}
 }

@@ -8,7 +8,7 @@ class ObjectArrayField extends ObjectField {
       if (!(value instanceof Array)) {
         throw new ValueError(
           `Value must be an array of "${getModelName(
-            this.objectClass
+            this.model
           )}", but "${value}" was given.`
         )
       }
