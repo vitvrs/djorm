@@ -6,8 +6,16 @@ function serializeError (e) {
   return e.message
 }
 
-class DjormError extends Error {}
-class NotImplemented extends Error {}
+class DjormError extends Error {
+  serialize () {
+    return {
+      code: this.code,
+      message: this.message
+    }
+  }
+}
+
+class NotImplemented extends DjormError {}
 class ConfigError extends DjormError {}
 class ModelError extends DjormError {}
 
@@ -17,13 +25,6 @@ class ValueError extends FieldError {}
 
 class ValidationError extends ValueError {
   code = 'validation-error'
-
-  serialize () {
-    return {
-      code: this.code,
-      message: this.message
-    }
-  }
 }
 
 class FieldValidationError extends ValidationError {
