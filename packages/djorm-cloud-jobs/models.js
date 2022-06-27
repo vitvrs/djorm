@@ -10,6 +10,7 @@ const {
   SELF
 } = require('djorm/models')
 const {
+  AutoField,
   BooleanField,
   CharField,
   DateTimeField,
@@ -91,7 +92,7 @@ class JobManager extends ObjectManager {
 class JobBase extends DatabaseModel {
   static manager = JobManager
   /** @type {int} id Primary unique identifier of the job */
-  static id = new PositiveIntegerField()
+  static id = new AutoField()
 
   /** @type {string} checksum Props and type checksum, useful to find identical
    *   jobs by querying the database. */
@@ -187,8 +188,8 @@ class JobBase extends DatabaseModel {
         .toDate()
   })
 
-  static childStats = new Field()
-  static descendantStats = new Field()
+  static childStats = new Field({ null: true })
+  static descendantStats = new Field({ null: true })
 
   static meta = class {
     static abstract = true

@@ -1,6 +1,7 @@
 const { concatValidators, filterUnique } = require('../filters')
 const { FieldError, FieldValidationError, UnknownField } = require('../errors')
 const { getModelName, registerModel } = require('./ModelRegistry')
+const { isNullish } = require('../values')
 
 let FieldModel = null
 
@@ -16,8 +17,6 @@ function parseFieldObjects (constructor) {
       return aggr
     }, [])
 }
-
-const isNullish = value => [undefined, null, ''].includes(value)
 
 class AttrModel {
   /**
@@ -233,12 +232,12 @@ class Field extends FieldBase {
   static secret = new FieldBase()
   static validator = new FieldBase()
 
-  /** Given this field has a validator, try to run it as a callback. Callback
-   *  will receive field value, the model instance, and field name as
-   *  arguments.
-   */
-  async validateValue (value, inst, fieldName) {
-    if (!this.null && isNullish(value)) {
+  isNull (value, inst, fieldName) {
+    return isNullish(value)
+  }
+
+  validateNullValue (value, inst, fieldName) {
+    if (this.isNull(value, inst, fieldName)) {
       throw new FieldValidationError(
         inst,
         fieldName,
@@ -246,6 +245,16 @@ class Field extends FieldBase {
           inst.constructor
         )}.${fieldName}`
       )
+    }
+  }
+
+  /** Given this field has a validator, try to run it as a callback. Callback
+   *  will receive field value, the model instance, and field name as
+   *  arguments.
+   */
+  async validateValue (value, inst, fieldName) {
+    if (!this.null && !this.autoIncrement) {
+      this.validateNullValue(value, inst, fieldName)
     }
     return this.validator ? await this.validator(value, inst, fieldName) : null
   }

@@ -9,7 +9,7 @@ const { promises } = require('fs')
 const { DatabaseModel } = require('djorm/models')
 
 class User extends DatabaseModel {
-  static id = new fields.PositiveIntegerField()
+  static id = new fields.AutoField()
   static name = new fields.CharField()
   static email = new fields.CharField({ null: true })
   static superuser = new fields.BooleanField({ default: false })
@@ -21,7 +21,7 @@ class User extends DatabaseModel {
 }
 
 class Role extends DatabaseModel {
-  static id = new fields.PositiveIntegerField()
+  static id = new fields.AutoField()
   static name = new fields.CharField()
 
   static meta = class {
@@ -30,7 +30,7 @@ class Role extends DatabaseModel {
 }
 
 class UserRole extends DatabaseModel {
-  static id = new fields.PositiveIntegerField()
+  static id = new fields.AutoField()
   static user = new fields.ForeignKey({
     model: 'User',
     relatedName: 'userRoles'
@@ -48,7 +48,7 @@ class AuditLog extends DatabaseModel {
 }
 
 class Job extends DatabaseModel {
-  static id = new fields.PositiveIntegerField()
+  static id = new fields.AutoField()
   static type = new fields.CharField()
   static props = new fields.JsonField({ null: true })
   static createdAt = new fields.DateTimeField()
