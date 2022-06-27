@@ -9,12 +9,12 @@ const { promises } = require('fs')
 const { DatabaseModel } = require('djorm/models')
 
 class User extends DatabaseModel {
-  static id = new fields.PositiveIntegerField()
+  static id = new fields.AutoField()
   static name = new fields.CharField()
   static password = new fields.PasswordField()
-  static superuser = new fields.BooleanField()
-  static inactive = new fields.BooleanField()
-  static privateKey = new fields.TextField({ encrypted: true })
+  static superuser = new fields.BooleanField({ default: false })
+  static inactive = new fields.BooleanField({ default: false })
+  static privateKey = new fields.TextField({ encrypted: true, null: true })
 
   static meta = class {
     static modelName = 'User'

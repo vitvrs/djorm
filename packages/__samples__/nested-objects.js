@@ -8,7 +8,7 @@ const setupModels = () => {
   const models = {}
   beforeEach(() => {
     class LookupTable extends DatabaseModel {
-      static id = new fields.PositiveIntegerField()
+      static id = new fields.AutoField()
       static inputVariable = new fields.CharField()
       static weight = new fields.PositiveIntegerField()
     }
@@ -27,11 +27,12 @@ const setupModels = () => {
     }
 
     class User extends DatabaseModel {
-      static id = new fields.PositiveIntegerField()
+      static id = new fields.AutoField()
       static name = new fields.CharField()
-      static frontendConfig = new fields.JsonField()
+      static frontendConfig = new fields.JsonField({ null: true })
       static personalKey = new fields.ObjectField({
-        model: UserKey
+        model: UserKey,
+        null: true
       })
 
       static meta = class {

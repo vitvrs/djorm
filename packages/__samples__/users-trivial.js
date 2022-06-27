@@ -8,22 +8,17 @@ const { serialize } = require('djorm/filters')
 const setupModels = () => {
   beforeEach(() => {
     class User extends DatabaseModel {
-      static id = new fields.PositiveIntegerField()
+      static id = new fields.AutoField()
       static name = new fields.CharField()
       static email = new fields.CharField()
-      static superuser = new fields.BooleanField()
-      static inactive = new fields.BooleanField()
-      static rating = new fields.FloatField()
-      static createdAt = new fields.DateTimeField()
+      static superuser = new fields.BooleanField({ default: false })
+      static inactive = new fields.BooleanField({ default: false })
+      static rating = new fields.FloatField({ default: 0 })
+      static createdAt = new fields.DateTimeField({ default: () => new Date() })
       static updatedAt = new fields.DateTimeField({ null: true })
 
       static meta = class {
         static modelName = 'User'
-      }
-
-      async create () {
-        this.set('createdAt', new Date())
-        return super.create()
       }
     }
 

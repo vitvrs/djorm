@@ -2,6 +2,7 @@ const camelCase = require('camelcase')
 
 const { Field } = require('../models/AttrModel')
 const { getModel, getModelName, SELF } = require('../models/ModelRegistry')
+const { isNullish } = require('../values')
 const { PositiveIntegerField } = require('./PositiveIntegerField')
 const { Relation } = require('./Relation')
 const { ValueError } = require('../errors')
@@ -98,8 +99,19 @@ class ForeignKey extends Relation {
   async fetch (inst) {
     const model = getModel(this.model)
     return await model.objects.get({
-      [model.pkName]: inst.get(this.keyField)
+      [model.pkName]: this.getForeignKeyValue(inst)
     })
+  }
+
+  getForeignKeyValue (inst) {
+    return inst.get(this.keyField)
+  }
+
+  isNull (value, inst, fieldName) {
+    return (
+      super.isNull(value, inst, fieldName) &&
+      isNullish(this.getForeignKeyValue(inst), inst, this.keyFieldName)
+    )
   }
 }
 

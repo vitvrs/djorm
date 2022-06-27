@@ -3,12 +3,11 @@ const fields = require('djorm/fields')
 const { advanceTo, clear } = require('jest-date-mock')
 const { init, shutdown } = require('djorm/config')
 const { DatabaseModel, clearModels, getModel } = require('djorm/models')
-const { RecordIsReferenced } = require('djorm/db/errors')
 
 const setupModels = () => {
   beforeEach(() => {
     class Job extends DatabaseModel {
-      static id = new fields.PositiveIntegerField()
+      static id = new fields.AutoField()
       static checksum = new fields.CharField()
       static live = new fields.BooleanField()
       static props = new fields.JsonField()
