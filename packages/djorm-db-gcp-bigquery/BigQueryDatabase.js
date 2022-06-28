@@ -65,8 +65,10 @@ class BigQueryDatabase extends Database {
   }
 
   async queryDb (str) {
-    const [result] = await this.db.query(str)
-    return result
+    return await this.runDatabaseOperation(async () => {
+      const [result] = await this.db.query(str)
+      return result
+    })
   }
 
   formatQuery (qs) {
