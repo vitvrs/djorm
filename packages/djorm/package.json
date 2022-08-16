@@ -6,6 +6,9 @@
   "homepage": "https://github.com/just-paja/djorm#readme",
   "license": "ISC",
   "main": "index.js",
+  "engines": {
+    "node": ">=16"
+  },
   "standard": {
     "env": [
       "jest"
