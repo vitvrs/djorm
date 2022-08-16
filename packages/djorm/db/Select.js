@@ -169,7 +169,7 @@ class Select extends Query {
     ])
       .mapModel(null)
       .first()
-    return result.__djorm_cnt
+    return result?.__djorm_cnt || 0
   }
 
   getMapper () {
