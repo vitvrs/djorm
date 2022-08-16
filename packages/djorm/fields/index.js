@@ -7,6 +7,7 @@ module.exports = {
   ...require('./CharField'),
   ...require('./DateField'),
   ...require('./DateTimeField'),
+  ...require('./EmailField'),
   ...require('./FileField'),
   ...require('./FloatField'),
   ...require('./ForeignKey'),
