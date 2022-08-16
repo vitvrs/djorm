@@ -1,6 +1,6 @@
 {
   "name": "djorm-db-migrations",
-  "version": "0.1.7-alpha.4",
+  "version": "0.1.18-alpha.0",
   "description": "Generate and execute database migrations.",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://github.com/just-paja/djorm#readme",
