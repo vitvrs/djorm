@@ -87,6 +87,13 @@ class FileField extends Field {
     return super.toDb(value)
   }
 
+  serialize (value) {
+    if (value) {
+      return value.filePath
+    }
+    return super.serialize(value)
+  }
+
   async saveFileValue (inst, fieldName, value) {
     if (value) {
       await value.save()
