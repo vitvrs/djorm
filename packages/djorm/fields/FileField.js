@@ -47,7 +47,6 @@ class File extends AttrModel {
       await new Promise((resolve, reject) =>
         pipeline(src, this.writeStream, e => {
           if (e) {
-            console.log('REJECT HERE')
             reject(e)
           } else {
             resolve()
@@ -83,7 +82,6 @@ class FileField extends Field {
 
   toDb (value) {
     if (value) {
-      console.log('toDb', value, value.name)
       return value.name
     }
     return super.toDb(value)
