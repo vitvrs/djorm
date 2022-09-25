@@ -20,7 +20,7 @@ class GcpFileStorage extends DjormStorage {
   }
 
   get bucket () {
-    return this.storage.bucket(this.bucketName)
+    return this.storage.bucket(this.getProp('bucketName'))
   }
 
   file (filePath) {
@@ -28,11 +28,11 @@ class GcpFileStorage extends DjormStorage {
   }
 
   getReadStream (filePath) {
-    return this.file(filePath).getReadStream()
+    return this.file(filePath).createReadStream()
   }
 
   getWriteStream (filePath) {
-    return this.file(filePath).getWriteStream()
+    return this.file(filePath).createWriteStream()
   }
 
   async exists (filePath) {

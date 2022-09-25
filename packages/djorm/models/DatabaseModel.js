@@ -164,8 +164,17 @@ class DatabaseModel extends DatabaseModelBase {
     })
   }
 
+  async saveFiles () {
+    await Promise.all(
+      this.constructor.fieldObjects
+        .filter(([name, field]) => field.saveFileValue)
+        .map(([name, field]) => field.saveFileValue(this, name, this.get(name)))
+    )
+  }
+
   async create () {
     await this.saveForeignKeys()
+    await this.saveFiles()
     const cascade = this.serializeDbValues()
     let inject = {}
     for (const row of cascade) {
@@ -184,6 +193,7 @@ class DatabaseModel extends DatabaseModelBase {
 
   async update () {
     await this.saveForeignKeys()
+    await this.saveFiles()
     const cascade = this.serializeDbValues()
     for (const row of cascade) {
       const result = await new Update()
