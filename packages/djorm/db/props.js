@@ -1,5 +1,5 @@
 class PropModel {
-  constructor (props = {}, negatj = false) {
+  constructor (props = {}) {
     this.props = props
   }
 
