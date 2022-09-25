@@ -1,11 +1,24 @@
 # `djorm-storage-jest`
 
-> TODO: description
+> Jest testing dummy storage driver for [Djorm](https://just-paja.github.io/djorm)
 
-## Usage
+It does not save any files, just provides jest mocks in place of the driver methods. See the source for details.
 
+## Installation
+
+```shell
+npm install --save-dev djorm-storage-jest
 ```
-const djormStorageJest = require('djorm-storage-jest');
 
-// TODO: DEMONSTRATE API
+## Configuration
+
+```javascript
+
+config({
+  storages: {
+    default: {
+      driver: 'djorm-storage-jest.JestFileStorage',
+    }
+  }
+})
 ```

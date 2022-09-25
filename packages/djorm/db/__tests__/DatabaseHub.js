@@ -1,7 +1,9 @@
-const { DatabaseHub, instance } = require('../DatabaseHub')
+const hub = require('../DatabaseHub')
+
+const { ConnectionHub } = require('../../models/ConnectionHub')
 
 describe('DatabaseHub', () => {
   it('getPool returns pool instance', () => {
-    expect(instance).toBeInstanceOf(DatabaseHub)
+    expect(hub).toBeInstanceOf(ConnectionHub)
   })
 })

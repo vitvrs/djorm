@@ -1,23 +1,20 @@
-const { Storage } = require('@google-cloud/storage')
-const {
-  CharField,
-  FileStorage,
-  setSystemDefaultStorage
-} = require('djorm/fields')
+const { Storage: GcpStorage } = require('@google-cloud/storage')
+const { Storage: DjormStorage } = require('djorm/storage/Storage')
 
-class GcpFileStorage extends FileStorage {
-  static projectId = new CharField()
-  static clientEmail = new CharField()
-  static privateKey = new CharField()
-  static bucketName = new CharField()
-  static basePath = new CharField()
-
+/** Google Cloud Platform Cloud Storage driver
+ * @param basePath {string} Prepend this path to all files
+ * @param bucketName {string} Bucket name
+ * @param clientEmail {string} The username / e-mail of the service account
+ * @param privateKey {string} The full private key
+ * @param projectId {string} The GCP project ID
+ */
+class GcpFileStorage extends DjormStorage {
   get storage () {
-    return new Storage({
-      projectId: this.get('projectId'),
+    return new GcpStorage({
+      projectId: this.getProp('projectId'),
       credentials: {
-        client_email: this.get('clientEmail'),
-        private_key: this.get('privateKey').replace(/\\n/g, '\n')
+        client_email: this.getProp('clientEmail'),
+        private_key: this.getProp('privateKey').replace(/\\n/g, '\n')
       }
     })
   }
@@ -57,8 +54,4 @@ class GcpFileStorage extends FileStorage {
   }
 }
 
-function useAsDefault (props) {
-  setSystemDefaultStorage(new GcpFileStorage(props))
-}
-
-module.exports = { GcpFileStorage, useAsDefault }
+module.exports = { GcpFileStorage }

@@ -1,7 +1,6 @@
 const { DatabaseModelBase } = require('./DatabaseModelBase')
 const { Delete } = require('../db/Delete')
 const { ForeignKey } = require('../fields/ForeignKey')
-const { getDb } = require('../db/DatabaseHub')
 const { Insert } = require('../db/Insert')
 const { ObjectManager } = require('./ObjectManager')
 const { FieldError, ObjectNotFound, UnknownField } = require('../errors')
@@ -15,6 +14,7 @@ const {
   getRelationship
 } = require('./ModelRegistry')
 
+const databaseHub = require('../db/DatabaseHub')
 const nonEmpty = item => Boolean(item)
 
 const FIELD_SEPARATOR = '__'
@@ -38,7 +38,7 @@ class DatabaseModel extends DatabaseModelBase {
   }
 
   static get db () {
-    return getDb(this.dbName)
+    return databaseHub.get(this.dbName)
   }
 
   static get table () {

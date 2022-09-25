@@ -1,58 +1,10 @@
 const { Database } = require('./Database')
 const { DatabaseError } = require('./errors')
+const { ConnectionHub } = require('../models/ConnectionHub')
 
-class DatabaseHub {
-  databases = {}
-
-  configDb (db, dbName = 'default') {
-    if (db instanceof Database) {
-      const existing = this.databases[dbName]
-      if (existing) {
-        existing.disconnect()
-      }
-      this.databases[dbName] = db
-    } else {
-      throw new DatabaseError(
-        `Database "${dbName}" must be instance of Database`
-      )
-    }
-  }
-
-  async connectDb (db, dbName = 'default') {
-    this.configDb(db, dbName)
-    await this.connectDbInstance(dbName)
-  }
-
-  async connectDbInstance (dbName) {
-    await this.databases[dbName].connect()
-  }
-
-  async disconnect () {
-    await Promise.all(Object.values(this.databases).map(db => db.disconnect()))
-    this.databases = {}
-  }
-
-  getDb (dbName) {
-    const db = this.databases[dbName]
-    if (!db) {
-      throw new DatabaseError(`Database "${dbName}" is not available`)
-    }
-    return db
-  }
+class DatabaseHub extends ConnectionHub {
+  ErrorClass = DatabaseError
+  ItemClass = Database
 }
 
-let hubSingleton = new DatabaseHub()
-
-module.exports = {
-  DatabaseHub,
-  connect: async (...args) => await hubSingleton.connectDb(...args),
-  disconnect: async () => await hubSingleton.disconnect(),
-  getDb: name => hubSingleton.getDb(name),
-  configDb: (db, dbName) => hubSingleton.configDb(db, dbName),
-  get instance () {
-    return hubSingleton
-  },
-  set instance (hub) {
-    hubSingleton = hub
-  }
-}
+module.exports = new DatabaseHub()

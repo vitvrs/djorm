@@ -1,7 +1,7 @@
 const { And } = require('./And')
 const { DatabaseModelBase } = require('../models/DatabaseModelBase')
 const { filterUnique } = require('../filters')
-const { ImmutablePropModel } = require('./props')
+const { ImmutablePropModel } = require('../models/PropModel')
 const { parseFieldObjects } = require('../models/AttrModel')
 const { Q } = require('./QueryCondition')
 const { QueryColumnGroup } = require('./QueryColumnGroup')

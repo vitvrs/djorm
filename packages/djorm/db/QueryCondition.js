@@ -1,4 +1,4 @@
-const { ImmutablePropModel } = require('./props')
+const { ImmutablePropModel } = require('../models/PropModel')
 const { LogicOperator } = require('./LogicOperator')
 
 class QueryCondition extends ImmutablePropModel {

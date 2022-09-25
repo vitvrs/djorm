@@ -1,4 +1,4 @@
-const { ImmutablePropModel } = require('./props')
+const { ImmutablePropModel } = require('../models/PropModel')
 
 class QueryIdentifier extends ImmutablePropModel {
   get name () {

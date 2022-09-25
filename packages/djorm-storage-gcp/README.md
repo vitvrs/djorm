@@ -1,11 +1,27 @@
 # `djorm-storage-gcp`
 
-> TODO: description
+> Google Cloud Platform storage driver for [Djorm](https://just-paja.github.io/djorm/)
 
-## Usage
+## Installation
 
+```shell
+npm install --save djorm-storage-gcp
 ```
-const djormStorageGcp = require('djorm-storage-gcp');
 
-// TODO: DEMONSTRATE API
+## Configuration
+
+```javascript
+
+config({
+  storages: {
+    default: {
+      driver: 'djorm-storage-gcp.GcpFileStorage',
+      basePath: '',
+      bucketName: 'bucket-name',
+      clientEmail: 'serviceaccount@gcp.com',
+      privateKey: '### BEGIN PRIVATE KEY ...',
+      projectId: 'gcp-project-id',
+    }
+  }
+})
 ```

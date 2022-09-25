@@ -1,13 +1,4 @@
-const init = async databases => {
-  const { Database } = require('../db/Database')
-  const { configDb } = require('../db/DatabaseHub')
-  Object.entries(databases).map(([dbName, dbConfig]) =>
-    configDb(Database.resolveDriver(dbConfig), dbName)
-  )
-}
-
-const shutdown = async () => {
-  await require('../db/DatabaseHub').disconnect()
-}
+const init = databases => require('../db/DatabaseHub').addInstances(databases)
+const shutdown = () => require('../db/DatabaseHub').destroy()
 
 module.exports = { init, shutdown }

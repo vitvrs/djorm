@@ -1,16 +1,13 @@
-const { FileStorage, setSystemDefaultStorage } = require('djorm/fields')
+const { Storage } = require('djorm/storage/Storage')
 
-class JestFileStorage extends FileStorage {
+class JestFileStorage extends Storage {
   getReadStream = jest.fn()
   getWriteStream = jest.fn()
   exists = jest.fn()
   read = jest.fn()
+  readDir = jest.fn()
   readMeta = jest.fn()
   write = jest.fn()
 }
 
-function useAsDefault () {
-  setSystemDefaultStorage(new JestFileStorage())
-}
-
-module.exports = { JestFileStorage, useAsDefault }
+module.exports = { JestFileStorage }

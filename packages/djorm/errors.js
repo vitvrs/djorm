@@ -18,6 +18,8 @@ class DjormError extends Error {
 class NotImplemented extends DjormError {}
 class ConfigError extends DjormError {}
 class ModelError extends DjormError {}
+class ConnectionError extends DjormError {}
+class StorageError extends DjormError {}
 
 class FieldError extends ModelError {}
 class UnknownField extends FieldError {}
@@ -88,6 +90,7 @@ class ObjectNotFound extends ModelError {
 
 module.exports = {
   ConfigError,
+  ConnectionError,
   DjormError,
   FieldError,
   FieldValidationError,
@@ -97,6 +100,7 @@ module.exports = {
   NotImplemented,
   ObjectNotFound,
   serializeError,
+  StorageError,
   UnknownField,
   ValidationError,
   ValueError

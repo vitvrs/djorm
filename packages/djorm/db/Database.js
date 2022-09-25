@@ -1,9 +1,9 @@
 const { DatabaseMapper } = require('./DatabaseMapper')
 const { NotImplemented } = require('../errors')
-const { PropModel } = require('./props')
+const { DriverModel } = require('../models/DriverModel')
 const { debug, trace } = require('../logger')
 
-class Database extends PropModel {
+class Database extends DriverModel {
   connected = false
   connecting = false
   disconnectTimeout = null
@@ -14,11 +14,6 @@ class Database extends PropModel {
     super(...args)
     this.queue = []
     this.disconnect = this.disconnect.bind(this)
-  }
-
-  static resolveDriver (dbConfig) {
-    const Model = require(dbConfig.driver)
-    return new Model(dbConfig)
   }
 
   getSchema () {

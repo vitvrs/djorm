@@ -3,7 +3,7 @@
   "version": "0.1.18-alpha.1",
   "description": "Google Cloud Storage support for Djorm",
   "author": "Pavel Žák <pavel@zak.global>",
-  "homepage": "https://github.com/just-paja/djorm#readme",
+  "homepage": "https://just-paja.github.io/djorm",
   "license": "ISC",
   "main": "index.js",
   "files": [

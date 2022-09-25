@@ -1,6 +1,5 @@
 const app = require('__samples__/trivial-app')
-
-const { getDb } = require('../db')
+const hub = require('../db')
 
 describe('database connection', () => {
   beforeEach(() => {
@@ -18,9 +17,9 @@ describe('database connection', () => {
 
     it('disconnects after some time', async () => {
       await app.User.objects.all()
-      expect(getDb('default')).toHaveProperty('connected', true)
+      expect(hub.get('default')).toHaveProperty('connected', true)
       await jest.runAllTimers()
-      expect(getDb('default')).toHaveProperty('connected', false)
+      expect(hub.get('default')).toHaveProperty('connected', false)
     })
   })
 })

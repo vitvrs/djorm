@@ -1,38 +1,11 @@
+const storageHub = require('../storage/StorageHub')
+
 const { AttrModel, Field } = require('../models/AttrModel')
 const { CharField } = require('./CharField')
 const { ObjectField } = require('./ObjectField')
-const { ConfigError } = require('../errors')
-
-let systemDefaultStorage = null
-
-function getSystemDefaultStorage () {
-  if (!systemDefaultStorage) {
-    throw new ConfigError(
-      'Default system storage needs to be configured to use FileField'
-    )
-  }
-  return systemDefaultStorage
-}
-
-function setSystemDefaultStorage (storage) {
-  systemDefaultStorage = storage
-}
-
-function getFieldValue (inst, fieldName) {
-  return fieldName && inst.get(fieldName)
-}
-
-class FileStorage extends AttrModel {
-  getReadStream (filePath) {}
-  getWriteStream (filePath) {}
-  async exists (filePath) {}
-  async read (filePath) {}
-  async readMeta (filePath) {}
-  async write (filePath, data) {}
-}
 
 class File extends AttrModel {
-  static storage = new ObjectField({ model: FileStorage })
+  static storageName = new CharField()
   static basePath = new CharField()
   static name = new CharField()
 
@@ -48,40 +21,39 @@ class File extends AttrModel {
     return this.storage.getReadStream(this.filePath)
   }
 
+  get storage () {
+    return storageHub.get(this.storageName)
+  }
+
   get writeStream () {
     return this.storage.getWriteStream(this.filePath)
   }
 
-  async exists () {
-    return await this.storage.exists(this.filePath)
-  }
-
-  async read () {
-    return await this.storage.read(this.filePath)
-  }
-
-  async readMeta () {
-    return await this.storage.readMeta(this.filePath)
-  }
-
-  async write (data) {
-    return await this.storage.write(this.filePath, data)
-  }
+  exists = () => this.storage.exists(this.filePath)
+  read = () => this.storage.read(this.filePath)
+  readMeta = () => this.storage.readMeta(this.filePath)
+  write = data => this.storage.write(this.filePath, data)
 }
 
 class FileField extends Field {
   static basePath = new CharField()
   static model = new ObjectField({ default: () => File, model: Object })
-  static storage = new ObjectField({ model: FileStorage, null: true })
-  static defaultStorage = new ObjectField({
-    default: getSystemDefaultStorage,
-    model: FileStorage
-  })
+  static storageName = new CharField()
 
-  resolveStorage () {
-    return this.get('storage') || this.get('defaultStorage')
+  get storage () {
+    return storageHub.get(this.storageName)
+  }
+
+  parse (value, inst) {
+    return this.get('model').from({
+      storageName: this.get('storageName'),
+      basePath: this.get('basePath'),
+      name: value.name
+    })
   }
 }
+
+const getFieldValue = (inst, fieldName) => fieldName && inst.get(fieldName)
 
 class NamedFileField extends FileField {
   static nameField = new Field()
@@ -90,7 +62,7 @@ class NamedFileField extends FileField {
 
   parse (value, inst) {
     return this.get('model').from({
-      storage: this.resolveStorage(this),
+      storageName: this.storageName,
       basePath: getFieldValue(inst, this.basePathField) || this.get('basePath'),
       name: getFieldValue(inst, this.nameField)
     })
@@ -102,10 +74,7 @@ class NamedFileField extends FileField {
 }
 
 module.exports = {
-  getSystemDefaultStorage,
-  setSystemDefaultStorage,
   File,
-  FileStorage,
   FileField,
   NamedFileField
 }
