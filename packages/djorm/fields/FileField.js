@@ -1,18 +1,20 @@
 const storageHub = require('../storage/StorageHub')
 
-const { v4 } = require('uuid')
-const { basename } = require('path')
 const { AttrModel, Field } = require('../models/AttrModel')
+const { basename } = require('path')
+const { BooleanField } = require('./BooleanField')
 const { createReadStream } = require('fs')
 const { CharField } = require('./CharField')
 const { ObjectField } = require('./ObjectField')
 const { pipeline } = require('stream')
+const { v4 } = require('uuid')
 
 class File extends AttrModel {
   static storageName = new CharField({ default: 'default' })
   static basePath = new CharField()
   static name = new CharField()
   static src = new Field()
+  static stored = new BooleanField({ default: false })
 
   static meta = {
     modelName: 'File'
@@ -80,6 +82,12 @@ class FileField extends Field {
     }
   }
 
+  fromDb (value, inst) {
+    value = super.fromDb(value, inst)
+    value.set('stored', true)
+    return value
+  }
+
   toDb (value) {
     if (value) {
       return value.name
@@ -95,7 +103,7 @@ class FileField extends Field {
   }
 
   async saveFileValue (inst, fieldName, value) {
-    if (value) {
+    if (value && !value.stored) {
       await value.save()
     }
   }
