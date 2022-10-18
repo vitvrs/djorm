@@ -10,7 +10,8 @@ class DjormError extends Error {
   serialize () {
     return {
       code: this.code,
-      message: this.message
+      message: this.message,
+      originalException: this.originalException
     }
   }
 }
