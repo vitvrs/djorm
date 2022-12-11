@@ -4,7 +4,8 @@ class PropModel {
   }
 
   getProp (name, defaultValue) {
-    return this.props[name] || defaultValue
+    const value = this.props[name]
+    return value === undefined ? defaultValue : value
   }
 }
 
