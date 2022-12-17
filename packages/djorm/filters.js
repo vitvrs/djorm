@@ -1,4 +1,4 @@
-const { NestedValidationError } = require('./errors')
+const { NestedValidationError, ValueError } = require('./errors')
 
 const serialize = (obj, ...args) => {
   if (obj instanceof Array) {
@@ -10,9 +10,7 @@ const serialize = (obj, ...args) => {
 const filterUnique = (item, index, src) => src.indexOf(item) === index
 
 const throwFirstUnknownError = errors => {
-  const unknownErrors = errors.filter(
-    err => !(err instanceof NestedValidationError)
-  )
+  const unknownErrors = errors.filter(err => !(err instanceof ValueError))
   if (unknownErrors.length > 0) {
     throw unknownErrors[0]
   }
