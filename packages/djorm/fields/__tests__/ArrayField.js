@@ -1,6 +1,6 @@
 const { ArrayField, CharField, IntegerField } = require('..')
 const { AttrModel } = require('../../models')
-const { FieldValidationError, ValueError } = require('../../errors')
+const { NestedValidationError, ValueError } = require('../../errors')
 
 describe('ArrayField', () => {
   it('accepts null value given field is nullable', () => {
@@ -22,7 +22,7 @@ describe('ArrayField', () => {
       })
     }
     const inst = new TestClass({ testField: null })
-    await expect(inst.validate()).rejects.toBeInstanceOf(FieldValidationError)
+    await expect(inst.validate()).rejects.toBeInstanceOf(NestedValidationError)
   })
 
   describe('with IntegerField base field', () => {

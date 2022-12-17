@@ -3,7 +3,7 @@ const fields = require('djorm/fields')
 const { advanceTo, clear } = require('jest-date-mock')
 const { DatabaseModel, clearModels, getModel } = require('djorm/models')
 const { init, shutdown } = require('djorm/config')
-const { FieldValidationError } = require('djorm/errors')
+const { NestedValidationError } = require('djorm/errors')
 const { QueryArray } = require('djorm/db/QueryArray')
 
 const setupModels = () => {
@@ -71,7 +71,7 @@ const setupTests = models => {
         id: 1,
         arrayField: ['1', null, 3]
       })
-    ).rejects.toBeInstanceOf(FieldValidationError)
+    ).rejects.toBeInstanceOf(NestedValidationError)
   })
 
   it('stores string array in string array field', async () => {
@@ -93,7 +93,7 @@ const setupTests = models => {
         id: 1,
         arrayField: ['1', null, 3]
       })
-    ).rejects.toBeInstanceOf(FieldValidationError)
+    ).rejects.toBeInstanceOf(NestedValidationError)
   })
 
   it('stores int array in nullable integer array field', async () => {
