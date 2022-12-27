@@ -102,7 +102,14 @@ class DatabaseModel extends DatabaseModelBase {
   getFieldTarget (fieldPath, value) {
     const separatorIndex = fieldPath.indexOf(FIELD_SEPARATOR)
     if (separatorIndex === -1) {
-      return [this, this.constructor.getField(fieldPath), fieldPath]
+      try {
+        return [this, this.constructor.getField(fieldPath), fieldPath]
+      } catch (e) {
+        if (e instanceof FieldError) {
+          return null
+        }
+        throw e
+      }
     }
     if (value === null) {
       return null
