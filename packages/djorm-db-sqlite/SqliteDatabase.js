@@ -24,11 +24,17 @@ class SqliteDatabase extends Database {
     return new SqliteWriter(this, model)
   }
 
-  async connectDb () {
-    this.db = sqlite(this.path)
+  createDb () {
+    const db = sqlite(this.path)
     if (this.props.unsafeMode) {
-      this.db.unsafeMode()
+      db.unsafeMode(true)
     }
+    db.pragma('journal_mode = WAL')
+    return db
+  }
+
+  async connectDb () {
+    this.db = this.createDb()
   }
 
   async disconnectDb () {
