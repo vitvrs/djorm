@@ -371,16 +371,23 @@ class JobBase extends DatabaseModel {
         ...this.props,
         ...jobProps.props
       },
-      topic: jobProps.topic || this.topic,
+      topic: jobProps.topic || this.get('topic'),
       rootId: this.rootId || this.parentId || this.id,
       parentId: this.id
     })
+    const store = getSettings('cloudJobs.store', true)
     if (this.status !== JobStatus.waiting) {
       this.status = JobStatus.waiting
-      await this.save()
+      if (store) {
+        await this.save()
+      }
     }
-    await childJob.save()
-    this.childrenIds.push(childJob.id)
+    if (store) {
+      await childJob.save()
+      this.childrenIds.push(childJob.id)
+    } else {
+      await childJob.spawn()
+    }
     return childJob
   }
 

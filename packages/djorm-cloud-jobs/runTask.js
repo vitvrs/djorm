@@ -49,16 +49,18 @@ const closeupParent = async (job, stage) => {
 async function runStage (handlers, job, stage, ...args) {
   info(`Running Job#${job.id}:${stage}`)
   const handler = resolveHandler(handlers, job, stage)
+  const store = getSettings('cloudJobs.store', true)
   let outputs = null
-  if (getSettings('cloudJobs.store', true)) {
+  if (store) {
     job.status = stage
     await job.save()
-    if (handler) {
-      outputs = await handler(job, ...args)
-    }
-    if (stage === JobStatus.success || stage === JobStatus.failure) {
-      await closeupParent(job, stage)
-    }
+  }
+  if (handler) {
+    outputs = await handler(job, ...args)
+  }
+
+  if (store && (stage === JobStatus.success || stage === JobStatus.failure)) {
+    await closeupParent(job, stage)
   }
   return outputs
 }
