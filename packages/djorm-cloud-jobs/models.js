@@ -332,7 +332,7 @@ class JobBase extends DatabaseModel {
    * @returns {JobBase} The same job instance
    */
   async spawn () {
-    if (!this.pk) {
+    if (!this.pk && getSettings('cloudJobs.store', true)) {
       throw new SpawnError('Cannot spawn job without ID.')
     }
     const message = serialize(this)
