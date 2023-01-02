@@ -5,7 +5,7 @@ class BigQueryWriter extends Writable {
     super({ objectMode: true })
     this.base = base
     this.model = model
-    this.tableName = this.model.table
+    this.tableName = this.model.table.split('.').reverse()[0]
     this.schemaName = this.base.props.schema
   }
 
