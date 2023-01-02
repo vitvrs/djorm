@@ -1,6 +1,7 @@
 const { JobStatus, JobStatusHandler } = require('./models')
 const { RuntimeError, formatError } = require('./errors')
 const { info } = require('djorm/logger')
+const { getSettings } = require('djorm/config')
 
 const resolveHandler = (handlers, job, stage) => {
   const handlerName = JobStatusHandler[stage]
@@ -48,14 +49,16 @@ const closeupParent = async (job, stage) => {
 async function runStage (handlers, job, stage, ...args) {
   info(`Running Job#${job.id}:${stage}`)
   const handler = resolveHandler(handlers, job, stage)
-  job.status = stage
-  await job.save()
   let outputs = null
-  if (handler) {
-    outputs = await handler(job, ...args)
-  }
-  if (stage === JobStatus.success || stage === JobStatus.failure) {
-    await closeupParent(job, stage)
+  if (getSettings('cloudJobs.store', true)) {
+    job.status = stage
+    await job.save()
+    if (handler) {
+      outputs = await handler(job, ...args)
+    }
+    if (stage === JobStatus.success || stage === JobStatus.failure) {
+      await closeupParent(job, stage)
+    }
   }
   return outputs
 }
