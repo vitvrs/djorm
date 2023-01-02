@@ -1,6 +1,6 @@
 const path = require('path')
 
-const { error, info } = require('djorm/logger')
+const { error, debug } = require('djorm/logger')
 const { formatMessage } = require('./pubsub')
 const { getEntrypoint } = require('./entry')
 const { pool } = require('workerpool')
@@ -43,7 +43,7 @@ const getMod = async modPath => {
  * @return void
  */
 const runLocalJob = async (topic, message) => {
-  info(`SPAWN: ${topic}: ${JSON.stringify(message)}`)
+  debug(`SPAWN: ${topic}: ${JSON.stringify(message)}`)
   if (getSettings('cloudJobs.pool', process.env.NODE_ENV !== 'test')) {
     return await runPoolJob(topic, message)
   }
