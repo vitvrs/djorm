@@ -30,12 +30,14 @@ class DatastoreFormatterBase extends QueryFormatter {
     return value
   }
 
-  formatEntityProps (data) {
-    return Object.entries(data).reduce(
-      (aggr, [fieldName, value]) =>
-        Object.assign(aggr, { [fieldName]: this.formatValue(value) }),
-      data
-    )
+  formatEntityProps (data, pkName) {
+    return Object.entries(data)
+      .filter(([fieldName]) => fieldName !== pkName)
+      .reduce(
+        (aggr, [fieldName, value]) =>
+          Object.assign(aggr, { [fieldName]: this.formatValue(value) }),
+        data
+      )
   }
 
   formatEntity (qs, entityData) {
@@ -43,8 +45,9 @@ class DatastoreFormatterBase extends QueryFormatter {
       .getDatabaseFields()
       .filter(([key, field]) => !field.indexable)
       .map(([key]) => key)
-    const data = this.formatEntityProps(entityData)
-    const key = this.formatKey(qs.props.model, data[qs.props.model.pkName])
+    const pkName = qs.props.model.pkName
+    const data = this.formatEntityProps(entityData, pkName)
+    const key = this.formatKey(qs.props.model, entityData[pkName])
     return {
       key,
       data,
