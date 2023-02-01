@@ -65,6 +65,10 @@ class NestedValidationError extends ValueError {
 
   constructor (fieldErrors) {
     super('Invalid request')
+    if (fieldErrors.length === 1) {
+      this.message = fieldErrors[0].message
+      this.stack = fieldErrors[0].stack
+    }
     this.fieldErrors = fieldErrors.filter(e => e instanceof FieldError)
     this.processingError = fieldErrors.find(e => !(e instanceof FieldError))
   }
