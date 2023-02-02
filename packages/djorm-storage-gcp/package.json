@@ -20,7 +20,7 @@
     "url": "git+https://github.com/just-paja/djorm.git"
   },
   "dependencies": {
-    "@google-cloud/storage": "^5.8.1",
+    "@google-cloud/storage": "^6.9.1",
     "djorm": "file:../djorm"
   }
 }
