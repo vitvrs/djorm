@@ -10,17 +10,23 @@ const { Storage: DjormStorage } = require('djorm/storage/Storage')
  */
 class GcpFileStorage extends DjormStorage {
   get storage () {
-    return new GcpStorage({
-      projectId: this.getProp('projectId'),
-      credentials: {
-        client_email: this.getProp('clientEmail'),
-        private_key: this.getProp('privateKey').replace(/\\n/g, '\n')
-      }
-    })
+    return new GcpStorage(this.config)
   }
 
   get bucket () {
     return this.storage.bucket(this.getProp('bucketName'))
+  }
+
+  get config () {
+    const config = {}
+    if (this.getProp('projectId')) {
+      config.projectId = this.getProp('projectId')
+    }
+    if (this.getProp('clientEmail') || this.getProp('privateKey')) {
+      config.client_email = this.getProp('clientEmail')
+      config.private_key = this.getProp('privateKey')
+    }
+    return config
   }
 
   file (filePath) {

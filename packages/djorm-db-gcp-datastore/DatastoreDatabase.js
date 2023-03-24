@@ -13,15 +13,18 @@ class DatastoreDatabase extends Database {
   mergeNestedModels = true
 
   get config () {
-    return {
+    const config = {
       apiEndpoint: this.props.apiEndpoint,
-      namespace: this.namespace,
-      projectId: this.props.projectId,
-      credentials: {
-        client_email: this.props.username,
-        private_key: this.props.password
-      }
+      namespace: this.namespace
     }
+    if (this.getProp('projectId')) {
+      config.projectId = this.getProp('projectId')
+    }
+    if (this.getProp('clientEmail') || this.getProp('privateKey')) {
+      config.client_email = this.getProp('clientEmail')
+      config.private_key = this.getProp('privateKey')
+    }
+    return config
   }
 
   get namespace () {
