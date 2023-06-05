@@ -321,7 +321,10 @@ class JobBase extends DatabaseModel {
    */
   async save () {
     this.live = JobRunning.filter.includes(this.get('status'))
-    return await super.save()
+    if (getSettings('cloudJobs.store', true)) {
+      return await super.save()
+    }
+    return this
   }
 
   /** Spawn execution of this job. This will run the cloud job in the
