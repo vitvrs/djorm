@@ -31,7 +31,9 @@ function createProcessWrapper (fn) {
             error(e)
           }
         }
-        process.exit(255)
+        if (getSettings('cloudJobs.exitOnFailure')) {
+          process.exit(255)
+        }
       }
     } finally {
       // Do not shutdown in test environment
