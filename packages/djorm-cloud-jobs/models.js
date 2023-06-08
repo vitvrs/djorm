@@ -386,11 +386,10 @@ class JobBase extends DatabaseModel {
       }
     }
     if (store) {
-      await childJob.save()
+      await childJob.save(true)
       this.childrenIds.push(childJob.id)
-    } else {
-      await childJob.spawn()
     }
+    await childJob.spawn()
     return childJob
   }
 
