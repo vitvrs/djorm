@@ -1,6 +1,6 @@
 const { error, info } = require('djorm/logger')
 const { getModel } = require('djorm/models')
-const { getSettings, init, shutdown } = require('djorm/config')
+const { getSettings, init, isUp, shutdown } = require('djorm/config')
 const { parseMessage } = require('./pubsub')
 const { registerEntrypoint } = require('./entry')
 const { runTask } = require('./runTask')
@@ -16,7 +16,9 @@ const { RuntimeError } = require('./errors')
 function createProcessWrapper (fn) {
   return async function (job) {
     try {
-      await init()
+      if (!isUp()) {
+        await init()
+      }
       await fn(job)
     } catch (processError) {
       /* istanbul ignore next */
@@ -34,7 +36,7 @@ function createProcessWrapper (fn) {
     } finally {
       // Do not shutdown in test environment
       const config = getSettings('cloudJobs', {})
-      if (!(config.local && !config.pool)) {
+      if (isUp() && (!config.keepAlive || !(config.local && !config.pool))) {
         await shutdown()
       }
     }
