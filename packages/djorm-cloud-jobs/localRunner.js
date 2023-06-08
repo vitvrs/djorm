@@ -47,8 +47,12 @@ const runLocalJob = async (topic, message) => {
   if (getSettings('cloudJobs.pool', process.env.NODE_ENV !== 'test')) {
     return await runPoolJob(topic, message)
   }
-  const { runJob } = await getMod(getEntrypoint(topic))
-  return await runJob({
+  const entryPoint = getEntrypoint(topic)
+  if (!entryPoint) {
+    throw new Error(`Cannot find entrypoint for topic ${topic}`)
+  }
+  const mod = await getMod(entryPoint)
+  return await mod.runJob({
     data: formatMessage(message)
   })
 }

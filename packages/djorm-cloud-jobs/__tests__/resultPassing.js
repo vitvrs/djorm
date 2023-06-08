@@ -30,7 +30,7 @@ describe('createSubscription', () => {
 
   afterEach(shutdown)
 
-  it('bubbles to the root job handler', async () => {
+  it.only('bubbles to the root job handler', async () => {
     const job = new Job({
       id: 1,
       type: 'parent-job-type'

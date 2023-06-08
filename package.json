@@ -16,25 +16,16 @@
     "build:isolate": "lerna-isolate bundle",
     "prepare": "NODE_PATH=.:packages node ./scripts/postinstall.js"
   },
-  "dependencies": {
-    "djorm": "file:packages/djorm",
-    "djorm-cloud-jobs": "file:packages/djorm-cloud-jobs",
-    "djorm-db-gcp-bigquery": "file:packages/djorm-db-gcp-bigquery",
-    "djorm-db-gcp-datastore": "file:packages/djorm-db-gcp-datastore",
-    "djorm-db-migrations": "file:packages/djorm-db-migrations",
-    "djorm-db-mysql": "file:packages/djorm-db-mysql",
-    "djorm-db-sql": "file:packages/djorm-db-sql",
-    "djorm-db-sqlite": "file:packages/djorm-db-sqlite",
-    "djorm-docs": "file:packages/djorm-docs",
-    "djorm-storage-gcp": "file:packages/djorm-storage-gcp",
-    "djorm-storage-jest": "file:packages/djorm-storage-jest"
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
+    "@google-cloud/datastore": "^7.5.1",
     "express": "^4.17.1",
     "find-cache-dir": "^3.3.1",
     "jest-date-mock": "^1.0.8",
     "jsdoc": "^3.6.6",
-    "lerna": "^3.22.1",
+    "lerna": "^7.0.0",
     "lerna-jest": "^0.5.4",
     "lerna-ministack": "^0.5.4",
     "node-fetch": "^2.6.1",

@@ -321,10 +321,10 @@ class JobBase extends DatabaseModel {
    * @async
    * @returns {JobBase} The same instance
    */
-  async save () {
+  async save (...args) {
     this.live = JobRunning.filter.includes(this.get('status'))
     if (getSettings('cloudJobs.store', true)) {
-      return await super.save()
+      return await super.save(...args)
     }
     return this
   }
@@ -384,7 +384,7 @@ class JobBase extends DatabaseModel {
     if (this.status !== JobStatus.waiting) {
       this.status = JobStatus.waiting
       if (store) {
-        await this.save()
+        await this.save(true)
       }
     }
     if (store) {
@@ -431,19 +431,22 @@ class JobBase extends DatabaseModel {
   }
 
   get ident () {
-    return `${getModelName(this.constructor)}#${this.pk || this.type}`
+    if (this.pk) {
+      return `${getModelName(this.constructor)}#${this.pk}`
+    }
+    return `${getModelName(this.constructor)}(type=${this.type})`
   }
 
   get logger () {
-    if (!this.constructor.loggerInstance) {
-      this.constructor.loggerInstance = logger.child(
+    if (!this.loggerInstance) {
+      this.loggerInstance = logger.child(
         {},
         {
           msgPrefix: `[${this.ident}] `
         }
       )
     }
-    return this.constructor.loggerInstance
+    return this.loggerInstance
   }
 }
 

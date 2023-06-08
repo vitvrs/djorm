@@ -218,12 +218,12 @@ class DatabaseModel extends DatabaseModelBase {
     return this
   }
 
-  async save () {
+  async save (...args) {
     await this.validate()
     if (this.pk) {
-      return await this.update()
+      return await this.update(...args)
     }
-    return await this.create()
+    return await this.create(...args)
   }
 
   async reload () {

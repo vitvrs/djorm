@@ -12,8 +12,12 @@ configure({
       path: tmpFile.name
     }
   },
+  logger: {
+    level: 'info'
+  },
   cloudJobs: {
     clientConfig: {},
+    keepAlive: true,
     local: true,
     routing: {
       'test-topic': {

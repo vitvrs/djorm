@@ -2,7 +2,7 @@ const path = require('path')
 
 const { formatMessage } = require('../pubsub')
 const { Job } = require('../models')
-const { configure, init, shutdown } = require('djorm/config')
+const { configure } = require('djorm/config')
 const { setupDb } = require('__jest__/sqlite')
 
 const formatMessageObject = message => ({
@@ -28,14 +28,11 @@ describe('createSubscription', () => {
     })
   })
 
-  afterEach(shutdown)
-
   it('bubbles to the root job handler', async () => {
     const job = new Job({
       type: 'grandparent-job-type'
     })
     await app.runJob(formatMessageObject(job))
-    await init()
     const state = await Job.objects.all()
     expect(state).toEqual([
       expect.objectContaining({

@@ -13,6 +13,7 @@ configure({
   cloudJobs: {
     clientConfig: {},
     local: true,
+    keepAlive: true,
     routing: {
       'test-topic': {
         parentJobType: 'parent-job-type',

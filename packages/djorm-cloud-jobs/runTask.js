@@ -25,7 +25,7 @@ const closeupParent = async (job, stage) => {
         stats.stopped === 0 &&
         stats.waiting === 0
       ) {
-        job.logger.debug(`status = ${stage}`)
+        parent.logger.debug(`status = ${stage}`)
         parent.status = stage
         await parent.save()
         await parent.spawn()
