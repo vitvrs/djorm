@@ -189,7 +189,7 @@ class DatabaseModel extends DatabaseModelBase {
         .target(row.model)
         .values({ ...row.values, ...inject })
         .exec()
-      if (result.insertId) {
+      if (result.insertId && !this.pk) {
         this.set(row.model.pkName, result.insertId)
         // Set this back to the cascade ^^
         inject = { ...inject, [row.model.pkName]: result.insertId }
