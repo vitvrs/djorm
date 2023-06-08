@@ -1,3 +1,5 @@
+const logger = require('djorm/logger')
+
 const { publishMessage, resolveTopic } = require('./pubsub')
 const { getSettings } = require('djorm/config')
 const { RetryError, SpawnError } = require('./errors')
@@ -421,13 +423,27 @@ class JobBase extends DatabaseModel {
       return await this.spawn()
     }
     const err = new RetryError(
-      `${getModelName(this.constructor)}#${
-        this.pk
-      } has reached it's retry limit because it failed on: ${e.message}`,
+      `${this.ident} has reached it's retry limit because it failed on: ${e.message}`,
       [e]
     )
     err.stack = e.stack
     throw err
+  }
+
+  get ident () {
+    return `${getModelName(this.constructor)}#${this.pk || this.type}`
+  }
+
+  get logger () {
+    if (!this.constructor.loggerInstance) {
+      this.constructor.loggerInstance = logger.child(
+        {},
+        {
+          msgPrefix: `[${this.ident}] `
+        }
+      )
+    }
+    return this.constructor.loggerInstance
   }
 }
 

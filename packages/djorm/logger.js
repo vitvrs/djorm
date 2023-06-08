@@ -1,6 +1,9 @@
 const noop = () => {}
 
 const defaultLogger = {
+  child () {
+    return this
+  },
   debug: noop,
   error: console.error,
   fatal: console.fatal,
@@ -24,6 +27,7 @@ const getLogger = () => logger
 const proxy = method => (...args) => getLogger()[method](...args)
 
 module.exports = {
+  child: proxy('child'),
   debug: proxy('debug'),
   error: proxy('error'),
   fatal: proxy('fatal'),

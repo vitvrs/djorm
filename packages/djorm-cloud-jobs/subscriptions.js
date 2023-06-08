@@ -1,4 +1,4 @@
-const { error, info } = require('djorm/logger')
+const { warn } = require('djorm/logger')
 const { getModel } = require('djorm/models')
 const { getSettings, init, isUp, shutdown } = require('djorm/config')
 const { parseMessage } = require('./pubsub')
@@ -25,10 +25,10 @@ function createProcessWrapper (fn) {
       if (process.env.NODE_ENV === 'test') {
         throw processError
       } else {
-        error(processError)
+        job.logger.error(processError)
         if (processError.errors) {
           for (const e of processError.errors) {
-            error(e)
+            job.logger.error(e)
           }
         }
         if (getSettings('cloudJobs.exitOnFailure')) {
@@ -132,7 +132,7 @@ const createSubscription = ({ filename, tasks, topic }) => {
       const handlers = resolveJobHandlers(tasks, job.type)
       await runTask(handlers, job, topic)
     } else {
-      info(`No job resolved for message ${message}`)
+      warn(`No job resolved for message ${message}`)
     }
   }
 

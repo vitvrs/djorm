@@ -1,6 +1,5 @@
 const { JobStatus, JobStatusHandler } = require('./models')
 const { RuntimeError, formatError } = require('./errors')
-const { debug, warn } = require('djorm/logger')
 const { getSettings } = require('djorm/config')
 
 const resolveHandler = (handlers, job, stage) => {
@@ -26,7 +25,7 @@ const closeupParent = async (job, stage) => {
         stats.stopped === 0 &&
         stats.waiting === 0
       ) {
-        debug(`Calling ${parent.id} a ${stage}`)
+        job.logger.debug(`status = ${stage}`)
         parent.status = stage
         await parent.save()
         await parent.spawn()
@@ -47,7 +46,7 @@ const closeupParent = async (job, stage) => {
  * @returns {Object}
  */
 async function runStage (handlers, job, stage, ...args) {
-  debug(`Running Job#${job.id}:${stage}`)
+  job.logger.debug(`run stage ${stage}`)
   const handler = resolveHandler(handlers, job, stage)
   const store = getSettings('cloudJobs.store', true)
   let outputs = null
@@ -116,7 +115,7 @@ async function runTask (handlers, job) {
         await runStage(handlers, job, status)
       }
     } catch (e) {
-      warn(`Caught error: ${formatError(e)}`)
+      job.logger.warn(`Caught error: ${formatError(e)}`)
       await runStage(handlers, job, JobStatus.failure, e)
       // This job will be recycled instead of fulfilling (rerun request stage)
       await job.retry(e)
