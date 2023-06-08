@@ -25,6 +25,8 @@ const getSettings = (configPath, defaultValue = null) => {
   return result === undefined ? defaultValue : result
 }
 
+let up = false
+
 const init = async () => {
   const settings = getSettings()
   if (settings.apps) {
@@ -37,6 +39,7 @@ const init = async () => {
   if (settings.databases) {
     await require('./init/databases').init(settings.databases)
   }
+  up = true
 }
 
 const shutdown = async () => {
@@ -45,11 +48,15 @@ const shutdown = async () => {
   require('./init/logger').shutdown()
   require('./init/storages').shutdown()
   require('./init/databases').shutdown()
+  up = false
 }
+
+const isUp = () => up
 
 module.exports = {
   configure,
   getSettings,
+  isUp,
   init,
   shutdown
 }
