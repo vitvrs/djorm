@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-alpha.0](https://github.com/just-paja/djorm/compare/v0.1.19-alpha.18...v0.2.0-alpha.0) (2023-06-09)
+
+**Note:** Version bump only for package djorm-storage-gcp
+
+
+
+
+
 ## [0.1.19-alpha.17](https://github.com/just-paja/djorm/compare/v0.1.19-alpha.16...v0.1.19-alpha.17) (2023-03-24)
 
 
