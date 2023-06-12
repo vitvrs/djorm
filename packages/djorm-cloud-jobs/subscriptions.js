@@ -14,27 +14,12 @@ const { RuntimeError } = require('./errors')
  * @returns {AsyncFunction}
  */
 function createProcessWrapper (fn) {
-  return async function (job) {
+  return async function (jobProps) {
     try {
       if (!isUp()) {
         await init()
       }
-      await fn(job)
-    } catch (processError) {
-      /* istanbul ignore next */
-      if (process.env.NODE_ENV === 'test') {
-        throw processError
-      } else {
-        job.logger.error(processError)
-        if (processError.errors) {
-          for (const e of processError.errors) {
-            job.logger.error(e)
-          }
-        }
-        if (getSettings('cloudJobs.exitOnFailure')) {
-          process.exit(255)
-        }
-      }
+      await fn(jobProps)
     } finally {
       // Do not shutdown in test environment
       const config = getSettings('cloudJobs', {})
@@ -126,11 +111,28 @@ const createSubscription = ({ filename, tasks, topic }) => {
       parseMessage(message)
     )
     if (job) {
-      if (!job.id && getSettings('cloudJobs.store', true)) {
-        await job.create(true)
+      try {
+        if (!job.id && getSettings('cloudJobs.store', true)) {
+          await job.create(true)
+        }
+        const handlers = resolveJobHandlers(tasks, job.type)
+        await runTask(handlers, job, topic)
+      } catch (processError) {
+        /* istanbul ignore next */
+        if (process.env.NODE_ENV === 'test') {
+          throw processError
+        } else {
+          job.logger.error(processError)
+          if (processError.errors) {
+            for (const e of processError.errors) {
+              job.logger.error(e)
+            }
+          }
+          if (getSettings('cloudJobs.exitOnFailure')) {
+            process.exit(255)
+          }
+        }
       }
-      const handlers = resolveJobHandlers(tasks, job.type)
-      await runTask(handlers, job, topic)
     } else {
       warn(`No job resolved for message ${message}`)
     }
