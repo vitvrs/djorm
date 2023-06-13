@@ -113,7 +113,7 @@ const createSubscription = ({ filename, tasks, topic }) => {
     if (job) {
       try {
         if (!job.id && getSettings('cloudJobs.store', true)) {
-          await job.create(true)
+          await job.save(true)
         }
         const handlers = resolveJobHandlers(tasks, job.type)
         await runTask(handlers, job, topic)
