@@ -127,7 +127,7 @@ const createSubscription = ({ filename, tasks, topic }) => {
         if (process.env.NODE_ENV === 'test') {
           throw processError
         } else {
-          job.logger.error(processError)
+          job.logger.fatal(processError)
           if (processError.errors) {
             for (const e of processError.errors) {
               job.logger.error(e)
