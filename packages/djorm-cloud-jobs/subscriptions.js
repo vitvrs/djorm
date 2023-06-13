@@ -107,9 +107,14 @@ const resolveJobHandlers = (work, jobType) => {
 const createSubscription = ({ filename, tasks, topic }) => {
   /** Listen to PubSub messages for car configurations to render */
   async function subscribeToMessages (message, context) {
-    const job = getModel(getSettings('cloudJobs.model', 'Job')).from(
-      parseMessage(message)
-    )
+    let props
+    try {
+      props = parseMessage(message)
+    } catch (e) {
+      warn(`Failed to parse message: "${message}"`)
+      warn(e)
+    }
+    const job = getModel(getSettings('cloudJobs.model', 'Job')).from(props)
     if (job) {
       try {
         if (!job.id && getSettings('cloudJobs.store', true)) {
