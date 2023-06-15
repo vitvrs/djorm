@@ -3,6 +3,9 @@ const { RuntimeError, formatError } = require('./errors')
 const { getSettings } = require('djorm/config')
 
 const resolveHandler = (handlers, job, stage) => {
+  if (handlers instanceof Function) {
+    return handlers
+  }
   const handlerName = JobStatusHandler[stage]
   if (handlerName in handlers) {
     const handler = handlers[handlerName]

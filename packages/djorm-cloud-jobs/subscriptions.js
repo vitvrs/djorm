@@ -39,9 +39,7 @@ function createProcessWrapper (fn) {
  */
 const resolveJobHandlers = (work, jobType) => {
   if (typeof work === 'function') {
-    return {
-      onRequest: work
-    }
+    return work
   }
   const ref = work[jobType]
   if (ref) {
