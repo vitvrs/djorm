@@ -22,8 +22,7 @@ function createProcessWrapper (fn) {
       await fn(jobProps)
     } finally {
       // Do not shutdown in test environment
-      const config = getSettings('cloudJobs', {})
-      if (isUp() && (!config.keepAlive || !(config.local && !config.pool))) {
+      if (isUp() && !getSettings('cloudJobs.keepAlive')) {
         await shutdown()
       }
     }
