@@ -38,7 +38,7 @@ class SqliteDatabase extends Database {
   }
 
   async disconnectDb () {
-    this.db.close()
+    this.db?.close()
     this.db = null
   }
 
