@@ -9,11 +9,13 @@ function init () {
   const settings = getSettings()
   pubsub = new PubSub(settings.cloudJobs.clientConfig)
   topicMap = Object.entries(settings.cloudJobs.routing).reduce(
-    (aggr, [topic, triggers]) =>
-      Object.values(triggers).reduce(
+    (aggr, [topic, triggers]) => {
+      const src = Array.isArray(triggers) ? triggers : Object.values(triggers)
+      return src.reduce(
         (inner, trigger) => ({ ...inner, [trigger]: topic }),
         aggr
-      ),
+      )
+    },
     {}
   )
 }
