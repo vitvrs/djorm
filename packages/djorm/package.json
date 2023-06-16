@@ -1,6 +1,6 @@
 {
   "name": "djorm",
-  "version": "0.2.0-alpha.0",
+  "version": "0.2.0-alpha.3",
   "description": "Django like ORM framework",
   "author": "Pavel Žák <pavel@zak.global>",
   "homepage": "https://just-paja.github.io/djorm",
