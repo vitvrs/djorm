@@ -45,8 +45,12 @@ class Database extends DriverModel {
   async connect () {
     if (!this.connected) {
       this.connecting = true
-      trace(`Connecting to ${this.props.driver} database`)
-      await this.connectDb()
+      if (!this.connectPromise) {
+        trace(`Connecting to ${this.constructor.name}`)
+        this.connectPromise = this.connectDb()
+      }
+      await this.connectPromise
+      this.connectPromise = null
       this.connected = true
       this.connecting = false
       debug(`Connected to ${this.props.driver} database`)
