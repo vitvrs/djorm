@@ -431,10 +431,11 @@ class JobBase extends DatabaseModel {
   }
 
   get ident () {
+    const modelName = getModelName(this.constructor)
     if (this.pk) {
-      return `${getModelName(this.constructor)}#${this.pk}`
+      return `${modelName}#${this.pk}`
     }
-    return `${getModelName(this.constructor)}(type=${this.type})`
+    return `${modelName}(type=${this.type})`
   }
 
   get logger () {
