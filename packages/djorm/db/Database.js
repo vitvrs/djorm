@@ -49,10 +49,13 @@ class Database extends DriverModel {
         trace(`Connecting to ${this.constructor.name}`)
         this.connectPromise = this.connectDb()
       }
-      await this.connectPromise
-      this.connectPromise = null
-      this.connected = true
-      this.connecting = false
+      try {
+        await this.connectPromise
+        this.connected = true
+      } finally {
+        this.connectPromise = null
+        this.connecting = false
+      }
       debug(`Connected to ${this.props.driver} database`)
     }
     this.resolveQueue()
