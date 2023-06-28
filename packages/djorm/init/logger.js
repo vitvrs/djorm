@@ -6,6 +6,7 @@ const init = async settings => {
     ? require(settings.logger.transport)
     : null
   const options = {
+    ...settings.logger.options,
     name: settings.name,
     level: settings.logger.level || 'info'
   }
