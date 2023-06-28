@@ -38,14 +38,20 @@ class BigQueryDatabase extends Database {
   db = null
 
   get config () {
-    return {
-      location: this.props.location,
-      projectId: this.props.projectId,
-      credentials: {
-        client_email: this.props.username,
-        private_key: this.props.password
-      }
+    const config = {
+      location: this.getProp('location')
     }
+    const credentials = {
+      client_email: this.getProp('clientEmail') || this.getProp('username'),
+      private_key: this.getProp('privateKey') || this.getProp('password')
+    }
+    if (Object.values(credentials).every(Boolean)) {
+      config.credentials = credentials
+    }
+    if (this.getProp('projectId')) {
+      config.projectId = this.getProp('projectId')
+    }
+    return config
   }
 
   createWriteStream (model) {

@@ -17,12 +17,15 @@ class DatastoreDatabase extends Database {
       apiEndpoint: this.props.apiEndpoint,
       namespace: this.namespace
     }
+    const credentials = {
+      client_email: this.getProp('clientEmail') || this.getProp('username'),
+      private_key: this.getProp('privateKey') || this.getProp('password')
+    }
+    if (Object.values(credentials).every(Boolean)) {
+      config.credentials = credentials
+    }
     if (this.getProp('projectId')) {
       config.projectId = this.getProp('projectId')
-    }
-    if (this.getProp('clientEmail') || this.getProp('privateKey')) {
-      config.client_email = this.getProp('clientEmail')
-      config.private_key = this.getProp('privateKey')
     }
     return config
   }
