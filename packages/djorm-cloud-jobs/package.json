@@ -20,7 +20,7 @@
     "url": "git+ssh://git@github.com/just-paja/djorm.git"
   },
   "dependencies": {
-    "@google-cloud/pubsub": "^2.11.0",
+    "@google-cloud/pubsub": "^3.2.1",
     "djorm": "file:../djorm",
     "moment-timezone": "^0.5.33"
   }
